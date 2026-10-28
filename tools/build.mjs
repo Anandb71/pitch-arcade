@@ -45,5 +45,7 @@ for(const [entry,outfile] of [['main','server'],['demo-check','demo-check'],['fo
  });
 }
 
+await build({entryPoints:['packages/twitch/src/auth-cli.ts'],outfile:'dist/auth.mjs',bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'});
+
 const {build:buildWeb}=await import('vite');
 await buildWeb();

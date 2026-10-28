@@ -21,7 +21,9 @@
     "mock:replay": "node tools/replay-chat.mjs",
     "library:seed": "npm run build && node tools/seed-library.mjs",
     "demo:auto": "npm run build && node --experimental-sqlite tools/start.mjs --mock --auto",
-    "shots": "npm run build && node tools/shots.mjs"
+    "shots": "npm run build && node tools/shots.mjs",
+    "auth": "npm run build && node tools/auth.mjs",
+    "auth:check": "npm run build && node tools/auth.mjs --check"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
