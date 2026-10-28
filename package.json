@@ -1,0 +1,23 @@
+{
+  "name": "pitch-arcade",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && node tools/build.mjs",
+    "dev": "node tools/placeholder.mjs",
+    "demo": "node tools/placeholder.mjs",
+    "playtest": "node factory/template/tools/playtest.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4",
+    "@types/node": "^22.10.0",
+    "esbuild": "^0.25.0"
+  }
+}
