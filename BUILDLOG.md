@@ -85,3 +85,7 @@ Added five Vitest tests for auto approval, live settings, a finished demo:auto g
 ### T02 OAuth accounts
 
 Added localhost authorization code login for broadcaster and bot, state verification, expected login and client checks, required scopes, refresh coalescing and private atomic token storage outside the repo. The check command prints scopes only. Added fake Twitch ID server tests for refresh and authorization URL scopes. Verified the official Twitch validation requirement at https://dev.twitch.tv/docs/authentication/validate-tokens/. npm test passes with 148 tests.
+
+### T03 EventSub lifecycle
+
+Extended the WebSocket client with per socket welcome and keepalive deadlines, seamless reconnect migration, duplicate chat suppression, revocation shutdown and resubscription after drops. The old connection stays alive until the replacement welcomes. Token monitoring validates both accounts hourly and ends the session on failure. Added mock tests for reconnect, missing welcome and missed keepalive, plus an hourly validation test. npm test passes with 154 tests, including the new Helix fixtures prepared for T04.

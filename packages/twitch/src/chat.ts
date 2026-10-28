@@ -20,41 +20,46 @@ export function mapChatEvent(raw:unknown):ChatMessage|null{
  const role:Role=event.chatter_user_id===event.broadcaster_user_id||badges.includes('broadcaster')?'broadcaster':badges.includes('moderator')?'mod':badges.includes('vip')?'vip':badges.includes('subscriber')?'sub':'viewer';
  return {id:event.message_id as string,userId:event.chatter_user_id as string,login:event.chatter_user_login as string,displayName:event.chatter_user_name as string,text:message.text,role};
 }
-export interface EventSubOptions {url?:string;onError?:()=>void}
+export interface EventSubOptions {url?:string;onError?:()=>void;retryMs?:number;welcomeMs?:number;graceMs?:number}
 export class EventSubChatSource extends FakeChatSource {
  onWelcome:(sessionId:string)=>Promise<void>=async()=>{};
- private socket:WebSocket|undefined;private retry:ReturnType<typeof setTimeout>|undefined;
- private watchdog:ReturnType<typeof setTimeout>|undefined;private stopped=true;private keepaliveMs=10000;
+ private active:WebSocket|undefined;private candidate:WebSocket|undefined;
+ private sockets=new Set<WebSocket>();private timers=new Map<WebSocket,ReturnType<typeof setTimeout>>();
+ private retry:ReturnType<typeof setTimeout>|undefined;private stopped=true;private seen=new Set<string>();
  constructor(private options:EventSubOptions={}){super();}
  start():void{if(!this.stopped)return;this.stopped=false;this.open(this.options.url??'wss://eventsub.wss.twitch.tv/ws',false);}
- stop():void{this.stopped=true;clearTimeout(this.retry);clearTimeout(this.watchdog);this.socket?.terminate();}
- private open(url:string,reconnecting:boolean):void{
-  if(this.stopped)return;
-  const parsed=new URL(url);
+ stop():void{this.stopped=true;clearTimeout(this.retry);for(const timer of this.timers.values())clearTimeout(timer);this.timers.clear();for(const socket of this.sockets)socket.terminate();this.sockets.clear();this.active=undefined;this.candidate=undefined;}
+ private open(url:string,migration:boolean):void{
+  if(this.stopped||this.candidate)return;
+  let parsed:URL;try{parsed=new URL(url);}catch{this.options.onError?.();return;}
   const local=parsed.protocol==='ws:'&&['127.0.0.1','localhost'].includes(parsed.hostname)&&!!this.options.url;
-  if(!local&&!(parsed.protocol==='wss:'&&parsed.hostname==='eventsub.wss.twitch.tv')){this.options.onError?.();return;}
-  const previous=this.socket,socket=new WebSocket(url,{maxPayload:1048576});this.socket=socket;
-  const arm=()=>{clearTimeout(this.watchdog);this.watchdog=setTimeout(()=>socket.terminate(),this.keepaliveMs+1000);};
-  arm();
+  if(parsed.username||parsed.password||(!local&&!(parsed.protocol==='wss:'&&parsed.hostname==='eventsub.wss.twitch.tv'))){this.options.onError?.();return;}
+  const socket=new WebSocket(url,{maxPayload:1048576});this.candidate=socket;this.sockets.add(socket);let welcomed=false,keepaliveMs=10000;
+  const arm=(ms:number)=>{clearTimeout(this.timers.get(socket));this.timers.set(socket,setTimeout(()=>{this.options.onError?.();socket.terminate();},ms));};
+  arm(migration?Math.min(this.options.welcomeMs??10000,30000):this.options.welcomeMs??10000);
   socket.on('message',raw=>{
-   if(socket!==this.socket)return;arm();
+   if(this.stopped)return;
    let envelope:unknown;try{envelope=JSON.parse(raw.toString());}catch{return;}
    const e=obj(envelope),meta=obj(e.metadata),payload=obj(e.payload),session=obj(payload.session);
    if(meta.message_type==='session_welcome'&&typeof session.id==='string'){
-    if(typeof session.keepalive_timeout_seconds==='number')this.keepaliveMs=session.keepalive_timeout_seconds*1000;
-    previous?.close();
-    if(!reconnecting)void this.onWelcome(session.id).catch(()=>{this.options.onError?.();socket.terminate();});
-   }else if(meta.message_type==='session_reconnect'&&typeof session.reconnect_url==='string'){
-    this.open(session.reconnect_url,true);
-   }else{
-    const message=mapChatEvent(envelope);
-    if(message)void this.publish(message).catch(()=>this.options.onError?.());
+    if(welcomed)return;welcomed=true;
+    if(typeof session.keepalive_timeout_seconds==='number'&&session.keepalive_timeout_seconds>0)keepaliveMs=session.keepalive_timeout_seconds*1000;
+    const previous=this.active;this.active=socket;this.candidate=undefined;previous?.close();arm(keepaliveMs+(this.options.graceMs??1000));
+    if(!migration){const deadline=setTimeout(()=>socket.terminate(),9000);void this.onWelcome(session.id).catch(()=>{this.options.onError?.();socket.terminate();}).finally(()=>clearTimeout(deadline));}
+    return;
    }
+   if(!welcomed)return;arm(keepaliveMs+(this.options.graceMs??1000));
+   if(meta.message_type==='session_reconnect'&&typeof session.reconnect_url==='string'){this.open(session.reconnect_url,true);return;}
+   if(meta.message_type==='revocation'){this.options.onError?.();this.stop();return;}
+   const message=mapChatEvent(envelope);
+   if(message&&!this.seen.has(message.id)){this.seen.add(message.id);if(this.seen.size>2000)this.seen.delete(this.seen.values().next().value!);void this.publish(message).catch(()=>this.options.onError?.());}
   });
   socket.on('error',()=>{this.options.onError?.();socket.terminate();});
   socket.on('close',()=>{
-   if(this.stopped||socket!==this.socket)return;
-   clearTimeout(this.watchdog);this.retry=setTimeout(()=>this.open(this.options.url??'wss://eventsub.wss.twitch.tv/ws',false),1000);
+   clearTimeout(this.timers.get(socket));this.timers.delete(socket);this.sockets.delete(socket);
+   if(this.candidate===socket)this.candidate=undefined;if(this.active===socket)this.active=undefined;
+   if(this.stopped||this.active||this.candidate)return;
+   clearTimeout(this.retry);this.retry=setTimeout(()=>this.open(this.options.url??'wss://eventsub.wss.twitch.tv/ws',false),this.options.retryMs??1000);
   });
  }
 }

@@ -7,13 +7,14 @@ export interface EventSubMock {
  drop:()=>void;
  close:()=>Promise<void>;
 }
+let mockInstance=0;
 /** Local wire fixture. This does not impersonate Twitch auth or Helix. */
-export async function startEventSubMock(port=0):Promise<EventSubMock> {
+export async function startEventSubMock(port=0,options:{welcomeDelayMs?:number;keepaliveSeconds?:number}={}):Promise<EventSubMock> {
  const server=new WebSocketServer({host:'127.0.0.1',port,maxPayload:4096});
  await new Promise<void>((resolve,reject)=>{
   server.once('listening',resolve);server.once('error',reject);
  });
- let sequence=0,session=0;
+ const instance=++mockInstance;let sequence=0,session=0;
  const envelope=(type:string,payload:unknown,chat=false)=>({
   metadata:{message_id:'mock-message-'+(++sequence),message_type:type,message_timestamp:new Date().toISOString(),...(chat?{subscription_type:'channel.chat.message',subscription_version:'1'}:{})},
   payload
@@ -26,14 +27,15 @@ export async function startEventSubMock(port=0):Promise<EventSubMock> {
  };
  const chat=(login:string,text:string,role='viewer')=>broadcast('notification',{
    subscription:{id:'mock-chat',status:'enabled',type:'channel.chat.message',version:'1',condition:{broadcaster_user_id:'broadcaster',user_id:'bot'},transport:{method:'websocket',session_id:'mock-'+session},created_at:new Date().toISOString(),cost:0},
-   event:{broadcaster_user_id:'broadcaster',broadcaster_user_login:'arcade',broadcaster_user_name:'Arcade',chatter_user_id:'viewer-'+login,chatter_user_login:login,chatter_user_name:login,message_id:'chat-'+sequence,message:{text,fragments:[{type:'text',text,cheermote:null,emote:null,mention:null}]},color:'#9146FF',badges:role==='viewer'?[]:[{set_id:role==='mod'?'moderator':role==='sub'?'subscriber':role,id:'1',info:''}],message_type:'text',cheer:null,reply:null,channel_points_custom_reward_id:null}
+   event:{broadcaster_user_id:'broadcaster',broadcaster_user_login:'arcade',broadcaster_user_name:'Arcade',chatter_user_id:'viewer-'+login,chatter_user_login:login,chatter_user_name:login,message_id:'chat-'+instance+'-'+sequence,message:{text,fragments:[{type:'text',text,cheermote:null,emote:null,mention:null}]},color:'#9146FF',badges:role==='viewer'?[]:[{set_id:role==='mod'?'moderator':role==='sub'?'subscriber':role,id:'1',info:''}],message_type:'text',cheer:null,reply:null,channel_points_custom_reward_id:null}
   },true);
  server.on('connection',socket=>{
   socket.on('error',()=>{});
   socket.on('message',raw=>{
    try{const value=JSON.parse(raw.toString());if(value.mock==='chat'&&typeof value.login==='string'&&/^[a-zA-Z0-9_]{1,25}$/.test(value.login)&&typeof value.text==='string'&&value.text.length<=512&&['viewer','sub','vip','mod','broadcaster'].includes(value.role??'viewer'))chat(value.login,value.text,value.role??'viewer');}catch{}
   });
-  send(socket,'session_welcome',{session:{id:'mock-'+(++session),status:'connected',keepalive_timeout_seconds:10,reconnect_url:null,connected_at:new Date().toISOString()}});
+  const welcome=setTimeout(()=>send(socket,'session_welcome',{session:{id:'mock-'+(++session),status:'connected',keepalive_timeout_seconds:options.keepaliveSeconds??10,reconnect_url:null,connected_at:new Date().toISOString()}}),options.welcomeDelayMs??0);
+  socket.once('close',()=>clearTimeout(welcome));
  });
  const address=server.address();
  if(!address||typeof address==='string')throw Error('Mock could not bind a TCP port.');

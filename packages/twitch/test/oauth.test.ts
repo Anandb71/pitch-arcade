@@ -8,3 +8,6 @@ it('validates identity, refreshes expired tokens and coalesces refresh against a
  let saved=0;const manager=new TokenManager({clientId:'client',clientSecret:'secret',idBase:'http://127.0.0.1:'+address.port,tokens:{bot:{accessToken:'old',refreshToken:'refresh',login:'bot',userId:'bot-id',scopes:scopes.bot}},save:()=>{saved++;}});
  try{await Promise.all([manager.validate('bot'),manager.validate('bot')]);expect(refreshed).toBe(1);expect(saved).toBe(1);expect(await manager.access('bot')).toBe('new');}finally{server.closeAllConnections();await new Promise<void>(r=>server.close(()=>r()));}
 });
+it('ends token monitoring when hourly validation fails',async()=>{
+ const {vi}=await import('vitest');vi.useFakeTimers();const manager=new TokenManager({clientId:'c',clientSecret:'s',tokens:{},save:()=>{}});let failures=0;const stop=manager.monitor(()=>{failures++;});await vi.advanceTimersByTimeAsync(3600000);expect(failures).toBe(1);stop();vi.useRealTimers();
+});
