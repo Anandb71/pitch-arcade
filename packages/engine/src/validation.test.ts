@@ -39,3 +39,18 @@ describe('format v1', () => {
   expect(s.seconds).toBeUndefined();
  });
 });
+
+test('examples cover every closed MVP value',()=>{
+ const cover=(actual:string[],expected:string[])=>expect(new Set(actual)).toEqual(new Set(expected));
+ cover(examples.map(s=>s.player.control),['move_lr','move_4','click','mash']);
+ cover(examples.flatMap(s=>s.spawners.map((p:{motion:string})=>p.motion)),['fall','rise','sweep','bounce','chase','flee','still','popup']);
+ cover(examples.flatMap(s=>s.spawners.map((p:{from:string})=>p.from)),['top','bottom','left','right','edges','random','center']);
+ cover(examples.flatMap(s=>s.spawners.map((p:{role:string})=>p.role)),['hazard','goal','target','decor']);
+ cover(examples.flatMap(s=>[s.player.size,...s.spawners.map((p:{size:string})=>p.size)]),['s','m','l']);
+ cover(examples.map(s=>s.win.type),['survive','collect','reach','hit','mash']);
+ cover(examples.flatMap(s=>s.mods),['wind_left','wind_right','mirror','spotlight','floor_lava','speedup']);
+ cover(examples.map(s=>s.palette),['sunset','ocean','candy','forest','midnight','citrus','ice','mono']);
+ cover(examples.map(s=>s.pattern),['none','dots','stripes','grid','stars']);
+ cover(examples.map(s=>s.sfx),['pop','boom','ding','none']);
+ cover(examples.map(s=>s.verb),Object.keys(verbs));
+});

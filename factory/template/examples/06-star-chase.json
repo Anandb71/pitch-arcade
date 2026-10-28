@@ -6,14 +6,14 @@
   "palette": "citrus",
   "pattern": "none",
   "player": {
-    "emoji": "🧑‍🍳",
+    "emoji": "🐱",
     "control": "move_4",
     "speed": 6,
     "size": "m"
   },
   "spawners": [
     {
-      "emoji": "🌮",
+      "emoji": "⭐",
       "role": "goal",
       "from": "random",
       "every": 0.35,
@@ -33,5 +33,5 @@
   "mods": [
     "wind_right"
   ],
-  "sfx": "pop"
+  "sfx": "ding"
 }

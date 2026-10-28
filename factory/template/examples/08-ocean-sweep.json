@@ -6,14 +6,14 @@
   "palette": "mono",
   "pattern": "stripes",
   "player": {
-    "emoji": "🧑‍🍳",
+    "emoji": "🐠",
     "control": "move_lr",
     "speed": 6,
     "size": "m"
   },
   "spawners": [
     {
-      "emoji": "🌮",
+      "emoji": "🐙",
       "role": "hazard",
       "from": "left",
       "every": 0.35,
@@ -31,5 +31,5 @@
     "role": "hazard"
   },
   "mods": [],
-  "sfx": "pop"
+  "sfx": "boom"
 }

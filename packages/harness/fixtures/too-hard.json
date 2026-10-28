@@ -1,0 +1,24 @@
+{
+  "v": 1,
+  "title": "Taco Rain",
+  "verb": "MASH",
+  "seconds": 5,
+  "palette": "sunset",
+  "pattern": "none",
+  "player": {
+    "emoji": "🧑‍🍳",
+    "control": "mash",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [],
+  "win": {
+    "type": "mash",
+    "n": 100
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [],
+  "sfx": "pop"
+}

@@ -1,0 +1,67 @@
+{
+  "v": 1,
+  "title": "Taco Rain",
+  "verb": "DODGE",
+  "seconds": 8,
+  "palette": "sunset",
+  "pattern": "none",
+  "player": {
+    "emoji": "🧑‍🍳",
+    "control": "move_lr",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🌮",
+      "role": "hazard",
+      "from": "top",
+      "every": 0.15,
+      "max": 40,
+      "motion": "still",
+      "speed": 5,
+      "size": "m"
+    },
+    {
+      "emoji": "🌮",
+      "role": "hazard",
+      "from": "top",
+      "every": 0.15,
+      "max": 40,
+      "motion": "still",
+      "speed": 5,
+      "size": "m"
+    },
+    {
+      "emoji": "🌮",
+      "role": "hazard",
+      "from": "top",
+      "every": 0.15,
+      "max": 40,
+      "motion": "still",
+      "speed": 5,
+      "size": "m"
+    },
+    {
+      "emoji": "🌮",
+      "role": "hazard",
+      "from": "top",
+      "every": 0.15,
+      "max": 40,
+      "motion": "still",
+      "speed": 5,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "survive"
+  },
+  "lose": {
+    "type": "touch",
+    "role": "hazard"
+  },
+  "mods": [
+    "floor_lava"
+  ],
+  "sfx": "pop"
+}

@@ -12,12 +12,20 @@
     "build": "npm run typecheck && node tools/build.mjs",
     "dev": "node tools/placeholder.mjs",
     "demo": "node tools/placeholder.mjs",
-    "playtest": "node factory/template/tools/playtest.mjs"
+    "playtest": "node factory/template/tools/playtest.mjs",
+    "pretest": "npm run build",
+    "mock:twitch": "npm run build && node tools/mock-twitch.mjs"
   },
   "devDependencies": {
-    "typescript": "^5.7.2",
-    "vitest": "^3.2.4",
     "@types/node": "^22.10.0",
-    "esbuild": "^0.25.0"
+    "@types/ws": "^8.18.2",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.4.5",
+    "vitest": "^4.1.12"
+  },
+  "engines": {
+    "node": ">=22.11.0",
+    "npm": ">=10.9.0"
   }
 }

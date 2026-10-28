@@ -19,3 +19,12 @@ No credentials or API keys are needed for playtests.
 npm run dev and npm run demo currently print milestone status.
 
 See PLAN.md for architecture and AGENTS.md for engineering rules.
+
+Thirty examples cover the full format, including all 30 allowed verbs.
+The playtest runs three bots on 40 seeds each and prints failure codes with tuning hints.
+See packages/engine/SPEC.md and packages/harness/README.md for the rules.
+
+Use npm run mock:twitch to start the local EventSub WebSocket fixture.
+It emits welcome, keepalive and simulated chat messages without Twitch CLI or credentials.
+The mock also exposes reconnect and drop controls for automated tests.
+Real OAuth, Helix, browser play and OBS integration remain later milestones.

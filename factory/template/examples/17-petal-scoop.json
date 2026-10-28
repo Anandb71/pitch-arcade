@@ -1,0 +1,37 @@
+{
+  "v": 1,
+  "title": "Petal Scoop",
+  "verb": "SCOOP",
+  "seconds": 5,
+  "palette": "candy",
+  "pattern": "stripes",
+  "player": {
+    "emoji": "🐰",
+    "control": "move_lr",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🍓",
+      "role": "goal",
+      "from": "top",
+      "every": 0.35,
+      "max": 12,
+      "motion": "fall",
+      "speed": 5,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "collect",
+    "n": 4
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [
+    "wind_left"
+  ],
+  "sfx": "ding"
+}

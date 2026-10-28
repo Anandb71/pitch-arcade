@@ -6,20 +6,20 @@
   "palette": "ice",
   "pattern": "dots",
   "player": {
-    "emoji": "🧑‍🍳",
+    "emoji": "🐦",
     "control": "move_4",
     "speed": 6,
     "size": "m"
   },
   "spawners": [
     {
-      "emoji": "🌮",
+      "emoji": "☁️",
       "role": "hazard",
       "from": "edges",
-      "every": 0.35,
+      "every": 0.6,
       "max": 12,
       "motion": "chase",
-      "speed": 5,
+      "speed": 1,
       "size": "m"
     }
   ],

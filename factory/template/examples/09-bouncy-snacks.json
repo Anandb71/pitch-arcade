@@ -6,14 +6,14 @@
   "palette": "sunset",
   "pattern": "grid",
   "player": {
-    "emoji": "🧑‍🍳",
+    "emoji": "🐿️",
     "control": "move_4",
     "speed": 6,
     "size": "m"
   },
   "spawners": [
     {
-      "emoji": "🌮",
+      "emoji": "🌰",
       "role": "goal",
       "from": "right",
       "every": 0.35,
@@ -25,11 +25,11 @@
   ],
   "win": {
     "type": "collect",
-    "n": 3
+    "n": 4
   },
   "lose": {
     "type": "timeout"
   },
   "mods": [],
-  "sfx": "pop"
+  "sfx": "ding"
 }

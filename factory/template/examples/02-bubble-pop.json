@@ -6,26 +6,26 @@
   "palette": "ocean",
   "pattern": "dots",
   "player": {
-    "emoji": "🧑‍🍳",
+    "emoji": "🐸",
     "control": "click",
     "speed": 6,
     "size": "m"
   },
   "spawners": [
     {
-      "emoji": "🌮",
+      "emoji": "💧",
       "role": "target",
       "from": "random",
       "every": 0.35,
       "max": 12,
       "motion": "popup",
       "speed": 5,
-      "size": "m"
+      "size": "s"
     }
   ],
   "win": {
     "type": "hit",
-    "n": 3
+    "n": 7
   },
   "lose": {
     "type": "timeout"
