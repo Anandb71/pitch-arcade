@@ -104,7 +104,7 @@ Tests added for results failure containment, missing configuration, a complete f
 
 Ran three actual CodexCliRunner jobs on normal, injection and impossible pitches with the verified sandbox and independent validator. All three completed and passed. No second iteration was needed. Build times were 14.182, 16.414 and 15.900 seconds, with median 15.900 seconds and two actual playtests per job. turn.completed reported 461039 total input tokens and 3096 output tokens. No timeout or usage limit occurred. The injection became Moonberry Catch with safe strings; the impossible idea became Orbiting Comets. Output scanning and sandbox probes passed. No Codex authentication file was inspected by this application.
 
-Added the three passing JSON games and genuine CLI receipts with thread IDs, durations, usage, fresh forty seed reports and difficulty summaries. Updated the library receipt test to distinguish twenty seed receipts from three real job receipts. docs/codex.md records individual measurements and limits of the evidence. Final npm test is green with 160 tests in 26 files, duration 8.70 seconds on Node 22.11 and npm 10.9. Nothing was pushed.
+Added the three passing JSON games and genuine CLI receipts with thread IDs, durations, usage, fresh forty seed reports and difficulty summaries. Updated the library receipt test to distinguish twenty seed receipts from three real job receipts. docs/codex.md records individual measurements and limits of the evidence. Final npm test is green with 160 tests in 26 files, duration 8.70 seconds on Node 22.11 and npm 10.9.
 
 ### M5 review
 
@@ -117,3 +117,7 @@ Rewrote README with clone instructions, all demo modes, real account setup, exac
 ### M5 screenshot polish
 
 Refreshed eight 1920 by 1080 PNGs and inspected every image. The main overlay comes from the actual local Twitch protocol demo with two building mock jobs, the measured Taco Dash Codex receipt labeled real, and a simulated Helix clip link. Increased receipt type size and kept all panels inside the safe area. Captures include three games, the title, dashboard and chat. The script also verifies literal HTML injection stays inert, preview isolation, controls and a finished unattended gauntlet. npm run shots passes with no browser errors. npm test is green with 168 tests in 27 files.
+
+### M5 fresh clone proof
+
+Cloned the local committed repository into /tmp/pa-fresh at de4bc34 using Node 22.11.0 and npm 10.9.0. npm ci installed 107 packages and audited 117 with zero vulnerabilities. npm test passed all 168 tests in 27 files. Build and prose checks returned 0. demo:auto completed five rounds with four wins and two lives without credentials. Doctor correctly returned 1 for missing live account settings and tokens, while Node, Twitch ID reachability and Codex checks passed. The clone remained clean after regeneration. Its server was stopped and the clone deleted. docs/fresh-clone.md records the outputs. No application fix was needed.
