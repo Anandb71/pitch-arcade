@@ -31,3 +31,19 @@ Runtime sandbox configuration will be verified during T09 rather than trusting t
 
 No Affiliate features, Extensions, viewer controlled play or remote game code are planned.
 Browser rendering, Twitch connectivity and runtime factory integration are later tasks.
+
+## Second milestone implementation
+
+T11 now handles typed chat sources, moderation, cooldowns, queue bounds, dedupe and role priority.
+SQLite uses a small synchronous port with node:sqlite after the better-sqlite3 target runtime check failed.
+All section 7.11 tables exist. The kill switch persists in settings.
+
+T09 now uses a CLI adapter and an explicit mock adapter.
+The verified permission profile extends :workspace, narrows writes to out and denies secret reads.
+The runner checks actual OS boundaries before live jobs and never adds an SDK dependency.
+The build syncs the complete factory template from canonical sources.
+
+T10 now independently validates output, stores built games and requires approval.
+The local Fastify panel, mock HTTP feed, EventSub mock replay, twenty measured seed games,
+privacy deletion and scripted offline demo connect the pipeline end to end.
+OAuth refresh, clips, browser gameplay and OBS remain later milestones.

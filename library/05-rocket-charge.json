@@ -1,0 +1,35 @@
+{
+  "v": 1,
+  "title": "Rocket Charge",
+  "verb": "MASH",
+  "seconds": 5,
+  "palette": "midnight",
+  "pattern": "stars",
+  "player": {
+    "emoji": "🤖",
+    "control": "mash",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🚀",
+      "role": "decor",
+      "from": "bottom",
+      "every": 0.35,
+      "max": 12,
+      "motion": "rise",
+      "speed": 5,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "mash",
+    "n": 33
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [],
+  "sfx": "boom"
+}

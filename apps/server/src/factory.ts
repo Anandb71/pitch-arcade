@@ -9,6 +9,8 @@ export interface FactoryOptions {
  emit?:(pitchId:number,step:FactoryStep)=>void;
 }
 export class Factory {
+ private stopped=false;
+ private directories=new Map<number,string>();
  private running=new Map<number,AbortController>();
  private waiters:(()=>void)[]=[];
  constructor(private store:Repository,private runner:CodexRunner,private options:FactoryOptions){
@@ -17,7 +19,7 @@ export class Factory {
   store.db.run("UPDATE pitches SET status='queued' WHERE status='building'");
  }
  kick():void{
-  while(this.store.enabled&&this.running.size<2){
+  while(!this.stopped&&this.store.enabled&&this.running.size<2){
    const spent=this.store.db.get<{n:number}>('SELECT count(*) AS n FROM builds WHERE started_at>?',Date.now()-3600000)?.n??0;
    if(spent>=(this.options.maxJobsPerHour??20))break;
    const pitch=this.store.queue()[0];if(!pitch)break;
@@ -29,6 +31,8 @@ export class Factory {
    });
   }
  }
+ stop():void{this.stopped=true;this.pause();}
+ cancelPitches(ids:number[]):void{for(const id of ids){this.running.get(id)?.abort('forgotten');const dir=this.directories.get(id);if(dir)removeJob(dir);this.directories.delete(id);}}
  pause():void{for(const controller of this.running.values())controller.abort('cancelled');}
  idle():Promise<void>{return this.running.size?new Promise(resolve=>this.waiters.push(resolve)):Promise.resolve();}
  private async build(pitch:Pitch,controller:AbortController):Promise<void>{
@@ -39,7 +43,7 @@ export class Factory {
   let timedOut=false;
   const timer=setTimeout(()=>{timedOut=true;controller.abort('timeout');},this.options.timeoutMs??150000);
   try{
-   dir=prepareJob(pitch,this.options.jobsRoot??resolve('factory/jobs'));
+   dir=prepareJob(pitch,this.options.jobsRoot??resolve('factory/jobs'));this.directories.set(pitch.id,dir);
    const abort=new Promise<never>((_,reject)=>{
     if(controller.signal.aborted)reject(Error('CANCELLED'));
     else controller.signal.addEventListener('abort',()=>reject(Error('CANCELLED')),{once:true});
@@ -60,7 +64,8 @@ export class Factory {
   }finally{
    clearTimeout(timer);receipt.durationMs=Date.now()-started;
    this.store.db.run('UPDATE builds SET ended_at=?,status=?,codex_thread_id=?,playtests=?,tokens_in=?,tokens_out=?,receipt_json=? WHERE id=?',Date.now(),receipt.status,receipt.threadId,receipt.playtests,receipt.tokensIn,receipt.tokensOut,JSON.stringify(receipt),buildId);
-   if(dir)removeJob(dir);
+   this.store.db.run('UPDATE games SET receipt_json=? WHERE pitch_id=?',JSON.stringify(receipt),pitch.id);
+   if(dir)removeJob(dir);this.directories.delete(pitch.id);
   }
  }
 }

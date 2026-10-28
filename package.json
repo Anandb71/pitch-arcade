@@ -10,12 +10,16 @@
     "test": "node --experimental-sqlite node_modules/vitest/vitest.mjs run",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && node tools/build.mjs",
-    "dev": "node tools/placeholder.mjs",
-    "demo": "node tools/placeholder.mjs",
+    "dev": "npm run build && node --experimental-sqlite tools/start.mjs",
+    "demo": "npm run build && node --experimental-sqlite tools/start.mjs --mock",
     "playtest": "node factory/template/tools/playtest.mjs",
     "pretest": "npm run build",
     "mock:twitch": "npm run build && node tools/mock-twitch.mjs",
-    "factory:check": "npm run build && node dist/factory-check.mjs"
+    "factory:check": "npm run build && node dist/factory-check.mjs",
+    "demo:check": "npm run build && node --experimental-sqlite dist/demo-check.mjs",
+    "forget": "npm run build && node --experimental-sqlite tools/forget.mjs",
+    "mock:replay": "node tools/replay-chat.mjs",
+    "library:seed": "npm run build && node tools/seed-library.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
@@ -28,5 +32,8 @@
   "engines": {
     "node": ">=22.11.0",
     "npm": ">=10.9.0"
+  },
+  "overrides": {
+    "light-my-request": "6.6.0"
   }
 }

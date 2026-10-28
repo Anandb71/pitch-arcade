@@ -1,7 +1,7 @@
 export interface ModerationDecision {allowed:boolean;source:string}
 export interface Moderator {check:(text:string)=>Promise<ModerationDecision>}
 export const defaultDenylist=['nazi','kill yourself','rape'];
-export const unsafeInstructions=/ignore (?:all |your |previous )?instructions|print (?:your |the )?(?:api key|secret|token)|<script|https?:\/\/|\b(?:api[_ ]?key|access[_ ]?token)\b/i;
+export const unsafeInstructions=/ignore\s+(?:(?:all|your|previous|prior|the)\s+)*(?:instructions|rules)|print (?:your |the )?(?:api key|secret|token)|<script|https?:\/\/|\b(?:api[_ ]?key|access[_ ]?token)\b/i;
 export class LocalModerator implements Moderator {
  async check(text:string):Promise<ModerationDecision>{
   return {allowed:!unsafeInstructions.test(text),source:'local heuristic'};

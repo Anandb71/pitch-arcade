@@ -1,5 +1,6 @@
 export const migration=`
 PRAGMA foreign_keys = ON;
+PRAGMA secure_delete = ON;
 PRAGMA journal_mode = WAL;
 CREATE TABLE IF NOT EXISTS users (
  twitch_id TEXT PRIMARY KEY, login TEXT NOT NULL COLLATE NOCASE, display_name TEXT NOT NULL,

@@ -95,3 +95,10 @@ test('similarity recognizes simple plurals',async()=>{
  await intake.handle(chat('!pitch dodge falling tacos'));
  expect(await intake.handle(chat('!pitch dodge falling taco','lee'))).toMatchObject({code:'SIMILAR'});
 });
+test('a filtered pitch still consumes cooldown so moderation cannot be spammed',async()=>{
+ const check=vi.fn(async()=>({allowed:false,source:'test'}));
+ const {intake}=make({moderator:{check}});
+ expect(await intake.handle(chat('!pitch dodge tacos'))).toMatchObject({code:'FILTERED'});
+ expect(await intake.handle(chat('!pitch catch stars'))).toMatchObject({code:'COOLDOWN'});
+ expect(check).toHaveBeenCalledTimes(1);
+});

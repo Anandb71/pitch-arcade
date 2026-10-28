@@ -1,0 +1,37 @@
+{
+  "v": 1,
+  "title": "Garden Guard",
+  "verb": "DEFEND",
+  "seconds": 5,
+  "palette": "sunset",
+  "pattern": "none",
+  "player": {
+    "emoji": "🧑‍🍳",
+    "control": "move_lr",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🌮",
+      "role": "hazard",
+      "from": "top",
+      "every": 0.35,
+      "max": 12,
+      "motion": "fall",
+      "speed": 5,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "survive"
+  },
+  "lose": {
+    "type": "touch",
+    "role": "hazard"
+  },
+  "mods": [
+    "floor_lava"
+  ],
+  "sfx": "pop"
+}

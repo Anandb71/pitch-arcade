@@ -1,0 +1,45 @@
+{
+  "source": "seed library written during the build in Codex thread 01a18380-92df-7fb1-84cd-1b45659bee41",
+  "buildThreadId": "01a18380-92df-7fb1-84cd-1b45659bee41",
+  "threadId": null,
+  "model": null,
+  "durationMs": null,
+  "playtests": null,
+  "tokensIn": null,
+  "tokensOut": null,
+  "validation": {
+    "seedsPerBot": 40,
+    "report": {
+      "pass": true,
+      "issues": [],
+      "metrics": {
+        "seeds": 40,
+        "idle": {
+          "wins": 8,
+          "runs": 40,
+          "rate": 0.2
+        },
+        "random": {
+          "wins": 8,
+          "runs": 40,
+          "rate": 0.2
+        },
+        "humanish": {
+          "wins": 33,
+          "runs": 40,
+          "rate": 0.825
+        },
+        "neverEnds": 0,
+        "firstHazardFrame": 94,
+        "peakEntities": 10,
+        "maxFrames": 300
+      }
+    },
+    "difficulty": {
+      "humanishWinRate": 0.825,
+      "idleWinRate": 0.2,
+      "randomWinRate": 0.2,
+      "challenge": 0.17500000000000004
+    }
+  }
+}

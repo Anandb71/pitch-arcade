@@ -34,3 +34,12 @@ test('mock can drop connections to exercise later client recovery',async()=>{
   mock.drop();expect(await closed).toBe(4000);
  }finally{await mock.close();}
 });
+test('replay clients can inject bounded chat envelopes into the local mock',async()=>{
+ const mock=await startEventSubMock();
+ try{
+  const client=await connect(mock.url);await client.next();
+  client.socket.send(JSON.stringify({mock:'chat',login:'lee',text:'!pitch pop bubbles',role:'vip'}));
+  expect(await client.next()).toMatchObject({payload:{event:{chatter_user_login:'lee',badges:[{set_id:'vip'}],message:{text:'!pitch pop bubbles'}}}});
+  client.socket.close();
+ }finally{await mock.close();}
+});

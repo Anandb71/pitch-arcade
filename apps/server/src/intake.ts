@@ -16,6 +16,9 @@ function similar(a:string,b:string):boolean {
  return intersection/(x.size+y.size-intersection)>=.8;
 }
 export class Intake {
+ private stopped=false;
+ stop():void{this.stopped=true;}
+ async idle():Promise<void>{await this.tail;}
  private tail:Promise<unknown>=Promise.resolve();
  private seenCommands=new Set<string>();
  readonly moderator:Moderator;
@@ -29,6 +32,7 @@ export class Intake {
  }
  private async accept(message:ChatMessage):Promise<IntakeResult>{
   const fail=(code:string):IntakeResult=>({ok:false,code});
+  if(this.stopped)return fail('PAUSED');
   if(!/^[a-z0-9_]{1,25}$/i.test(message.login)||!message.userId||message.userId.length>64||message.id.length>200||!roles.includes(message.role))return fail('INVALID_USER');
   const command=/^!arcade\s+(on|off)\s*$/i.exec(message.text);
   if(command){
@@ -44,7 +48,7 @@ export class Intake {
   const text=parsePitch(message.text);
   if(!text)return fail('IGNORED');
   if(this.store.seen(message.id))return fail('DUPLICATE_EVENT');
-  if(!this.enabled)return fail('PAUSED');
+  if(this.stopped||!this.enabled)return fail('PAUSED');
   const now=(this.options.now??Date.now)(),last=this.store.lastPitch(message.userId);
   if(last!==undefined&&now-last<(this.options.cooldownMs??120000))return fail('COOLDOWN');
   if(this.store.active().length>=(this.options.queueCap??20))return fail('QUEUE_FULL');
@@ -57,7 +61,7 @@ export class Intake {
    this.store.addPitch(clean,now,'filtered',{allowed:false,source:'moderation unavailable'},'MODERATION_UNAVAILABLE');
    return fail('MODERATION_UNAVAILABLE');
   }
-  if(!this.enabled)return fail('PAUSED');
+  if(this.stopped||!this.enabled)return fail('PAUSED');
   const pitch=this.store.addPitch(clean,now,decision.allowed?'queued':'filtered',decision,decision.allowed?null:'FILTERED');
   this.store.event(decision.allowed?'pitch.queued':'pitch.filtered',{pitchId:pitch.id},now,message.userId);
   if(!decision.allowed)return fail('FILTERED');

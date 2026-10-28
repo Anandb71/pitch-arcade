@@ -42,12 +42,12 @@ export class Repository {
  queue():Pitch[]{return this.pitches().filter(p=>p.status==='queued').sort((a,b)=>roles.indexOf(a.role)-roles.indexOf(b.role)||a.id-b.id);}
  active():Pitch[]{return this.pitches().filter(p=>p.status==='queued'||p.status==='building');}
  seen(id:string):boolean{return !!this.db.get('SELECT id FROM pitches WHERE message_id=?',id);}
- lastPitch(userId:string):number|undefined{return this.db.get<{created_at:number}>("SELECT created_at FROM pitches WHERE user_id=? AND status NOT IN ('filtered','received') ORDER BY created_at DESC LIMIT 1",userId)?.created_at;}
+ lastPitch(userId:string):number|undefined{return this.db.get<{created_at:number}>("SELECT created_at FROM pitches WHERE user_id=? AND status!='received' ORDER BY created_at DESC LIMIT 1",userId)?.created_at;}
  setPitch(id:number,status:PitchStatus,reason:string|null=null):void {this.db.run('UPDATE pitches SET status=?,reason=? WHERE id=?',status,reason,id);}
  event(type:string,payload:Record<string,unknown>,now=Date.now(),userId:string|null=null):void{this.db.run('INSERT INTO events(ts,type,payload_json,user_id) VALUES(?,?,?,?)',now,type,JSON.stringify(payload),userId);}
  events():{id:number;type:string;payload_json:string}[]{return this.db.all('SELECT id,type,payload_json FROM events ORDER BY id DESC LIMIT 100');}
  get enabled():boolean{return this.db.get<{value:string}>("SELECT value FROM settings WHERE key='enabled'")?.value!=='false';}
  set enabled(value:boolean){this.db.run("INSERT INTO settings(key,value) VALUES('enabled',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",String(value));}
- forget(login:string):number {return this.transaction(()=>Number(this.db.run('DELETE FROM users WHERE login=? COLLATE NOCASE',login).changes));}
+ forget(login:string):number {const deleted=this.transaction(()=>Number(this.db.run('DELETE FROM users WHERE login=? COLLATE NOCASE',login).changes));this.db.exec('PRAGMA wal_checkpoint(TRUNCATE)');return deleted;}
  close():void {this.db.close();}
 }
