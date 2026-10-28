@@ -58,15 +58,16 @@ test('library requires approval and maintains state and counters exactly once',(
   store.forget('priya');expect(library.all()).toHaveLength(0);
  }finally{store.close();}
 });
-test('20 seed library games have honest receipts and fresh passing reports',()=>{
+test('20 seed games and three runtime games have honest receipts and fresh reports',()=>{
  const store=new Repository(openSqlite(':memory:'));const library=new Library(store);
  try{
-  expect(library.importSeeds('library')).toBe(20);expect(library.approved()).toHaveLength(20);
+  expect(library.importSeeds('library')).toBe(23);expect(library.approved()).toHaveLength(23);
   expect(library.importSeeds('library')).toBe(0);
   for(const game of library.all()){
    const receipt=game.receipt as {source:string;threadId:unknown;durationMs:unknown};
+   if(receipt.source==='codex-cli'){expect(receipt.threadId).toMatch(/^[a-f0-9-]{36}$/);expect(receipt.durationMs).toBeGreaterThan(0);}else{
    expect(receipt.source).toBe('seed library written during the build in Codex thread 01a18380-92df-7fb1-84cd-1b45659bee41');
-   expect(receipt.threadId).toBeNull();expect(receipt.durationMs).toBeNull();
+   expect(receipt.threadId).toBeNull();expect(receipt.durationMs).toBeNull();}
    expect(game.report.pass).toBe(true);expect(game.difficulty.humanishWinRate).toBeGreaterThanOrEqual(.35);
   }
  }finally{store.close();}

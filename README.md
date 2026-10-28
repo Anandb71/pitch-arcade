@@ -93,3 +93,5 @@ The forget command removes a designer's stored records and related work.
 See docs/server.md for environment settings, docs/factory.md for the CLI policy,
 ASSETS.md for fonts and synthesized sound, and SECURITY.md for boundaries.
 AGENTS.md, PLAN.md and BUILDLOG.md record the engineering process.
+
+Connect a real channel with [Twitch setup](docs/twitch.md). Use npm run demo:twitch-sim to exercise the real protocol clients locally. Three actual Codex jobs and their measured receipts are documented in [the factory spike](docs/codex.md).

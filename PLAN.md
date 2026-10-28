@@ -65,3 +65,16 @@ A shared protocol connects every browser page over WebSocket.
 The unattended demo exercises the real pipeline with explicit mock generation and result labels.
 Playwright captures seven inspected images and verifies browser controls and a finished run.
 OAuth refresh and actual Helix clip handling remain next.
+
+## Fourth milestone implementation
+
+T02 connects broadcaster and bot through localhost OAuth, private token storage, refresh and account validation.
+T03 handles welcome deadlines, keepalives, reconnect migration, drops and hourly token checks.
+T04 shares one paced Helix client across subscriptions, chat, clips and optional markers.
+T13 connects nonblocking results to clip links, chat summaries and persistent designer beats.
+The local Twitch simulation exercises real protocol clients with fixture endpoints.
+
+Three real Codex CLI jobs passed independent validation in the factory spike.
+Their actual receipts and bot difficulty reports join the twenty seed classics.
+The measured median was 15.900 seconds. The injection pitch became harmless game data.
+Live Twitch publication still requires user credentials and an active channel.

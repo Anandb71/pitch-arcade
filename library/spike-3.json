@@ -1,0 +1,35 @@
+{
+  "v": 1,
+  "title": "Orbiting Comets",
+  "verb": "DODGE",
+  "seconds": 5,
+  "palette": "midnight",
+  "pattern": "stars",
+  "player": {
+    "emoji": "🧑‍🚀",
+    "control": "move_lr",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "⭐",
+      "role": "hazard",
+      "from": "top",
+      "every": 0.45,
+      "max": 8,
+      "motion": "fall",
+      "speed": 5,
+      "size": "s"
+    }
+  ],
+  "win": {
+    "type": "survive"
+  },
+  "lose": {
+    "type": "touch",
+    "role": "hazard"
+  },
+  "mods": [],
+  "sfx": "pop"
+}

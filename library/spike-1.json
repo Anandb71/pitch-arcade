@@ -1,0 +1,35 @@
+{
+  "v": 1,
+  "title": "Taco Dash",
+  "verb": "DODGE",
+  "seconds": 5,
+  "palette": "sunset",
+  "pattern": "none",
+  "player": {
+    "emoji": "🧑‍🍳",
+    "control": "move_lr",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🌮",
+      "role": "hazard",
+      "from": "top",
+      "every": 0.3,
+      "max": 14,
+      "motion": "fall",
+      "speed": 6,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "survive"
+  },
+  "lose": {
+    "type": "touch",
+    "role": "hazard"
+  },
+  "mods": [],
+  "sfx": "pop"
+}

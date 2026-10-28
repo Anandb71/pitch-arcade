@@ -1,0 +1,45 @@
+{
+  "v": 1,
+  "title": "Moonberry Catch",
+  "verb": "CATCH",
+  "seconds": 5,
+  "palette": "midnight",
+  "pattern": "stars",
+  "player": {
+    "emoji": "🐰",
+    "control": "move_lr",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "⭐",
+      "role": "goal",
+      "from": "top",
+      "every": 0.3,
+      "max": 12,
+      "motion": "fall",
+      "speed": 4,
+      "size": "m"
+    },
+    {
+      "emoji": "⭐",
+      "role": "decor",
+      "from": "top",
+      "every": 0.7,
+      "max": 5,
+      "motion": "fall",
+      "speed": 3,
+      "size": "s"
+    }
+  ],
+  "win": {
+    "type": "collect",
+    "n": 5
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [],
+  "sfx": "ding"
+}

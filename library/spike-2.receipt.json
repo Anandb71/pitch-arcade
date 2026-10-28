@@ -1,0 +1,43 @@
+{
+  "source": "codex-cli",
+  "simulated": false,
+  "threadId": "01a183fc-bc31-7053-ab1e-d9e0827a8122",
+  "model": "gpt-6-luna",
+  "durationMs": 16414,
+  "playtests": 2,
+  "tokensIn": 175583,
+  "tokensOut": 1177,
+  "status": "completed",
+  "difficulty": {
+    "humanishWinRate": 0.625,
+    "idleWinRate": 0,
+    "randomWinRate": 0,
+    "challenge": 0.375
+  },
+  "validation": {
+    "pass": true,
+    "issues": [],
+    "metrics": {
+      "seeds": 40,
+      "idle": {
+        "wins": 0,
+        "runs": 40,
+        "rate": 0
+      },
+      "random": {
+        "wins": 0,
+        "runs": 40,
+        "rate": 0
+      },
+      "humanish": {
+        "wins": 25,
+        "runs": 40,
+        "rate": 0.625
+      },
+      "neverEnds": 0,
+      "firstHazardFrame": null,
+      "peakEntities": 14,
+      "maxFrames": 300
+    }
+  }
+}
