@@ -76,3 +76,14 @@ test('scripted replay crosses the actual EventSub mock socket before factory app
   expect(arcade.library.approved()).toHaveLength(5);
  }finally{source.stop();await mock.close();await arcade.close();}
 },15000);
+test('gauntlet endpoints and pushed snapshots share the server state machine',async()=>{
+ const arcade=await createArcade({dbPath:':memory:',mockTwitch:true,mockCodex:true,stepMs:0});
+ try{
+  expect((await arcade.app.inject({method:'POST',url:'/api/gauntlet/start',headers,payload:{seed:1}})).statusCode).toBe(200);
+  for(let i=0;i<288;i++)arcade.gauntlet.tick();
+  expect((await arcade.app.inject('/api/state')).json().gauntlet.phase).toBe('play');
+  expect((await arcade.app.inject({method:'POST',url:'/api/gauntlet/skip',headers,payload:{}})).json()).toMatchObject({phase:'result',lastOutcome:'skip',lives:3});
+  expect((await arcade.app.inject({method:'POST',url:'/api/arcade',headers,payload:{enabled:false}})).statusCode).toBe(200);
+  expect(arcade.gauntlet.state).toMatchObject({phase:'finished',reason:'stopped'});
+ }finally{await arcade.close();}
+});

@@ -4,14 +4,15 @@ import type {GameSpec} from '../../../packages/engine/src/index.js';
 import type {Report} from '../../../packages/harness/src/index.js';
 import {Repository,type Pitch} from './storage.js';
 import {validateGame,type Difficulty,type ValidatedGame} from './validator.js';
-export interface LibraryGame {id:number;title:string;verb:string;authorId:string|null;status:'built'|'approved'|'rejected';spec:GameSpec;report:Report;difficulty:Difficulty;receipt:unknown}
-interface GameRow {id:number;title:string;verb:string;author_id:string|null;status:LibraryGame['status'];spec_json:string;report_json:string;receipt_json:string;pitch_id:number|null}
+import type {ArcadeGame} from '../../../packages/shared/src/protocol.js';
+export type LibraryGame=ArcadeGame;
+interface GameRow {id:number;title:string;verb:string;author_id:string|null;author_login:string|null;classic:number;approved_at:number|null;status:LibraryGame['status'];spec_json:string;report_json:string;receipt_json:string;pitch_id:number|null}
 export class Library {
  constructor(private store:Repository){}
  all():LibraryGame[]{
-  return this.store.db.all<GameRow>('SELECT * FROM games ORDER BY id').map(row=>{
+  return this.store.db.all<GameRow>('SELECT g.*,u.login AS author_login FROM games g LEFT JOIN users u ON u.twitch_id=g.author_id ORDER BY g.id').map(row=>{
    const report=JSON.parse(row.report_json) as Report,m=report.metrics!;
-   return {id:row.id,title:row.title,verb:row.verb,authorId:row.author_id,status:row.status,spec:JSON.parse(row.spec_json) as GameSpec,report,difficulty:{humanishWinRate:m.humanish.rate,idleWinRate:m.idle.rate,randomWinRate:m.random.rate,challenge:1-m.humanish.rate},receipt:JSON.parse(row.receipt_json)};
+   return {id:row.id,title:row.title,verb:row.verb,authorId:row.author_id,authorLogin:row.author_login??'arcade',classic:!!row.classic,approvedAt:row.approved_at??0,status:row.status,spec:JSON.parse(row.spec_json) as GameSpec,report,difficulty:{humanishWinRate:m.humanish.rate,idleWinRate:m.idle.rate,randomWinRate:m.random.rate,challenge:1-m.humanish.rate},receipt:JSON.parse(row.receipt_json)};
   });
  }
  approved():LibraryGame[]{return this.all().filter(game=>game.status==='approved');}

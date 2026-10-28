@@ -57,3 +57,11 @@ Added 29 tests covering malicious outputs, forged reports, output filesystem che
 Implemented the Canvas 2D renderer at 960 by 540 with all eight palettes and five static patterns, system emoji sprites, bounded particles, soft spotlight, floor lava and shake capped at six logical pixels. Rendering observes snapshots without modifying simulation or moving entities independently. Added synthesized WebAudio effects behind an explicit sound gesture. Added keyboard, pointer and scaled coordinate input, blur cleanup and a practice play page built by Vite. Double tap S or Shift + S skips so a normal S press remains available for WASD movement.
 
 Documented the installed Noto Color Emoji fallback stack and original synthesized audio in ASSETS.md. Added seven renderer and input tests, including exact snapshot coordinates and an engine purity guard, plus a trusted web asset smoke test. npm test passed on Node 22.11 and npm 10.9: 16 files, 127 tests. Type checks and Vite build passed.
+
+## T12
+
+Added shared browser protocol types and a server authoritative gauntlet with five distinct approved games, newest viewer approvals first, classic fill, title cards, 3 2 1 countdown, play, result and final score phases. Sessions begin with three lives. Skips preserve lives, stops are idempotent, and three losses end the run. Integer speed percentages advance the unchanged 60 Hz engine through a rational accumulator. Humanish bot play remains explicitly labeled as a mock demo mode.
+
+The server pushes snapshots over WebSocket and accepts input only from a claimed local play connection. The play page now renders those snapshots and offers sound, skip and start controls. Added persistent gauntlet and play records, designer beats and ResultsSink hooks. MockResultsSink records honest simulated clip requests and result chat lines, with no fabricated clip URLs. Privacy deletion resets sessions referencing the forgotten designer.
+
+Added 12 state machine, life exhaustion, determinism, speed, API and socket input tests. npm test passed on Node 22.11 and npm 10.9: 18 files, 139 tests. Type checks and Vite build passed.
