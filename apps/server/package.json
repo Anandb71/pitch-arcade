@@ -2,5 +2,9 @@
   "name": "@pitch-arcade/server",
   "version": "0.1.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "fastify": "^5.12.7",
+    "ws": "^8.22.0"
+  }
 }

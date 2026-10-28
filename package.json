@@ -7,7 +7,7 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "vitest run",
+    "test": "node --experimental-sqlite node_modules/vitest/vitest.mjs run",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && node tools/build.mjs",
     "dev": "node tools/placeholder.mjs",
