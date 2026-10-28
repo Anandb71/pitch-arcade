@@ -89,3 +89,7 @@ Added localhost authorization code login for broadcaster and bot, state verifica
 ### T03 EventSub lifecycle
 
 Extended the WebSocket client with per socket welcome and keepalive deadlines, seamless reconnect migration, duplicate chat suppression, revocation shutdown and resubscription after drops. The old connection stays alive until the replacement welcomes. Token monitoring validates both accounts hourly and ends the session on failure. Added mock tests for reconnect, missing welcome and missed keepalive, plus an hourly validation test. npm test passes with 154 tests, including the new Helix fixtures prepared for T04.
+
+### T04 Helix client
+
+Added typed safe errors, bot chat queue with one second spacing and twenty sends per rolling thirty seconds, rate reset handling, authenticated subscriptions, broadcaster clips with title and twenty second duration, bounded clip polling and optional pin and marker flags. Added local HTTP fixtures for request bodies, auth role, polling, chat pacing and rate headers. npm test passes with 154 tests.
