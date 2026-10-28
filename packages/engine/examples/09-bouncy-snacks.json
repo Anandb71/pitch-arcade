@@ -1,0 +1,35 @@
+{
+  "v": 1,
+  "title": "Bouncy Snacks",
+  "verb": "GRAB",
+  "seconds": 5,
+  "palette": "sunset",
+  "pattern": "grid",
+  "player": {
+    "emoji": "🐿️",
+    "control": "move_4",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🌰",
+      "role": "goal",
+      "from": "right",
+      "every": 0.35,
+      "max": 12,
+      "motion": "bounce",
+      "speed": 5,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "collect",
+    "n": 4
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [],
+  "sfx": "ding"
+}

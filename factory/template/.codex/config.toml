@@ -1,0 +1,42 @@
+# Generated into each job. Trusted controller adds runtime read roots via argv.
+default_permissions = "factory"
+approval_policy = "never"
+allow_login_shell = false
+web_search = "disabled"
+
+[features]
+apps = false
+plugins = false
+multi_agent = false
+memories = false
+use_legacy_landlock = false
+
+[permissions.factory]
+extends = ":workspace"
+
+[permissions.factory.filesystem]
+":root" = "deny"
+":minimal" = "read"
+":tmpdir" = "deny"
+":slash_tmp" = "deny"
+
+[permissions.factory.filesystem.":workspace_roots"]
+"." = "read"
+"out" = "write"
+"inbox" = "read"
+"tools" = "read"
+"spec" = "read"
+"examples" = "read"
+"AGENTS.md" = "read"
+".codex" = "read"
+".git" = "read"
+"**/.env" = "deny"
+"**/.env.*" = "deny"
+"**/tokens*.json" = "deny"
+
+[permissions.factory.network]
+enabled = false
+
+[shell_environment_policy]
+inherit = "core"
+ignore_default_excludes = false

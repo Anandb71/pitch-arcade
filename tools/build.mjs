@@ -1,5 +1,10 @@
 import { build } from 'esbuild';
-import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, rmSync, copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+rmSync('factory/template/examples',{recursive:true,force:true});
+cpSync('packages/engine/examples','factory/template/examples',{recursive:true});
+mkdirSync('factory/template/.codex',{recursive:true});
+copyFileSync('factory/designer/AGENTS.md','factory/template/AGENTS.md');
+copyFileSync('factory/designer/.codex/config.toml','factory/template/.codex/config.toml');
 const tool='factory/template/tools/playtest.mjs';
 mkdirSync('factory/template/tools',{recursive:true});
 mkdirSync('factory/template/spec',{recursive:true});
@@ -22,5 +27,10 @@ writeFileSync('factory/template/tools/LICENSES.txt',
 console.log('Built self contained factory playtest and synced format docs.');
 await build({
  entryPoints:['packages/twitch/src/index.ts'],outfile:'dist/twitch-mock.mjs',
+ bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'
+});
+
+await build({
+ entryPoints:['apps/server/src/factory-check.ts'],outfile:'dist/factory-check.mjs',
  bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'
 });

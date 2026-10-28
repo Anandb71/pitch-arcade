@@ -14,7 +14,8 @@
     "demo": "node tools/placeholder.mjs",
     "playtest": "node factory/template/tools/playtest.mjs",
     "pretest": "npm run build",
-    "mock:twitch": "npm run build && node tools/mock-twitch.mjs"
+    "mock:twitch": "npm run build && node tools/mock-twitch.mjs",
+    "factory:check": "npm run build && node dist/factory-check.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

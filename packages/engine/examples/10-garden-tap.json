@@ -1,0 +1,45 @@
+{
+  "v": 1,
+  "title": "Garden Tap",
+  "verb": "CLICK",
+  "seconds": 5,
+  "palette": "ocean",
+  "pattern": "stars",
+  "player": {
+    "emoji": "🐝",
+    "control": "click",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🌻",
+      "role": "target",
+      "from": "random",
+      "every": 0.35,
+      "max": 12,
+      "motion": "still",
+      "speed": 5,
+      "size": "s"
+    },
+    {
+      "emoji": "🌳",
+      "role": "decor",
+      "from": "center",
+      "every": "once",
+      "max": 1,
+      "motion": "still",
+      "speed": 1,
+      "size": "l"
+    }
+  ],
+  "win": {
+    "type": "hit",
+    "n": 8
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [],
+  "sfx": "none"
+}

@@ -1,0 +1,36 @@
+{
+  "v": 1,
+  "title": "Moon Race",
+  "verb": "RACE",
+  "seconds": 5,
+  "palette": "forest",
+  "pattern": "grid",
+  "player": {
+    "emoji": "🧑‍🚀",
+    "control": "move_4",
+    "speed": 1,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "⭐",
+      "role": "goal",
+      "from": "random",
+      "every": "once",
+      "max": 1,
+      "motion": "still",
+      "speed": 5,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "reach"
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [
+    "mirror"
+  ],
+  "sfx": "none"
+}
