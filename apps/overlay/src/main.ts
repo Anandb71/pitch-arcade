@@ -35,7 +35,11 @@ function drawState(state:ArcadeState):void{
  latest=state;
  session.textContent=state.mockTwitch?'● MOCK SESSION':'● LOCAL ARCADE';
  const recent=state.builds.find(build=>build.status==='completed'&&build.receipt_json);
- recentReceipt.textContent='';if(recent?.receipt_json){try{recentReceipt.textContent='Last build · '+receiptSummary(JSON.parse(recent.receipt_json));}catch{}}
+ const spike=state.games.find(game=>game.receipt&&typeof game.receipt==='object'&&(game.receipt as Record<string,unknown>).source==='codex-cli');
+ recentReceipt.textContent='';
+ if(spike)recentReceipt.textContent='Real Codex spike · '+spike.title+'\n'+receiptSummary(spike.receipt);
+ else if(recent?.receipt_json){try{recentReceipt.textContent='Last build · '+receiptSummary(JSON.parse(recent.receipt_json));}catch{}}
+
  const active=state.pitches.filter(p=>['queued','building'].includes(p.status));
  jobCount.textContent=active.length+' ACTIVE';jobs.replaceChildren();
  const shown=[...active.filter(p=>p.status==='building'),...active.filter(p=>p.status==='queued'),...state.pitches.filter(p=>['built','approved'].includes(p.status)).slice(-2).reverse()].filter((p,i,list)=>list.findIndex(q=>q.id===p.id)===i).slice(0,2);

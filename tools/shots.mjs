@@ -9,12 +9,12 @@ import assert from 'node:assert/strict';
 mkdirSync('data/shot-sessions',{recursive:true});mkdirSync('shots',{recursive:true});
 const data=mkdtempSync(resolve('data/shot-sessions/session-'));
 const port=await new Promise((resolve,reject)=>{const server=createServer();server.once('error',reject);server.listen(0,'127.0.0.1',()=>{const address=server.address();server.close(()=>resolve(address.port));});});
-const base='http://127.0.0.1:'+port;
+let base='http://127.0.0.1:'+port;
 const child=spawn(process.execPath,['--experimental-sqlite','tools/start.mjs','--mock','--auto'],{
  env:{...process.env,PORT:String(port),ARCADE_DB_PATH:join(data,'arcade.sqlite'),MOCK_FACTORY_STEP_MS:'700'},stdio:['ignore','pipe','pipe']
 });
 let serverLog='';child.stdout.on('data',chunk=>{serverLog=(serverLog+chunk).slice(-8000);});child.stderr.on('data',chunk=>{serverLog=(serverLog+chunk).slice(-8000);});
-let browser;
+let browser,simChild;
 const errors=[],captures=[];
 async function state(){const response=await fetch(base+'/api/state',{signal:AbortSignal.timeout(2000)});if(!response.ok)throw Error('State unavailable.');return response.json();}
 async function post(path,body={}){const response=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json','X-Arcade-Control':'local'},body:JSON.stringify(body)});assert.ok(response.ok,path+' returned '+response.status);return response.json();}
@@ -64,7 +64,7 @@ try{
    await overlay.getByText('@lee',{exact:true}).waitFor();
    const safe=await overlay.locator('.overlay-panel,.overlay-ticker').evaluateAll(elements=>elements.every(el=>{const r=el.getBoundingClientRect();return r.left>=48&&r.top>=48&&r.right<=1872&&r.bottom<=1032;}));
    assert.ok(safe,'Overlay panels must stay inside the safe area.');
-   await capture(overlay,'overlay.png',{phase:'play',factory:'two actual mock jobs building',leaderboard:live.leaderboard});
+   await capture(overlay,'overlay-mock.png',{phase:'play',factory:'two actual mock jobs building',leaderboard:live.leaderboard});
    await until(s=>s.pitches.every(p=>!['queued','building'].includes(p.status)),15000);
    await dashboard.getByRole('button',{name:'Approve',exact:true}).first().waitFor();
    await capture(dashboard,'dashboard.png',{pending:'actual independently validated mock games'});
@@ -107,10 +107,33 @@ try{
  await until(s=>s.settings.denylist.includes('spoilers'));
  await post('/api/settings',{...original,autoApproveMods:false});
  await manual.close();
+
+ console.log('Checking literal untrusted HTML rendering.');
+ const payload='<img src=x onerror="window.arcadeXss=true">';
+ await post('/api/mock/chat',{login:'markup',role:'viewer',text:'!pitch '+payload});
+ await chat.reload();await delay(200);
+ assert.ok(await chat.getByText('!pitch '+payload,{exact:true}).isVisible());
+ for(const page of [overlay,dashboard,chat])assert.equal(await page.evaluate(()=>window.arcadeXss),undefined);
+ console.log('Capturing the actual local Twitch protocol simulation.');
+ const simPort=await new Promise((resolve,reject)=>{const server=createServer();server.once('error',reject);server.listen(0,'127.0.0.1',()=>{const address=server.address();server.close(()=>resolve(address.port));});});
+ simChild=spawn(process.execPath,['--experimental-sqlite','tools/start.mjs','--twitch-sim'],{env:{...process.env,PORT:String(simPort),ARCADE_DB_PATH:join(data,'twitch-sim.sqlite'),MOCK_FACTORY_STEP_MS:'700',DEMO_AUTO:'1'},stdio:['ignore','pipe','pipe']});
+ simChild.stdout.on('data',()=>{});simChild.stderr.on('data',()=>{});
+ base='http://127.0.0.1:'+simPort;
+ await until(()=>true,20000);
+ await overlay.goto(base+'/overlay/?backdrop=1');
+ const protocol=await until(s=>s.gauntlet.phase==='play'&&s.gauntlet.round>=3&&s.resultTicker.some(item=>item.kind==='chat'&&item.text.includes('https://clips.twitch.tv/')),90000);
+ await post('/api/demo/freeze',{frozen:true});
+ for(const [login,text] of [['river','!pitch escape from a maze of garden stars'],['cobalt','!pitch dodge soaring clouds in an ocean storm']])assert.equal((await post('/api/mock/chat',{login,role:'viewer',text})).ok,true);
+ await overlay.waitForFunction(()=>document.querySelectorAll('.factory-job .working').length===2);
+ await overlay.locator('.last-build').filter({hasText:'Real Codex spike'}).waitFor();
+ await overlay.locator('.ticker-text').filter({hasText:'https://clips.twitch.tv/'}).waitFor();
+ assert.ok(await overlay.locator('.overlay-panel,.overlay-ticker').evaluateAll(elements=>elements.every(el=>{const r=el.getBoundingClientRect();return r.left>=48&&r.top>=48&&r.right<=1872&&r.bottom<=1032;})));
+ await capture(overlay,'overlay.png',{source:'Actual EventSub mock and fake Helix with real Twitch clients. Factory workers are mock replays. Real spike receipt was measured in milestone four.',game:protocol.gauntlet.game.title,realReceipt:(await state()).games.find(game=>game.receipt.source==='codex-cli').receipt,clip:protocol.resultTicker.find(item=>item.kind==='chat'&&item.text.includes('https://clips.twitch.tv/'))});
+ await post('/api/demo/freeze',{frozen:false});
  assert.deepEqual(errors,[],'Browser pages must have no uncaught errors.');
- writeFileSync('shots/manifest.json',JSON.stringify({viewport:{width:1920,height:1080},seed:1,source:'Actual scripted mock session. Humanish inputs and engine outcomes are real; factory generation and clip requests are simulated.',captures,finished:{score:finished.gauntlet.score,lives:finished.gauntlet.lives,outcomes:finished.gauntlet.outcomes},manualControls:{keyboardMovement:true,doubleTapSkip:true,previewIsolated:true,approvalRules:true,wordFilter:true},browserErrors:errors},null,2)+'\n');
- console.log('PASS: seven screenshots, three distinct games, working controls and a finished five game gauntlet.');
+ writeFileSync('shots/manifest.json',JSON.stringify({viewport:{width:1920,height:1080},seed:1,source:'Actual scripted mock session plus a local Twitch protocol simulation. Real Codex spike receipts are labeled separately. Clip URLs are fake Helix fixtures.',captures,finished:{score:finished.gauntlet.score,lives:finished.gauntlet.lives,outcomes:finished.gauntlet.outcomes},manualControls:{keyboardMovement:true,doubleTapSkip:true,previewIsolated:true,approvalRules:true,wordFilter:true},browserErrors:errors},null,2)+'\n');
+ console.log('PASS: eight screenshots, three distinct games, working controls and a finished five game gauntlet.');
 }finally{
- await browser?.close();child.kill('SIGTERM');
+ await browser?.close();simChild?.kill('SIGTERM');child.kill('SIGTERM');
  await Promise.race([new Promise(resolve=>child.once('exit',resolve)),delay(5000).then(()=>child.kill('SIGKILL'))]);
 }

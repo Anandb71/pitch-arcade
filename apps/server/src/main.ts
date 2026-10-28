@@ -41,7 +41,7 @@ let closing=false;
 const close=async()=>{if(closing)return;closing=true;clearInterval(pump);stopClock();await stopTwitch();await arcade.close();};
 process.once('SIGINT',close);process.once('SIGTERM',close);
 
-if(env.DEMO_AUTO==='1'&&mockTwitch&&mockCodex){
+if(env.DEMO_AUTO==='1'&&mockTwitch&&mockCodex&&!sim){
  void prepareAutoDemo(arcade).then(()=>addDemoReviewPitches(arcade)).catch(()=>{console.error('The scripted demo could not finish preparing.');});
 }
 
