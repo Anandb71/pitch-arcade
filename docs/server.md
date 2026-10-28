@@ -107,7 +107,7 @@ SQLite uses secure_delete and checkpoints its WAL after deletion.
 Nonpitch conversations are not persisted. Command output, stderr, credentials and agent prose are not logged.
 Only pitch text and basic Twitch identity are retained with the necessary game and build records.
 
-## Third milestone browser clients
+## Browser clients
 
 The dashboard is now at /dashboard/, the play page at /play/,
 the transparent OBS source at /overlay/ and mock chat at /chat/.
@@ -129,7 +129,7 @@ POST /api/settings updates autoApproveMods, autoApproveVips and a bounded denyli
 Rules persist in SQLite and apply to new builds after independent validation.
 The word list updates intake immediately and also filters generated titles.
 Settings audit events store counts rather than the blocked phrases.
-GET /api/state includes settings, current gauntlet, designer beats and mock result ticker items.
+GET /api/state includes settings, current gauntlet, designer beats and labeled result ticker items.
 
 MOCK_FACTORY_STEP_MS optionally sets replay step timing.
 DEMO_AUTO is set by npm run demo:auto.
@@ -139,5 +139,4 @@ See docs/demo.md for unattended capture and OBS placement.
 
 The loss hook is a ResultsSink interface.
 MockResultsSink records simulated clip requests and chat result lines.
-The next milestone can replace that sink with actual Helix behavior.
-No real clip is claimed in this milestone.
+RealResultsSink uses the live Helix client, posts confirmed clip links and sends the final gauntlet summary. Clip and chat errors stay separate from gameplay. The local protocol demo uses the same sink against fake Helix and labels its links simulated. Public Twitch delivery is not yet verified.

@@ -121,3 +121,9 @@ Refreshed eight 1920 by 1080 PNGs and inspected every image. The main overlay co
 ### M5 fresh clone proof
 
 Cloned the local committed repository into /tmp/pa-fresh at de4bc34 using Node 22.11.0 and npm 10.9.0. npm ci installed 107 packages and audited 117 with zero vulnerabilities. npm test passed all 168 tests in 27 files. Build and prose checks returned 0. demo:auto completed five rounds with four wins and two lives without credentials. Doctor correctly returned 1 for missing live account settings and tokens, while Node, Twitch ID reachability and Codex checks passed. The clone remained clean after regeneration. Its server was stopped and the clone deleted. docs/fresh-clone.md records the outputs. No application fix was needed.
+
+### M5 final audit
+
+Scanned the entire git log patch history and current tracked files for service key patterns, bearer tokens, JWTs, private keys and high entropy token shaped strings. No operational credential was found. All entropy candidates were classified as public identifiers, dependency metadata, generated harness fragments, source paths, Canvas types or synthetic fixtures. No candidate remained unclassified. Prohibited provenance markers had zero occurrences. Ignore checks passed for .env, local env variants, token JSON, data, dependencies, builds and job directories. Only .env.example is tracked among environment and token paths.
+
+The final prose check passes eleven target files. A temporary negative fixture confirmed all three forbidden dash forms fail, and was removed. Clarified the remaining server docs and strengthened the forget regression to prove later pitches remain possible. Final npm test is green with 168 tests in 27 files, duration 10.01 seconds on Node 22.11.0 and npm 10.9.0. Eight final screenshots were inspected. Remaining human work is live Twitch authorization and stream verification, OBS composition, recording the public video and completing the Devpost submission.

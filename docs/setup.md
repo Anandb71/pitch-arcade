@@ -54,6 +54,6 @@ Crop the window capture to the visible game arena. Preserve its 16:9 ratio, resi
 
 ## Before recording
 
-Run npm test and npm run lint:prose. Run npm run shots if you want refreshed stills. The script needs installed Chrome, Playwright Chromium or CHROME_PATH. Other machines may need `npx playwright install chromium` once.
+Run npm test and npm run lint:prose. Run npm run shots if you want refreshed stills. The script needs installed Chrome, Playwright Chromium or CHROME_PATH. Other machines may need `npm exec -- playwright install chromium` once.
 
 Verify live chat, reconnect, acknowledgments and a clip on your own channel. Make sure clips are enabled and the stream category permits them. Check OBS composition and audio. Record the real behavior you can demonstrate, and label all local simulations. Add your video URL to DEVPOST.md.

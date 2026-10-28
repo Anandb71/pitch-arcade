@@ -109,7 +109,7 @@ test('drops secret shaped chat before persistence and moderation',async()=>{
 });
 test('forget invalidates both pending and queued moderation without banning future pitches',async()=>{
  let release!:(value:{allowed:boolean;source:string})=>void;const {intake,store}=make({moderator:{check:()=>new Promise(resolve=>{release=resolve;})}});
- const pending=intake.handle(chat('!pitch catch berries')),queued=intake.handle(chat('!pitch dodge tacos'));await Promise.resolve();intake.forget('priya');store.forget('priya');release({allowed:true,source:'test'});expect(await pending).toMatchObject({code:'CANCELLED'});expect(await queued).toMatchObject({code:'CANCELLED'});expect(store.pitches()).toHaveLength(0);
+ const pending=intake.handle(chat('!pitch catch berries')),queued=intake.handle(chat('!pitch dodge tacos'));await Promise.resolve();intake.forget('priya');store.forget('priya');release({allowed:true,source:'test'});expect(await pending).toMatchObject({code:'CANCELLED'});expect(await queued).toMatchObject({code:'CANCELLED'});expect(store.pitches()).toHaveLength(0);intake.moderator.check=async()=>({allowed:true,source:'test'});expect((await intake.handle(chat('!pitch pop bubbles'))).ok).toBe(true);
 });
 test('pause then resume cannot publish an old moderation result, including failures',async()=>{
  let reject!:(error:Error)=>void;const {intake,store}=make({moderator:{check:()=>new Promise((_resolve,r)=>{reject=r;})}});
