@@ -1,0 +1,37 @@
+{
+  "v": 1,
+  "title": "Cloud Patrol",
+  "verb": "SURVIVE",
+  "seconds": 5,
+  "palette": "ice",
+  "pattern": "dots",
+  "player": {
+    "emoji": "🧑‍🍳",
+    "control": "move_4",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🌮",
+      "role": "hazard",
+      "from": "edges",
+      "every": 0.35,
+      "max": 12,
+      "motion": "chase",
+      "speed": 5,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "survive"
+  },
+  "lose": {
+    "type": "touch",
+    "role": "hazard"
+  },
+  "mods": [
+    "speedup"
+  ],
+  "sfx": "pop"
+}

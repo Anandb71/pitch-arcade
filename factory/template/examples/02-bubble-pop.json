@@ -1,0 +1,37 @@
+{
+  "v": 1,
+  "title": "Bubble Pop",
+  "verb": "POP",
+  "seconds": 5,
+  "palette": "ocean",
+  "pattern": "dots",
+  "player": {
+    "emoji": "🧑‍🍳",
+    "control": "click",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🌮",
+      "role": "target",
+      "from": "random",
+      "every": 0.35,
+      "max": 12,
+      "motion": "popup",
+      "speed": 5,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "hit",
+    "n": 3
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [
+    "spotlight"
+  ],
+  "sfx": "pop"
+}

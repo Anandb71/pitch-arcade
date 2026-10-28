@@ -1,0 +1,35 @@
+{
+  "v": 1,
+  "title": "Ocean Sweep",
+  "verb": "AVOID",
+  "seconds": 5,
+  "palette": "mono",
+  "pattern": "stripes",
+  "player": {
+    "emoji": "🧑‍🍳",
+    "control": "move_lr",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🌮",
+      "role": "hazard",
+      "from": "left",
+      "every": 0.35,
+      "max": 12,
+      "motion": "sweep",
+      "speed": 5,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "survive"
+  },
+  "lose": {
+    "type": "touch",
+    "role": "hazard"
+  },
+  "mods": [],
+  "sfx": "pop"
+}
