@@ -29,12 +29,12 @@ export function scanStrings(value:unknown):string[]{
  };
  walk(value,0);return [...found];
 }
-export function validateGame(value:unknown):ValidationResult{
+export function validateGame(value:unknown,denylist:readonly string[]=defaultDenylist):ValidationResult{
  const unsafe=scanStrings(value);
  if(unsafe.length)return {ok:false,issues:unsafe.map(code=>({code,hint:'Output contains an unsafe string. Use only game data.'}))};
  const parsed=validateSpec(value);
  if(!parsed.ok)return {ok:false,issues:parsed.issues.map(i=>({code:i.code,hint:'Game data does not match the documented format.'}))};
- if(defaultDenylist.some(word=>parsed.spec.title.toLowerCase().includes(word)))return fail('TITLE_FILTER','Choose a friendly game title.');
+ if([...defaultDenylist,...denylist].some(word=>parsed.spec.title.toLowerCase().includes(word)))return fail('TITLE_FILTER','Choose a friendly game title.');
  const report=playtest(parsed.spec);
  if(!report.pass)return {ok:false,issues:report.issues};
  const metrics=report.metrics!;
@@ -50,7 +50,7 @@ function readOutput(path:string):unknown{
   return JSON.parse(buffer.subarray(0,length).toString('utf8')) as unknown;
  }finally{closeSync(descriptor);}
 }
-export function validateJobOutput(dir:string):ValidationResult{
+export function validateJobOutput(dir:string,denylist:readonly string[]=defaultDenylist):ValidationResult{
  try{
   const out=join(dir,'out'),stat=lstatSync(out);
   if(!stat.isDirectory()||stat.isSymbolicLink())return fail('UNSAFE_OUTPUT','Output must be a regular local directory.');
@@ -60,7 +60,7 @@ export function validateJobOutput(dir:string):ValidationResult{
    if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).join(',')!=='reason'||typeof (value as {reason?:unknown}).reason!=='string'||(!(value as {reason:string}).reason.trim()||(value as {reason:string}).reason.length>200)||scanStrings(value).length)return fail('UNSAFE_OUTPUT','Designer rejection contains invalid data.');
    return fail('DESIGNER_REJECTED','The designer declined this pitch.');
   }
-  return validateGame(readOutput(join(out,'game.json')));
+  return validateGame(readOutput(join(out,'game.json')),denylist);
  }catch{return fail('UNSAFE_OUTPUT','Provide a regular game.json file under 64 KiB, or a safe reject.json.');}
 }
 function safeIsLink(path:string):boolean{try{return lstatSync(path).isSymbolicLink();}catch{return false;}}

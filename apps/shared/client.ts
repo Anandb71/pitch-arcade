@@ -10,14 +10,15 @@ export class ArcadeClient {
   socket.onopen=()=>{this.connected=true;if(this.player)socket.send(JSON.stringify({type:'claim-player',control:'local'}));};
   socket.onmessage=event=>{
    const value=JSON.parse(String(event.data)) as {type:string;state?:ArcadeState|GauntletState;granted?:boolean};
-   if(value.type==='gauntlet'){this.gauntlet=value.state as GauntletState;this.onGame(this.gauntlet);}
+   if(value.type==='gauntlet'){this.acceptGame(value.state as GauntletState);}
    else if(value.type==='arcade')this.accept(value.state as ArcadeState);
    else if(value.type==='player-control')this.hasControl=!!value.granted;
    else this.scheduleRefresh();
   };
   socket.onclose=()=>{this.connected=false;this.hasControl=false;if(!this.disposed)this.retry=window.setTimeout(()=>{this.connect();void this.refresh();},800);};
  }
- private accept(state:ArcadeState):void{this.state=state;this.gauntlet=state.gauntlet;this.onState(state);this.onGame(state.gauntlet);}
+ private acceptGame(state:GauntletState):void{if(this.gauntlet&&state.revision<this.gauntlet.revision)return;this.gauntlet=state;this.onGame(state);}
+ private accept(state:ArcadeState):void{if(this.gauntlet&&state.gauntlet.revision<this.gauntlet.revision)state.gauntlet=this.gauntlet;this.state=state;this.onState(state);this.acceptGame(state.gauntlet);}
  private scheduleRefresh():void{if(!this.refreshTimer)this.refreshTimer=window.setTimeout(()=>{this.refreshTimer=0;void this.refresh();},80);}
  async refresh():Promise<void>{try{const response=await fetch('/api/state');if(response.ok)this.accept(await response.json() as ArcadeState);}catch{/* Reconnect retries preserve the last valid screen. */}}
  input(input:Input):void{if(this.hasControl&&this.socket?.readyState===WebSocket.OPEN)this.socket.send(JSON.stringify({type:'input',control:'local',input}));}

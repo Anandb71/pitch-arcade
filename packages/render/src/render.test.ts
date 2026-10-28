@@ -16,6 +16,7 @@ test('keyboard and pointer input preserve held state for engine edge detection',
  expect(state.read()).toMatchObject({x:-1,y:-1,mash:true});
  state.pointer({x:20,y:30},true);expect(state.read()).toMatchObject({click:true,pointer:{x:20,y:30}});
  state.clear();expect(state.read()).toMatchObject({x:0,y:0,mash:false,click:false});
+ state.pointer({x:20,y:30},true);expect(state.read().mash).toBe(true);
 });
 test('S remains a down key while a double tap or Shift + S skips',()=>{
  const state=new InputState();state.key('KeyS',true);expect(state.read().y).toBe(1);

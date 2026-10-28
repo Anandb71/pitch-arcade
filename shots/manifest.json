@@ -1,0 +1,109 @@
+{
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "seed": 1,
+  "source": "Actual scripted mock session. Humanish inputs and engine outcomes are real; factory generation and clip requests are simulated.",
+  "captures": [
+    {
+      "file": "play-title.png",
+      "phase": "title"
+    },
+    {
+      "file": "play-game.png",
+      "phase": "play",
+      "game": "Taco Rain",
+      "round": 1,
+      "frame": 111
+    },
+    {
+      "file": "play-game-2.png",
+      "phase": "play",
+      "game": "Bubble Pop",
+      "round": 2,
+      "frame": 112
+    },
+    {
+      "file": "play-game-3.png",
+      "phase": "play",
+      "game": "Berry Basket",
+      "round": 3,
+      "frame": 111
+    },
+    {
+      "file": "overlay.png",
+      "phase": "play",
+      "factory": "two actual mock jobs building",
+      "leaderboard": [
+        {
+          "login": "lee",
+          "beats": 1,
+          "gamesApproved": 1
+        }
+      ]
+    },
+    {
+      "file": "dashboard.png",
+      "pending": "actual independently validated mock games"
+    },
+    {
+      "file": "chat-panel.png",
+      "source": "actual mock pitches and result messages"
+    }
+  ],
+  "finished": {
+    "score": 4,
+    "lives": 2,
+    "outcomes": [
+      {
+        "gameId": 21,
+        "title": "Taco Rain",
+        "designer": "priya",
+        "outcome": "win",
+        "round": 1,
+        "ms": 5000
+      },
+      {
+        "gameId": 22,
+        "title": "Bubble Pop",
+        "designer": "lee",
+        "outcome": "lose",
+        "round": 2,
+        "ms": 4467
+      },
+      {
+        "gameId": 23,
+        "title": "Berry Basket",
+        "designer": "mira",
+        "outcome": "win",
+        "round": 3,
+        "ms": 2583
+      },
+      {
+        "gameId": 24,
+        "title": "Moon Escape",
+        "designer": "arun",
+        "outcome": "win",
+        "round": 4,
+        "ms": 967
+      },
+      {
+        "gameId": 25,
+        "title": "Rocket Charge",
+        "designer": "zoe",
+        "outcome": "win",
+        "round": 5,
+        "ms": 3267
+      }
+    ]
+  },
+  "manualControls": {
+    "keyboardMovement": true,
+    "doubleTapSkip": true,
+    "previewIsolated": true,
+    "approvalRules": true,
+    "wordFilter": true
+  },
+  "browserErrors": []
+}

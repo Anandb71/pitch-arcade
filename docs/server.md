@@ -1,7 +1,7 @@
 # Server and mock modes
 
-The server binds to 127.0.0.1. The small panel at / sends mock chat, shows factory work,
-pauses the arcade and approves or rejects games.
+The server binds to 127.0.0.1. The control room at /dashboard/ shows factory work,
+pauses the arcade and approves or rejects games. The mock chat page is /chat/.
 Its DOM uses textContent for all chat and model data.
 The WebSocket at /events broadcasts sanitized factory and state events.
 
@@ -118,3 +118,38 @@ SQLite uses secure_delete and checkpoints its WAL after deletion.
 
 Nonpitch conversations are not persisted. Command output, stderr, credentials and agent prose are not logged.
 Only pitch text and basic Twitch identity are retained with the necessary game and build records.
+
+## Third milestone browser clients
+
+The dashboard is now at /dashboard/, the play page at /play/,
+the transparent OBS source at /overlay/ and mock chat at /chat/.
+The root URL also serves the dashboard.
+npm run demo prints all four URLs and OBS instructions.
+
+The server owns the active gauntlet and engine.
+A fixed tick clock advances title, countdown, play, result and final score phases.
+Every engine frame is pushed to connected clients.
+Snapshots have monotonic revisions so an older HTTP response cannot restore an earlier phase.
+
+POST /api/gauntlet/start begins a five game session.
+POST /api/gauntlet/skip preserves lives and skips the current game.
+POST /api/gauntlet/stop ends the session.
+The start body can include an integer seed. Autoplay is accepted only in mock Twitch mode.
+Player input uses a claimed local WebSocket connection, separate from all chat sources.
+
+POST /api/settings updates autoApproveMods, autoApproveVips and a bounded denylist.
+Rules persist in SQLite and apply to new builds after independent validation.
+The word list updates intake immediately and also filters generated titles.
+Settings audit events store counts rather than the blocked phrases.
+GET /api/state includes settings, current gauntlet, designer beats and mock result ticker items.
+
+MOCK_FACTORY_STEP_MS optionally sets replay step timing.
+DEMO_AUTO is set by npm run demo:auto.
+Its mock-only /api/demo/freeze endpoint exists for screenshot capture.
+Normal and live sessions do not expose that endpoint.
+See docs/demo.md for unattended capture and OBS placement.
+
+The loss hook is a ResultsSink interface.
+MockResultsSink records simulated clip requests and chat result lines.
+The next milestone can replace that sink with actual Helix behavior.
+No real clip is claimed in this milestone.

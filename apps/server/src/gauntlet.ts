@@ -10,17 +10,18 @@ export function selectGames(games:ArcadeGame[]):ArcadeGame[]{
  const classics=games.filter(g=>g.status==='approved'&&g.classic).sort((a,b)=>a.id-b.id);
  const ids=new Set<number>();return [...viewers,...classics].filter(g=>{if(ids.has(g.id))return false;ids.add(g.id);return true;}).slice(0,5);
 }
-const idle=():GauntletState=>({id:null,phase:'idle',phaseFrames:0,round:0,total:5,lives:3,score:0,countdown:3,speedPercent:100,seed:0,autoplay:false,game:null,snapshot:null,pointer:null,outcomes:[],lastOutcome:null,reason:null});
+const idle=():GauntletState=>({id:null,revision:0,phase:'idle',phaseFrames:0,round:0,total:5,lives:3,score:0,countdown:3,speedPercent:100,seed:0,autoplay:false,game:null,snapshot:null,pointer:null,outcomes:[],lastOutcome:null,reason:null});
 export class Gauntlet {
- frozen=false;
+ frozen=false;private revision=0;
  private value=idle();private games:RoundGame[]=[];private engine:Engine|undefined;private bot:Bot|undefined;
+ private pointer:{x:number;y:number}|null=null;
  private input:Input={};private fractional=0;
- constructor(private store:Repository,private library:Library,private sink:ResultsSink,private onChange:(state:GauntletState)=>void=()=>{}){
+ constructor(private store:Repository,private library:Library,private sink:ResultsSink,private onChange?:(state:GauntletState)=>void){
   store.db.run('UPDATE gauntlets SET ended_at=? WHERE ended_at IS NULL',Date.now());
  }
- get state():GauntletState{return structuredClone({...this.value,snapshot:this.engine?.snapshot()??null,pointer:this.input.pointer??null});}
+ get state():GauntletState{return structuredClone({...this.value,snapshot:this.engine?.snapshot()??null,pointer:this.pointer});}
  get active():boolean{return !['idle','finished'].includes(this.value.phase);}
- private notify():void{this.onChange(this.state);}
+ private notify():void{this.value.revision=++this.revision;this.onChange?.(this.state);}
  start(options:{seed?:number;autoplay?:boolean}={}):void{
   if(this.active)throw Error('GAUNTLET_BUSY');
   const selected=selectGames(this.library.approved());if(selected.length<5)throw Error('NEED_FIVE_GAMES');
@@ -31,7 +32,7 @@ export class Gauntlet {
  }
  private nextRound():void{
   this.value.round++;this.value.game=this.games[this.value.round-1]!;
-  this.value.speedPercent=100+(this.value.round-1)*12;this.value.lastOutcome=null;this.fractional=0;this.input={};
+  this.value.speedPercent=100+(this.value.round-1)*12;this.value.lastOutcome=null;this.fractional=0;this.input={};this.pointer=null;
   const seed=(this.value.seed+(this.value.round-1)*101)>>>0;
   this.engine=new Engine(this.value.game.spec,seed);this.bot=createBot('humanish',seed,this.value.game.spec);
   this.value.phase='title';this.value.phaseFrames=0;this.notify();
@@ -40,6 +41,7 @@ export class Gauntlet {
   const finite=(n:unknown,lo:number,hi:number)=>typeof n==='number'&&Number.isFinite(n)?Math.max(lo,Math.min(hi,n)):0;
   this.input={x:finite(input.x,-1,1),y:finite(input.y,-1,1),click:input.click===true,mash:input.mash===true,
    ...(input.pointer?{pointer:{x:finite(input.pointer.x,0,960),y:finite(input.pointer.y,0,540)}}:{})};
+  if(this.input.pointer)this.pointer=this.input.pointer;
  }
  tick():void{
   if(!this.active||this.frozen)return;
@@ -52,14 +54,14 @@ export class Gauntlet {
    this.fractional+=this.value.speedPercent;
    while(this.fractional>=100&&this.engine.outcome==='playing'){
     const input=this.value.autoplay?this.bot!(this.engine.snapshot()):this.input;
-    this.engine.step(input);if(this.value.autoplay)this.input=input;this.fractional-=100;
+    this.engine.step(input);if(this.value.autoplay){this.input=input;if(input.pointer)this.pointer=input.pointer;}this.fractional-=100;
    }
    if(this.engine.outcome!=='playing')this.record(this.engine.outcome);
   }else if(this.value.phase==='result'&&this.value.phaseFrames>=96){
    if(this.value.lives<=0)this.finish('out_of_lives');
    else if(this.value.round===5)this.finish('complete');else this.nextRound();
   }
-  if(this.value.phaseFrames%3===0)this.notify();
+  this.notify();
  }
  skip():void{if(['title','countdown','play'].includes(this.value.phase))this.record('skip');}
  stop():void{
@@ -67,7 +69,7 @@ export class Gauntlet {
   if(this.value.phase!=='result')this.record('skip');
   this.finish('stopped');
  }
- reset():void{this.stop();this.value=idle();this.engine=undefined;this.games=[];this.input={};this.notify();}
+ reset():void{this.stop();this.value=idle();this.engine=undefined;this.games=[];this.input={};this.pointer=null;this.notify();}
  forget(ids:Set<string>):void{if(this.games.some(game=>game.authorId&&ids.has(game.authorId)))this.reset();}
  private record(outcome:PlayOutcome):void{
   if(!this.value.game||this.value.outcomes.length>=this.value.round)return;

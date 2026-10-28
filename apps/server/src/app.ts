@@ -11,11 +11,10 @@ import {Factory} from './factory.js';
 import {CodexCliRunner,MockCodexRunner,type CodexRunner} from './runners.js';
 import {Library} from './library.js';
 import {validateJobOutput} from './validator.js';
-import {panel} from './panel.js';
 import {Gauntlet} from './gauntlet.js';
 import {MockResultsSink,type ResultsSink} from './results.js';
-import {defaultDenylist} from './moderation.js';
-import type {ArcadeState} from '../../../packages/shared/src/protocol.js';
+import {SettingsStore} from './settings.js';
+import type {Settings,ArcadeState} from '../../../packages/shared/src/protocol.js';
 import type {FactoryStep} from './codex-events.js';
 export interface ArcadeOptions {
  dbPath?:string;mockTwitch?:boolean;mockCodex?:boolean;seedLibrary?:boolean;seedDir?:string;stepMs?:number;
@@ -31,6 +30,7 @@ export async function createArcade(options:ArcadeOptions={}){
  const path=options.dbPath??resolve('data/arcade.sqlite');if(path!==':memory:')mkdirSync(dirname(path),{recursive:true});
  const store=new Repository(openSqlite(path)),library=new Library(store);
  try{if(options.seedLibrary!==false)library.importSeeds(options.seedDir??resolve('library'));}catch(error){store.close();throw error;}
+ const settings=new SettingsStore(store);
  let closing=false;
  const app=Fastify({logger:false,bodyLimit:4096,trustProxy:false});
  const mockTwitch=options.mockTwitch??process.env.MOCK_TWITCH==='1';
@@ -50,8 +50,8 @@ export async function createArcade(options:ArcadeOptions={}){
   ...(options.maxJobsPerHour!==undefined?{maxJobsPerHour:options.maxJobsPerHour}:{}),
   emit:(pitchId,step)=>{steps.push({pitchId,...step});if(steps.length>100)steps.shift();broadcast({type:'factory.step',pitchId,...step});},
   complete:async(pitch,dir,receipt)=>{
-   const result=validateJobOutput(dir);
-   if(result.ok)library.addBuilt(pitch,result,receipt);
+   const result=validateJobOutput(dir,settings.read().denylist);
+   if(result.ok){const id=library.addBuilt(pitch,result,receipt);const policy=settings.read();if((pitch.role==='mod'&&policy.autoApproveMods)||(pitch.role==='vip'&&policy.autoApproveVips))library.approve(id,'auto rule: '+pitch.role);}
    else{
     store.setPitch(pitch.id,'rejected',result.issues.map(i=>i.code).join(','));
     store.event('game.validation_rejected',{pitchId:pitch.id,codes:result.issues.map(i=>i.code)},Date.now(),pitch.user_id);
@@ -64,9 +64,9 @@ export async function createArcade(options:ArcadeOptions={}){
   broadcast({type:'result',item});
  });
  const gauntlet=new Gauntlet(store,library,resultsSink,state=>broadcast({type:'gauntlet',state}));
- const getState=():ArcadeState=>({enabled:store.enabled,mockTwitch,mockCodex:runner.model==='mock replay',pitches:store.pitches(),games:library.all(),steps,acks:acks.map(a=>a.text),builds:store.db.all('SELECT id,pitch_id,model,status,receipt_json FROM builds ORDER BY id DESC LIMIT 20'),gauntlet:gauntlet.state,leaderboard:store.db.all('SELECT login,beats,games_approved AS gamesApproved FROM users WHERE beats>0 ORDER BY beats DESC,login LIMIT 5'),resultTicker:resultsSink instanceof MockResultsSink?resultsSink.items:[],settings:{autoApproveMods:false,autoApproveVips:false,denylist:defaultDenylist}});
+ const getState=():ArcadeState=>({enabled:store.enabled,mockTwitch,mockCodex:runner.model==='mock replay',pitches:store.pitches(),games:library.all(),steps,acks:acks.map(a=>a.text),builds:store.db.all('SELECT id,pitch_id,model,status,receipt_json FROM builds ORDER BY id DESC LIMIT 20'),gauntlet:gauntlet.state,leaderboard:store.db.all('SELECT login,beats,games_approved AS gamesApproved FROM users WHERE beats>0 ORDER BY beats DESC,login LIMIT 5'),resultTicker:resultsSink instanceof MockResultsSink?resultsSink.items:[],settings:settings.read()});
  const intake=new Intake(store,{
-  cooldownMs:options.cooldownMs??120000,queueCap:options.queueCap??20,moderator:options.moderator??moderatorFromEnv(),
+  getDenylist:()=>settings.read().denylist,cooldownMs:options.cooldownMs??120000,queueCap:options.queueCap??20,moderator:options.moderator??moderatorFromEnv(),
   onToggle:enabled=>{if(enabled)factory.kick();else{factory.pause();gauntlet.stop();}broadcast({type:'arcade.toggle',enabled});}
  });
  const receive=async(message:ChatMessage)=>{
@@ -85,9 +85,12 @@ export async function createArcade(options:ArcadeOptions={}){
   if(!['GET','HEAD'].includes(request.method)&&request.headers['x-arcade-control']!=='local')return reply.code(403).send({error:'A local control header is required.'});
  });
  app.setErrorHandler((_error,_request,reply)=>reply.code(400).send({error:'That request could not be handled.'}));
- app.get('/',async(_request,reply)=>reply.header('Content-Security-Policy',"default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'").type('text/html').send(panel(mockTwitch)));
- app.get('/overlay/',async(_request,reply)=>reply.type('text/html').send(readFileSync(resolve('dist/web/apps/overlay/index.html'),'utf8')));
- app.get('/play/',async(_request,reply)=>reply.type('text/html').send(readFileSync(resolve('dist/web/apps/play/index.html'),'utf8')));
+ const html=(path:string,reply:import('fastify').FastifyReply)=>reply.header('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'none'; frame-ancestors 'self'").type('text/html').send(readFileSync(resolve(path),'utf8'));
+ app.get('/',async(_request,reply)=>html('dist/web/apps/dashboard/index.html',reply));
+ app.get('/dashboard/',async(_request,reply)=>html('dist/web/apps/dashboard/index.html',reply));
+ app.get('/chat/',async(_request,reply)=>html('dist/web/apps/dashboard/chat.html',reply));
+ app.get('/overlay/',async(_request,reply)=>html('dist/web/apps/overlay/index.html',reply));
+ app.get('/play/',async(_request,reply)=>html('dist/web/apps/play/index.html',reply));
  app.get<{Params:{file:string}}>('/assets/:file',async(request,reply)=>{
   const file=request.params.file;if(!/^[a-zA-Z0-9_.-]+\.(js|css|woff2|svg)$/.test(file))return reply.code(404).send();
   try{return reply.type(file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'application/octet-stream').send(readFileSync(join(resolve('dist/web/assets'),file)));}catch{return reply.code(404).send();}
@@ -112,7 +115,7 @@ export async function createArcade(options:ArcadeOptions={}){
   broadcast({type:'game.rejected',gameId:request.params.id});return {ok:true};
  });
  app.post<{Body:{enabled:boolean}}>('/api/arcade',{schema:{body:{type:'object',required:['enabled'],additionalProperties:false,properties:{enabled:{type:'boolean'}}}}},async request=>{
-  store.enabled=request.body.enabled;if(store.enabled)factory.kick();else{factory.pause();gauntlet.stop();}return {enabled:store.enabled};
+  store.enabled=request.body.enabled;if(store.enabled)factory.kick();else{factory.pause();gauntlet.stop();}broadcast({type:'arcade.toggle',enabled:store.enabled});return {enabled:store.enabled};
  });
  app.post<{Params:{login:string}}>('/api/users/:login/forget',{schema:{params:{type:'object',required:['login'],properties:{login:{type:'string',pattern:'^[a-zA-Z0-9_]{1,25}$'}}}}},async request=>{
   const pitches=store.pitches().filter(p=>p.login.toLowerCase()===request.params.login.toLowerCase());
@@ -124,6 +127,7 @@ export async function createArcade(options:ArcadeOptions={}){
   for(let i=steps.length-1;i>=0;i--)if(pitches.some(p=>p.id===steps[i]!.pitchId))steps.splice(i,1);
   results.clear();broadcast({type:'user.forgotten'});return {deleted};
  });
+ app.post<{Body:Settings}>('/api/settings',{schema:{body:{type:'object',required:['autoApproveMods','autoApproveVips','denylist'],additionalProperties:false,properties:{autoApproveMods:{type:'boolean'},autoApproveVips:{type:'boolean'},denylist:{type:'array',maxItems:50,items:{type:'string',minLength:1,maxLength:40}}}}}},async request=>{const value=settings.save(request.body);broadcast({type:'controls.updated'});return value;});
  app.post<{Body:{seed?:number;autoplay?:boolean}}>('/api/gauntlet/start',{schema:{body:{type:'object',additionalProperties:false,properties:{seed:{type:'integer',minimum:0,maximum:4294967295},autoplay:{type:'boolean'}}}}},async(request,reply)=>{
   if(!store.enabled)return reply.code(409).send({error:'Resume the arcade first.'});
   if(request.body?.autoplay&&!mockTwitch)return reply.code(400).send({error:'Bot play is available only in mock mode.'});

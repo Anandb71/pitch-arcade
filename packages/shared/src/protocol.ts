@@ -11,7 +11,7 @@ export type Phase='idle'|'title'|'countdown'|'play'|'result'|'finished';
 export type PlayOutcome='win'|'lose'|'skip';
 export interface RoundResult {gameId:number;title:string;designer:string;outcome:PlayOutcome;round:number;ms:number}
 export interface GauntletState {
- id:number|null;phase:Phase;phaseFrames:number;round:number;total:number;lives:number;score:number;
+ id:number|null;revision:number;phase:Phase;phaseFrames:number;round:number;total:number;lives:number;score:number;
  countdown:number;speedPercent:number;seed:number;autoplay:boolean;
  game:RoundGame|null;snapshot:Snapshot|null;pointer:{x:number;y:number}|null;outcomes:RoundResult[];
  lastOutcome:PlayOutcome|null;reason:'complete'|'out_of_lives'|'stopped'|null;

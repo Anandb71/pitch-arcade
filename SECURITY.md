@@ -43,5 +43,10 @@ Never place real credentials in pitches, fixtures, screenshots or seed receipts.
 The forget command deletes related rows, user audit events and stopped job artifacts.
 Live deletion cancels that user's active jobs and clears local presentation state.
 
-This milestone provides factory and library controls.
-Automatic token refresh, clip integration and the OBS overlay are still planned.
+The server now owns live gauntlet simulation and only a claimed local play socket can send input.
+Chat messages remain authoring data and cannot steer the game. Previews use a separate local engine.
+All snapshots carry monotonic revisions. The accelerated clock still consumes fixed engine steps.
+
+The mock-only screenshot freeze control is disabled outside the explicit auto demo.
+Mock result requests are labeled and contain no invented clip URLs.
+Automatic token refresh and real clip integration remain planned.

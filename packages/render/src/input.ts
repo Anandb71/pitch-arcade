@@ -11,7 +11,7 @@ export class InputState {
  clear():void{this.keys.clear();this.clicking=false;}
  read():Input{
   const held=(...codes:string[])=>codes.some(code=>this.keys.has(code));
-  return {x:Number(held('ArrowRight','KeyD'))-Number(held('ArrowLeft','KeyA')),y:Number(held('ArrowDown','KeyS'))-Number(held('ArrowUp','KeyW')),mash:held('Space'),click:this.clicking||held('Space'),pointer:{...this.aim}};
+  return {x:Number(held('ArrowRight','KeyD'))-Number(held('ArrowLeft','KeyA')),y:Number(held('ArrowDown','KeyS'))-Number(held('ArrowUp','KeyW')),mash:held('Space')||this.clicking,click:this.clicking||held('Space'),pointer:{...this.aim}};
  }
 }
 export function bindInput(canvas:HTMLCanvasElement,onSkip:()=>void=()=>{}):{state:InputState;dispose:()=>void}{

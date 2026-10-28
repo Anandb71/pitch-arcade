@@ -2,7 +2,7 @@ import type {ChatMessage} from './chat.js';
 import {roles} from './chat.js';
 import {defaultDenylist,LocalModerator,type Moderator} from './moderation.js';
 import {Repository} from './storage.js';
-export interface IntakeOptions {cooldownMs?:number;queueCap?:number;denylist?:string[];moderator?:Moderator;now?:()=>number;onToggle?:(enabled:boolean)=>void}
+export interface IntakeOptions {cooldownMs?:number;queueCap?:number;denylist?:string[];getDenylist?:()=>readonly string[];moderator?:Moderator;now?:()=>number;onToggle?:(enabled:boolean)=>void}
 export interface IntakeResult {ok:boolean;code:string;message?:string;pitchId?:number;position?:number}
 export function parsePitch(text:string):string|null {
  const match=/^!pitch\s+(.+)$/iu.exec(text);
@@ -54,14 +54,15 @@ export class Intake {
   if(this.store.active().length>=(this.options.queueCap??20))return fail('QUEUE_FULL');
   if(this.store.pitches().some(p=>['queued','building','built','approved'].includes(p.status)&&p.created_at>now-600000&&similar(p.text,text)))return fail('SIMILAR');
   const clean={...message,text,displayName:message.displayName.replace(/[\x00-\x1f]/g,'').slice(0,50)};
-  const denied=(this.options.denylist??defaultDenylist).some(word=>text.toLowerCase().includes(word.toLowerCase()));
+  const denied=()=>(this.options.getDenylist?.()??this.options.denylist??defaultDenylist).some(word=>text.toLowerCase().includes(word.toLowerCase()));
   let decision;
-  try{decision=denied?{allowed:false,source:'local denylist'}:await this.moderator.check(text);}
+  try{decision=denied()?{allowed:false,source:'local denylist'}:await this.moderator.check(text);}
   catch{
    this.store.addPitch(clean,now,'filtered',{allowed:false,source:'moderation unavailable'},'MODERATION_UNAVAILABLE');
    return fail('MODERATION_UNAVAILABLE');
   }
   if(this.stopped||!this.enabled)return fail('PAUSED');
+  if(denied())decision={allowed:false,source:'local denylist'};
   const pitch=this.store.addPitch(clean,now,decision.allowed?'queued':'filtered',decision,decision.allowed?null:'FILTERED');
   this.store.event(decision.allowed?'pitch.queued':'pitch.filtered',{pitchId:pitch.id},now,message.userId);
   if(!decision.allowed)return fail('FILTERED');

@@ -14,3 +14,7 @@ Audio starts only after a user gesture. Muting does not affect simulation.
 The renderer uses eight palettes and five static patterns.
 Particles are decorative and capped at 96. Shake is capped at six logical pixels.
 There are no full screen flashes or strobe effects.
+
+The committed shots are browser captures of the running application at 1920 by 1080.
+They use original interface code, system emoji rendering and actual mock session state.
+No generated bitmap artwork or third party screenshots are included.

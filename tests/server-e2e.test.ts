@@ -29,7 +29,7 @@ test('local control rejects cross origin, rebinding and unmarked writes',async()
   expect((await arcade.app.inject({url:'/api/state',headers:{host:'attacker.invalid'}})).statusCode).toBe(403);
   expect((await arcade.app.inject({...request,headers})).statusCode).toBe(200);
   expect(arcade.store.enabled).toBe(false);
-  const panel=await arcade.app.inject('/');expect(panel.statusCode).toBe(200);expect(panel.body).toContain('textContent');
+  const panel=await arcade.app.inject('/');expect(panel.statusCode).toBe(200);expect(panel.body).toContain('Control room');
  }finally{await arcade.close();}
 });
 test('real mode has no spoofable HTTP chat endpoint',async()=>{

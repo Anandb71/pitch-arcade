@@ -84,3 +84,15 @@ test('three losses exhaust lives and prevent a fourth game',()=>{
  expect(gauntlet.state).toMatchObject({phase:'finished',lives:0,score:0,reason:'out_of_lives',round:3});
  expect(store.db.all('SELECT * FROM plays')).toHaveLength(3);expect(sink.items.filter(i=>i.kind==='clip')).toHaveLength(3);
 });
+test('publishes each fixed engine frame so the play renderer receives 60 Hz snapshots',()=>{
+ const {store,library,sink}=setup(),frames:number[]=[];
+ const gauntlet=new Gauntlet(store,library,sink,state=>{if(state.phase==='play')frames.push(state.snapshot!.frame);});
+ gauntlet.start({seed:1});advance(gauntlet,288);advance(gauntlet,30);
+ expect(frames).toEqual(Array.from({length:31},(_,i)=>i));
+});
+test('the cursor spotlight retains its last aim between bot click frames',()=>{
+ const {gauntlet}=setup();gauntlet.start({seed:1,autoplay:true});gauntlet.skip();advance(gauntlet,96+288);
+ for(let i=0;i<40&&!gauntlet.state.pointer;i++)gauntlet.tick();
+ const pointer=gauntlet.state.pointer;expect(pointer).not.toBeNull();gauntlet.tick();
+ expect(gauntlet.state.pointer).toEqual(pointer);
+});

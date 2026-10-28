@@ -3,8 +3,8 @@
 This project is built in one main thread:
 01a18380-92df-7fb1-84cd-1b45659bee41.
 
-Seven completed tasks cover workspace setup, the microgame format, deterministic simulation,
-playtesting, intake, factory adapters and independent validation with a persistent library.
+Eleven completed tasks cover workspace setup, game data, deterministic simulation,
+playtesting, intake, factory isolation, validation, rendering, gauntlets, the overlay and dashboard.
 BUILDLOG.md records each task, test evidence and commit.
 No subagents were used and no code was pushed by this build session.
 
@@ -20,3 +20,9 @@ They contain real harness measurements and no fabricated runtime generation timi
 
 Live generation latency has not been measured in this milestone.
 The offline sandbox preflight was run successfully with codex-cli 0.165.0.
+
+
+The third milestone includes a scripted humanish bot session and inspected Playwright screenshots.
+The screenshot manifest records actual engine outcomes, including a designer win.
+The generated factory steps remain visibly simulated.
+No live generation latency or real Twitch clip creation is claimed by these screenshots.
