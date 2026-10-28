@@ -1,3 +1,4 @@
+import {scanStrings} from './strings.js';
 import type {ChatMessage} from './chat.js';
 import {roles} from './chat.js';
 import {defaultDenylist,LocalModerator,type Moderator} from './moderation.js';
@@ -16,8 +17,10 @@ function similar(a:string,b:string):boolean {
  return intersection/(x.size+y.size-intersection)>=.8;
 }
 export class Intake {
- private stopped=false;
- stop():void{this.stopped=true;}
+ private stopped=false;private epoch=0;private revisions=new Map<string,number>();
+ forget(login:string):void{const key=login.toLowerCase();this.revisions.set(key,(this.revisions.get(key)??0)+1);}
+ interrupt():void{this.epoch++;}
+ stop():void{this.stopped=true;this.interrupt();}
  async idle():Promise<void>{await this.tail;}
  private tail:Promise<unknown>=Promise.resolve();
  private seenCommands=new Set<string>();
@@ -27,12 +30,15 @@ export class Intake {
  }
  get enabled():boolean{return this.store.enabled;}
  handle(message:ChatMessage):Promise<IntakeResult> {
-  if(/^!arcade\s+(on|off)\s*$/i.test(message.text))return this.accept(message);
-  const next=this.tail.then(()=>this.accept(message));this.tail=next.catch(()=>{});return next;
+  const key=message.login.toLowerCase(),revision=this.revisions.get(key)??0,epoch=this.epoch;
+  const valid=()=>!this.stopped&&this.epoch===epoch&&(this.revisions.get(key)??0)===revision;
+  if(/^!arcade\s+(on|off)\s*$/i.test(message.text))return this.accept(message,valid);
+  const next=this.tail.then(()=>this.accept(message,valid));this.tail=next.catch(()=>{});return next;
  }
- private async accept(message:ChatMessage):Promise<IntakeResult>{
+ private async accept(message:ChatMessage,valid:()=>boolean):Promise<IntakeResult>{
   const fail=(code:string):IntakeResult=>({ok:false,code});
   if(this.stopped)return fail('PAUSED');
+  if(!valid())return fail('CANCELLED');
   if(!/^[a-z0-9_]{1,25}$/i.test(message.login)||!message.userId||message.userId.length>64||message.id.length>200||!roles.includes(message.role))return fail('INVALID_USER');
   const command=/^!arcade\s+(on|off)\s*$/i.exec(message.text);
   if(command){
@@ -40,6 +46,7 @@ export class Intake {
    if(this.seenCommands.has(message.id))return fail('DUPLICATE_EVENT');
    this.seenCommands.add(message.id);
    if(this.seenCommands.size>1000)this.seenCommands.delete(this.seenCommands.values().next().value!);
+   this.interrupt();
    this.store.enabled=command[1]!.toLowerCase()==='on';
    this.options.onToggle?.(this.enabled);
    this.store.event('arcade.toggle',{enabled:this.enabled});
@@ -47,6 +54,7 @@ export class Intake {
   }
   const text=parsePitch(message.text);
   if(!text)return fail('IGNORED');
+  if(scanStrings([text,message.displayName]).some(code=>code.startsWith('SECRET_')))return fail('FILTERED');
   if(this.store.seen(message.id))return fail('DUPLICATE_EVENT');
   if(this.stopped||!this.enabled)return fail('PAUSED');
   const now=(this.options.now??Date.now)(),last=this.store.lastPitch(message.userId);
@@ -58,9 +66,11 @@ export class Intake {
   let decision;
   try{decision=denied()?{allowed:false,source:'local denylist'}:await this.moderator.check(text);}
   catch{
+   if(!valid())return fail(this.enabled?'CANCELLED':'PAUSED');
    this.store.addPitch(clean,now,'filtered',{allowed:false,source:'moderation unavailable'},'MODERATION_UNAVAILABLE');
    return fail('MODERATION_UNAVAILABLE');
   }
+  if(!valid())return fail(this.enabled?'CANCELLED':'PAUSED');
   if(this.stopped||!this.enabled)return fail('PAUSED');
   if(denied())decision={allowed:false,source:'local denylist'};
   const pitch=this.store.addPitch(clean,now,decision.allowed?'queued':'filtered',decision,decision.allowed?null:'FILTERED');

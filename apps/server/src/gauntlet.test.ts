@@ -96,3 +96,5 @@ test('the cursor spotlight retains its last aim between bot click frames',()=>{
  const pointer=gauntlet.state.pointer;expect(pointer).not.toBeNull();gauntlet.tick();
  expect(gauntlet.state.pointer).toEqual(pointer);
 });
+test('rejecting any selected game stops the run before it can play again',()=>{const {gauntlet}=setup();gauntlet.start();const id=gauntlet.state.game!.id;gauntlet.rejectGame(id);expect(gauntlet.state).toMatchObject({phase:'finished',reason:'stopped'});});
+test('a new gauntlet clears the screenshot freeze latch',()=>{const {gauntlet}=setup();gauntlet.start();gauntlet.frozen=true;gauntlet.stop();gauntlet.start();gauntlet.tick();expect(gauntlet.state.phaseFrames).toBe(1);});

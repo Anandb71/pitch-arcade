@@ -118,3 +118,4 @@ test('hourly job budget leaves excess work queued',async()=>{
 test('reports a Codex usage limit without reflecting arbitrary upstream text',()=>{
  const parser=new CodexEventParser('gpt-6-luna');parser.push(JSON.stringify({type:'error',message:'You have hit your usage limit. Try again at 04:00 UTC.'})+'\n');expect(parser.receipt.usageLimitReset).toBe('Try again at 04:00 UTC.');
 });
+test('usage limit receipts retain only a parsed reset time',()=>{const parser=new CodexEventParser('gpt-6-luna');const text='You hit your usage limit. Try again at 04:00 UTC. '+ 'sk-'+'synthetic_fixture_123456789';parser.push(JSON.stringify({type:'error',message:text})+'\n');expect(parser.receipt.usageLimitReset).toBe('Try again at 04:00 UTC.');});

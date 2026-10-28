@@ -28,7 +28,7 @@ export class Gauntlet {
   const id=Number(this.store.db.run('INSERT INTO gauntlets(started_at,lives_left,score) VALUES(?,3,0)',Date.now()).lastInsertRowid);
   this.games=selected.map(({id,title,verb,spec,authorId,authorLogin,classic})=>({id,title,verb,spec,authorId,authorLogin,classic}));
   this.value={...idle(),id,seed:(options.seed??2026+id*137)>>>0,autoplay:options.autoplay??false};
-  this.nextRound();
+  this.frozen=false;this.nextRound();
  }
  private nextRound():void{
   this.value.round++;this.value.game=this.games[this.value.round-1]!;
@@ -69,6 +69,7 @@ export class Gauntlet {
   if(this.value.phase!=='result')this.record('skip');
   this.finish('stopped');
  }
+ rejectGame(id:number):void{if(this.active&&this.games.some(game=>game.id===id))this.stop();}
  reset():void{this.stop();this.value=idle();this.engine=undefined;this.games=[];this.input={};this.pointer=null;this.notify();}
  forget(ids:Set<string>):void{if(this.games.some(game=>game.authorId&&ids.has(game.authorId)))this.reset();}
  private record(outcome:PlayOutcome):void{

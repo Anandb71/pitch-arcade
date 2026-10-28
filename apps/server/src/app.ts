@@ -114,12 +114,14 @@ export async function createArcade(options:ArcadeOptions={}){
  });
  app.post<{Params:{id:number}}>('/api/games/:id/reject',{schema:idSchema},async(request,reply)=>{
   if(!library.reject(request.params.id))return reply.code(404).send({error:'Game not found.'});
+  gauntlet.rejectGame(request.params.id);
   broadcast({type:'game.rejected',gameId:request.params.id});return {ok:true};
  });
  app.post<{Body:{enabled:boolean}}>('/api/arcade',{schema:{body:{type:'object',required:['enabled'],additionalProperties:false,properties:{enabled:{type:'boolean'}}}}},async request=>{
-  store.enabled=request.body.enabled;if(store.enabled)factory.kick();else{factory.pause();gauntlet.stop();}broadcast({type:'arcade.toggle',enabled:store.enabled});return {enabled:store.enabled};
+  intake.interrupt();store.enabled=request.body.enabled;if(store.enabled)factory.kick();else{factory.pause();gauntlet.stop();}broadcast({type:'arcade.toggle',enabled:store.enabled});return {enabled:store.enabled};
  });
  app.post<{Params:{login:string}}>('/api/users/:login/forget',{schema:{params:{type:'object',required:['login'],properties:{login:{type:'string',pattern:'^[a-zA-Z0-9_]{1,25}$'}}}}},async request=>{
+  intake.forget(request.params.login);
   const pitches=store.pitches().filter(p=>p.login.toLowerCase()===request.params.login.toLowerCase());
   const userIds=new Set(pitches.map(p=>p.user_id));
   gauntlet.forget(userIds);resultsSink.forget?.(userIds);

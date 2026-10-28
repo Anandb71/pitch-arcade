@@ -102,3 +102,16 @@ test('a filtered pitch still consumes cooldown so moderation cannot be spammed',
  expect(await intake.handle(chat('!pitch catch stars'))).toMatchObject({code:'COOLDOWN'});
  expect(check).toHaveBeenCalledTimes(1);
 });
+test('drops secret shaped chat before persistence and moderation',async()=>{
+ const check=vi.fn(async()=>({allowed:true,source:'test'})),{intake,store}=make({moderator:{check}});
+ const secret='sk-'+'synthetic_fixture_123456789';const message={...chat('!pitch dodge '+secret),id:'sensitive-event'};
+ expect(await intake.handle(message)).toMatchObject({code:'FILTERED'});expect(store.pitches()).toHaveLength(0);expect(check).not.toHaveBeenCalled();
+});
+test('forget invalidates both pending and queued moderation without banning future pitches',async()=>{
+ let release!:(value:{allowed:boolean;source:string})=>void;const {intake,store}=make({moderator:{check:()=>new Promise(resolve=>{release=resolve;})}});
+ const pending=intake.handle(chat('!pitch catch berries')),queued=intake.handle(chat('!pitch dodge tacos'));await Promise.resolve();intake.forget('priya');store.forget('priya');release({allowed:true,source:'test'});expect(await pending).toMatchObject({code:'CANCELLED'});expect(await queued).toMatchObject({code:'CANCELLED'});expect(store.pitches()).toHaveLength(0);
+});
+test('pause then resume cannot publish an old moderation result, including failures',async()=>{
+ let reject!:(error:Error)=>void;const {intake,store}=make({moderator:{check:()=>new Promise((_resolve,r)=>{reject=r;})}});
+ const pending=intake.handle(chat('!pitch catch berries'));await Promise.resolve();await intake.handle(chat('!arcade off','owner','broadcaster'));await intake.handle({...chat('!arcade on','owner','broadcaster'),id:'resume'});reject(Error('private service error'));expect(await pending).toMatchObject({code:'CANCELLED'});expect(store.pitches()).toHaveLength(0);
+});

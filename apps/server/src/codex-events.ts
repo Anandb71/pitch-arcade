@@ -38,7 +38,8 @@ export class CodexEventParser {
   if(e.type==='error'||e.type==='turn.failed'){
    const message=typeof e.message==='string'?e.message:typeof record(e.error).message==='string'?record(e.error).message as string:'';
    if(/usage.limit|limit.reached|out of.*(?:credits|usage)|hit your.*limit/i.test(message)){
-    this.receipt.usageLimitReset=message.match(/(?:try again|reset[ s:]*)[^\n]{0,100}/i)?.[0]?.replace(/[^a-zA-Z0-9 :.,()+/-]/g,'')??'Reset time was not supplied.';
+    const reset=message.match(/(?:try again at|resets? at)\s+((?:\d{4}-\d{2}-\d{2}[ T])?\d{1,2}:\d{2}(?::\d{2})?(?:\s*(?:AM|PM))?(?:\s*(?:UTC|GMT|Z))?)/i);
+    this.receipt.usageLimitReset=reset?'Try again at '+reset[1]+'.':'Reset time was not supplied.';
    }
   }
   if(e.type==='thread.started'&&typeof e.thread_id==='string'&&/^[a-zA-Z0-9-]{8,80}$/.test(e.thread_id))this.receipt.threadId=e.thread_id;
