@@ -27,7 +27,8 @@
     "factory:spike": "npm run build && node dist/factory-spike.mjs",
     "start": "npm run build && node --experimental-sqlite tools/start.mjs",
     "doctor": "npm run build && node tools/doctor.mjs",
-    "demo:twitch-sim": "npm run build && node --experimental-sqlite tools/start.mjs --twitch-sim"
+    "demo:twitch-sim": "npm run build && node --experimental-sqlite tools/start.mjs --twitch-sim",
+    "lint:prose": "node tools/lint-prose.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

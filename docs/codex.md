@@ -1,31 +1,24 @@
-# How Codex is used
+# Codex in Pitch Arcade
 
-This project is built in one main thread:
-01a18380-92df-7fb1-84cd-1b45659bee41.
+## Build
 
-Completed tasks cover workspace setup, game data, deterministic simulation,
-playtesting, intake, factory isolation, validation, rendering, gauntlets, the overlay and dashboard.
-BUILDLOG.md records each task, test evidence and commit.
-No subagents were used and no code was pushed by this build session.
+The project was built in one main Codex thread: 01a18380-92df-7fb1-84cd-1b45659bee41. The thread wrote original code, tests, documentation and browser tooling. The build includes fifteen planned engineering tasks: T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14 and T15. The final review, documentation, screenshots and clean installation checks are recorded separately in BUILDLOG.md.
 
-The runtime adapter uses the installed Codex CLI with a verified permission profile.
-It writes game data, runs a bundled playtest and can tune up to four times.
-Sanitized tool events become visible factory steps.
-The server reruns the playtest itself and waits for streamer approval.
+The final suite has 168 tests in 27 files. Milestones one through four produced sixteen implementation commits, including the real factory spike. Final packaging adds separate commits for review, docs, screenshots, fresh clone proof and the final audit.
 
-The offline adapter replays curated games and labels every step as simulated.
-It does not claim a model call, thread ID or token usage.
-Twenty seed receipts attribute their source to this main build thread.
-They contain real harness measurements and no fabricated runtime generation timings.
+The engine, harness and Twitch work started with tests. Each task closed with a green suite and a build log entry. The final self review found six defects and added regression tests for each. Browser tooling captures real running application state and checks controls, previews, rendering and a finished unattended session.
 
-Live generation latency was first measured in milestone four, as recorded below.
-The offline sandbox preflight was run successfully with codex-cli 0.165.0.
+## Runtime
 
+Live generation uses CodexCliRunner with codex-cli 0.165.0 and gpt-6-luna by default. Each job gets a copied designer template, a fresh git repository, a fixed prompt and inbox JSON. The pitch is untrusted data. Command network access is disabled. Only out is writable. An OS boundary preflight runs before every model job.
 
-The third milestone includes a scripted humanish bot session and inspected Playwright screenshots.
-The screenshot manifest records actual engine outcomes, including a designer win.
-The generated factory steps remain visibly simulated.
-No live generation latency or real Twitch clip creation is claimed by these screenshots.
+The CLI emits JSONL. The parser extracts fixed factory step labels, thread ID, model, duration, playtest count and turn usage. Raw prose and tool output are not published. Jobs have a 150 second deadline and four playtests. The server independently validates the output and reruns the bot harness. Approval comes afterward.
+
+The optional Codex SDK is not installed. The CLI already supports the signed in ChatGPT session, constrained job execution and JSONL receipts needed here. OPENAI_API_KEY is used only for optional moderation. The application never reads the Codex authentication file.
+
+MockCodexRunner is a labeled replay of curated games. Its thread ID and usage are null. Its duration measures the replay, not model generation. Twenty seed receipts credit the main build thread without inventing per game timings. Three later runtime receipts contain actual measurements.
+
+See [factory configuration](factory.md) for exact verified keys and platform limits. Browser screenshots use mock authoring or local Twitch protocol fixtures. The overlay labels an actual spike receipt separately. Its clip URL is simulated. Public Twitch chat and clips remain unverified without account credentials.
 
 ## Real factory spike
 

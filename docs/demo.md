@@ -64,7 +64,8 @@ No browser download is performed by the script.
 
 The script writes:
 
-* shots/overlay.png with two actual mock jobs building, current gameplay and a designer beat.
+* shots/overlay.png from the local Twitch protocol simulation, with two mock workers, an actual measured Codex spike receipt and a simulated clip link.
+* shots/overlay-mock.png from the separate scripted mock session.
 * shots/play-title.png with the first viewer game title.
 * shots/play-game.png, play-game-2.png and play-game-3.png from three different games.
 * shots/dashboard.png with actual validated games awaiting approval.
@@ -78,7 +79,7 @@ After taking the images, the script waits for the gauntlet to finish.
 It then checks a manual game, keyboard input, double tap skip, preview isolation,
 auto approval settings and the word editor through the browser.
 
-The source images were inspected during the build.
+The eight source images were inspected during the final build.
 The word editor is collapsed by default so blocked phrases do not appear in a shared dashboard.
 The gameplay HUD sits outside the arena so it cannot hide a simulated target.
 It shows the actual verb, score target and remaining game time. The OBS card mirrors that objective.

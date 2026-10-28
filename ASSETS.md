@@ -18,3 +18,20 @@ There are no full screen flashes or strobe effects.
 The committed shots are browser captures of the running application at 1920 by 1080.
 They use original interface code, system emoji rendering and actual mock session state.
 No generated bitmap artwork or third party screenshots are included.
+
+## Licenses
+
+Original application source and generated game data are provided under the repository MIT license, copyright 2026 Anand Biju. No external game code was copied.
+
+| Component | License | Distribution |
+| --- | --- | --- |
+| Original UI, renderer, engine and games | MIT | Source in this repo |
+| Noto Color Emoji font | SIL OFL 1.1 | System font only, no font binary bundled |
+| Apple and Segoe emoji fonts | Platform supplied | Used only when installed by the operating system |
+| Synthesized effects | Original code under MIT | No recorded audio |
+| Fastify, ws, Ajv, Vite, Vitest, TypeScript and esbuild | MIT | npm dependencies with upstream notices |
+| Playwright | Apache 2.0 | Development dependency |
+| Node.js and SQLite | Upstream Node license and SQLite public domain | Provided by the runtime |
+| Bundled harness dependencies | Upstream notices | factory/template/tools/LICENSES.txt |
+
+The screenshots are direct browser captures of this application. The final overlay includes a real measured Codex receipt and clearly simulated Helix clip links. No Twitch footage, copyrighted music or external artwork is included. Font rendering can differ on other systems.

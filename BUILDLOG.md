@@ -109,3 +109,7 @@ Added the three passing JSON games and genuine CLI receipts with thread IDs, dur
 ### M5 review
 
 Reviewed data and command boundaries, browser sinks, Host and Origin controls, deterministic engine state and asynchronous queue behavior. Found and fixed six defects: sensitive chat reflection, forget versus moderation, pause and resume versus moderation, rejected selected games, a retained screenshot freeze and reflected receipt error suffixes. Added eight regression and boundary tests. docs/review.md records each finding and the verified boundaries. npm test is green with 168 tests in 27 files.
+
+### M5 docs and submission draft
+
+Rewrote README with clone instructions, all demo modes, real account setup, exact local URLs, environment settings, architecture, safety, testing, gallery and honest live status. Added setup and Devpost drafts. Cleaned up the Build and Runtime Codex story, asset licenses and security guidance. Removed obsolete credential names from .env.example and corrected OBS placement versus browser cropping. Added npm run lint:prose. The prose check passes all ten current target files. npm test is green with 168 tests in 27 files.
