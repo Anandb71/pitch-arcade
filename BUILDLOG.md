@@ -51,3 +51,9 @@ Created twenty passing seed specs with honest receipts naming main build thread 
 Updated README, setup, safety, architecture and Codex evidence docs. The demo now starts a real local panel. Verified its rendered factory state and seed library with headless Chrome. Pinned light-my-request to 6.6.0 because the latest helper requires ESM loading behavior missing in Node 22.11. No new unapproved production dependency was added.
 
 Added 29 tests covering malicious outputs, forged reports, output filesystem checks, approval states, all seed receipts, HTTP guards, live deletion, CLI deletion, EventSub mapping and replay, subscription payloads, acknowledgment pacing and moderation spam. A clean npm ci passed on Node 22.11 with npm 10.9. Final npm test passed: 14 files, 119 tests, 3.48 seconds. npm run demo:check and npm run factory:check passed. npm audit reports zero vulnerabilities. Live Twitch requests and real model generation were not exercised. No milestone blockers.
+
+## T07
+
+Implemented the Canvas 2D renderer at 960 by 540 with all eight palettes and five static patterns, system emoji sprites, bounded particles, soft spotlight, floor lava and shake capped at six logical pixels. Rendering observes snapshots without modifying simulation or moving entities independently. Added synthesized WebAudio effects behind an explicit sound gesture. Added keyboard, pointer and scaled coordinate input, blur cleanup and a practice play page built by Vite. Double tap S or Shift + S skips so a normal S press remains available for WASD movement.
+
+Documented the installed Noto Color Emoji fallback stack and original synthesized audio in ASSETS.md. Added seven renderer and input tests, including exact snapshot coordinates and an engine purity guard, plus a trusted web asset smoke test. npm test passed on Node 22.11 and npm 10.9: 16 files, 127 tests. Type checks and Vite build passed.

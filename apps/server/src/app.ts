@@ -1,7 +1,7 @@
 import Fastify from 'fastify';
 import {WebSocketServer,WebSocket} from 'ws';
-import {mkdirSync} from 'node:fs';
-import {dirname,resolve} from 'node:path';
+import {mkdirSync,readFileSync} from 'node:fs';
+import {dirname,resolve,join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {FakeChatSource,roles,type ChatMessage,type ChatSource} from './chat.js';
 import {Repository,openSqlite} from './storage.js';
@@ -76,6 +76,11 @@ export async function createArcade(options:ArcadeOptions={}){
  });
  app.setErrorHandler((_error,_request,reply)=>reply.code(400).send({error:'That request could not be handled.'}));
  app.get('/',async(_request,reply)=>reply.header('Content-Security-Policy',"default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'").type('text/html').send(panel(mockTwitch)));
+ app.get('/play/',async(_request,reply)=>reply.type('text/html').send(readFileSync(resolve('dist/web/apps/play/index.html'),'utf8')));
+ app.get<{Params:{file:string}}>('/assets/:file',async(request,reply)=>{
+  const file=request.params.file;if(!/^[a-zA-Z0-9_.-]+\.(js|css|woff2|svg)$/.test(file))return reply.code(404).send();
+  try{return reply.type(file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'application/octet-stream').send(readFileSync(join(resolve('dist/web/assets'),file)));}catch{return reply.code(404).send();}
+ });
  app.get('/api/health',async()=>({app:'pitch-arcade',mockTwitch,mockCodex:runner.model==='mock replay'}));
  app.get('/api/state',async()=>({enabled:store.enabled,pitches:store.pitches(),games:library.all(),steps,acks:acks.map(a=>a.text),builds:store.db.all('SELECT id,pitch_id,model,status,receipt_json FROM builds ORDER BY id DESC LIMIT 20')}));
  app.get('/api/library',async()=>library.approved());

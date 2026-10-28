@@ -44,3 +44,6 @@ for(const [entry,outfile] of [['main','server'],['demo-check','demo-check'],['fo
   bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'
  });
 }
+
+const {build:buildWeb}=await import('vite');
+await buildWeb();

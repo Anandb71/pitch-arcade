@@ -13,13 +13,16 @@
       "node"
     ],
     "lib": [
-      "ES2022"
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
     ]
   },
   "include": [
     "packages/**/*.ts",
     "apps/**/*.ts",
     "tests/**/*.ts",
-    "vitest.config.ts"
+    "vitest.config.ts",
+    "vite.config.ts"
   ]
 }

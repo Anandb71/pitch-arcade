@@ -1,0 +1,20 @@
+import '../../shared/style.css';
+import './play.css';
+import {mount,node,topbar} from '../../shared/dom.js';
+import {startPractice,SynthSfx} from '../../../packages/render/src/index.js';
+import type {GameSpec} from '../../../packages/engine/src/types.js';
+const root=mount();root.append(topbar('Play window'));
+const shell=node('main','play-shell'),head=node('div','row between'),title=node('h1','','The practice room');
+head.append(title,node('span','pill lime','960 × 540 / 60 HZ'));
+const canvas=node('canvas');canvas.setAttribute('aria-label','Microgame arena');
+const stage=node('div','arena');stage.append(canvas);
+const status=node('p','muted','Choose a game and try it. Your arrows, WASD, space and mouse are ready.');
+const audio=new SynthSfx(),sound=node('button','secondary','Enable sound');
+sound.onclick=async()=>{if(audio.enabled){audio.enabled=false;sound.textContent='Enable sound';}else{await audio.enable();sound.textContent='Mute sound';}};
+const select=node('select'),start=node('button','','Play this game'),controls=node('div','row');
+controls.append(select,start,sound);shell.append(head,stage,controls,status);root.append(shell);
+const games=await (await fetch('/api/library')).json() as {id:number;title:string;spec:GameSpec}[];
+for(const game of games){const option=node('option','',game.title);option.value=String(game.id);select.append(option);}
+let dispose:(()=>void)|undefined;
+start.onclick=()=>{const game=games.find(g=>g.id===Number(select.value));if(!game)return;dispose?.();title.textContent=game.spec.verb+'!';dispose=startPractice(canvas,game.spec,outcome=>{status.textContent=outcome==='win'?'Nice one. Play again?':'That game got you. Try again?';},kind=>audio.play(kind));};
+start.click();
