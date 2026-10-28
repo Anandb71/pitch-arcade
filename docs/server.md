@@ -37,26 +37,14 @@ The newer injection helper requires an ESM loading behavior unavailable in that 
 | FACTORY_MAX_JOBS_PER_HOUR | Job budget, default 20 |
 | FACTORY_MODEL | Live CLI model, default gpt-6-luna |
 | OPENAI_API_KEY | Optional OpenAI moderation key |
-| TWITCH_CLIENT_ID | Client ID for supplied live Twitch auth |
-| TWITCH_BOT_ACCESS_TOKEN | Bot user token for reading and writing chat |
-| TWITCH_BROADCASTER_ID | Broadcaster user ID |
-| TWITCH_BOT_ID | Bot user ID |
+| TWITCH_CLIENT_ID | Registered Twitch application ID |
+| TWITCH_CLIENT_SECRET | Application secret kept in .env |
+| TWITCH_BROADCASTER_LOGIN | Expected broadcaster login |
+| TWITCH_BOT_LOGIN | Expected bot login |
+| TWITCH_TOKEN_PATH | Private token file outside the repo |
 | CODEX_BUILD_THREAD_ID | Verified main build thread override for seed regeneration |
 
-Other names in .env.example reserve future OAuth and clip setup.
-The CLI factory uses existing ChatGPT sign in. It does not forward CODEX_API_KEY
-or other parent API credentials to job commands.
-No SDK package is needed.
-
-To use a supplied live Twitch token, set MOCK_TWITCH to 0, provide the four Twitch auth fields,
-and run npm run dev. The bot token needs user:read:chat and user:write:chat.
-The EventSub adapter subscribes after welcome, follows reconnects and resubscribes after drops.
-The chat sender serializes messages with at least one second between sends.
-OAuth login, automatic token refresh and clip creation remain later tasks.
-
-The protocol follows Twitch's
-[chat guide](https://dev.twitch.tv/docs/chat/send-receive-messages)
-and [WebSocket guide](https://dev.twitch.tv/docs/eventsub/handling-websocket-events/).
+See [Twitch setup](twitch.md) for authorization, scopes, reconnect behavior and the local protocol simulation. The CLI factory uses existing ChatGPT sign in. It does not forward CODEX_API_KEY or other parent API credentials to job commands. No SDK package is needed.
 
 ## Local API
 

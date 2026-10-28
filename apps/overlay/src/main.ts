@@ -28,8 +28,8 @@ function drawTicker(state:ArcadeState):void{
  const result=state.resultTicker.filter(item=>item.kind==='chat').at(-1);
  if(result&&result.id!==lastResultId){lastResultId=result.id;resultUntil=performance.now()+8000;}
  const active=state.pitches.filter(p=>['queued','building'].includes(p.status)),showResult=!!result&&performance.now()<resultUntil;
- tickerLabel.textContent=showResult?'THEY GOT THE STREAMER':'IN THE FACTORY';
- tickerText.textContent=showResult?'Mock results · '+result!.text:active.length?active.slice(0,3).map(p=>'@'+p.login+': '+p.text).join('   /   '):'Pitch a five second game with !pitch. Your idea could be next.';
+ tickerLabel.textContent=showResult?'ARCADE RESULTS':'IN THE FACTORY';
+ tickerText.textContent=showResult?(result!.simulated?'Simulated results · ':'Twitch · ')+result!.text:active.length?active.slice(0,3).map(p=>'@'+p.login+': '+p.text).join('   /   '):'Pitch a five second game with !pitch. Your idea could be next.';
 }
 function drawState(state:ArcadeState):void{
  latest=state;

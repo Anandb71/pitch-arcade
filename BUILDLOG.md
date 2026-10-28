@@ -93,3 +93,9 @@ Extended the WebSocket client with per socket welcome and keepalive deadlines, s
 ### T04 Helix client
 
 Added typed safe errors, bot chat queue with one second spacing and twenty sends per rolling thirty seconds, rate reset handling, authenticated subscriptions, broadcaster clips with title and twenty second duration, bounded clip polling and optional pin and marker flags. Added local HTTP fixtures for request bodies, auth role, polling, chat pacing and rate headers. npm test passes with 154 tests.
+
+### T13 live results and protocol simulation
+
+Wired OAuth account identity into the live EventSub and Helix clients, hourly token checks, bounded nonblocking clip results, chat links, end of gauntlet summaries and optional stream markers. Designer beats remain persisted independently of upstream requests. Result tickers distinguish real and simulated events. Added start with a friendly missing variable list, doctor, Twitch setup docs and a credential free protocol demo with actual WebSocket and HTTP calls. Legacy chat helpers now use the same conservative queue. Hardened the migration deadline, token path checks and callback state encoding. Prepared the measured factory spike command and usage limit reporting.
+
+Tests added for results failure containment, missing configuration, a complete fake Twitch pipeline including actual outbound clip links and summary, private token paths, usage limits and bounded clip polling. npm test passes with 160 tests in 26 files. The launched demo:twitch-sim finished five rounds with three wins, one life left, two simulated clip links and a final chat summary. Doctor confirmed Node, Codex CLI and Twitch ID reachability and correctly reported absent credentials and token file. Start correctly lists all four missing variables. Live account authorization and published Twitch clips need credentials and a live channel, which are not present here.

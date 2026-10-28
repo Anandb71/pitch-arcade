@@ -20,7 +20,7 @@ async function authorize(role:Account,login:string,redirect:string,client:string
   let busy=false;const server=createServer((req,res)=>{
    const url=new URL(req.url??'/','http://localhost:8787');res.setHeader('Content-Type','text/plain');res.setHeader('Cache-Control','no-store');res.setHeader('Referrer-Policy','no-referrer');
    const received=url.searchParams.get('state')??'';
-   if(req.headers.host!=='localhost:8787'||url.pathname!=='/callback'||received.length!==state.length||!timingSafeEqual(Buffer.from(received),Buffer.from(state))||busy){res.writeHead(400);res.end('Authorization could not be verified. Use the printed URL.');return;}
+   if(req.headers.host!=='localhost:8787'||url.pathname!=='/callback'||!/^[a-f0-9]{64}$/.test(received)||!timingSafeEqual(Buffer.from(received),Buffer.from(state))||busy){res.writeHead(400);res.end('Authorization could not be verified. Use the printed URL.');return;}
    busy=true;const code=url.searchParams.get('code');
    if(!code){res.end('Twitch authorization was declined.');done(Error('Authorization was declined.'));return;}
    void manager.exchange(role,code,redirect,login).then(()=>{res.end('Connected. You can close this tab.');done();},()=>{res.end('Account did not match. Check your Twitch login and try again.');done(Error('Twitch account did not match the configured login.'));});

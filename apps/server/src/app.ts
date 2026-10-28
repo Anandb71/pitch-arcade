@@ -59,12 +59,14 @@ export async function createArcade(options:ArcadeOptions={}){
    broadcast({type:'factory.validated',pitchId:pitch.id,pass:result.ok});
   }
  });
- const resultsSink=options.resultsSink??new MockResultsSink(item=>{
+ const resultsSink:ResultsSink=options.resultsSink??new MockResultsSink(item=>{
   if(item.kind==='chat'){acks.push({userId:item.authorId??'',text:'Mock results: '+item.text});if(acks.length>50)acks.shift();}
   broadcast({type:'result',item});
  });
+ const unsubscribeResults=resultsSink.subscribe?.(item=>{if(item.kind==='chat'){acks.push({userId:item.authorId??'',text:(item.simulated?'Simulated Twitch: ':'Twitch: ')+item.text});if(acks.length>50)acks.shift();}broadcast({type:'result',item});});
+ app.addHook('onClose',async()=>{unsubscribeResults?.();});
  const gauntlet=new Gauntlet(store,library,resultsSink,state=>broadcast({type:'gauntlet',state}));
- const getState=():ArcadeState=>({enabled:store.enabled,mockTwitch,mockCodex:runner.model==='mock replay',pitches:store.pitches(),games:library.all(),steps,acks:acks.map(a=>a.text),builds:store.db.all('SELECT id,pitch_id,model,status,receipt_json FROM builds ORDER BY id DESC LIMIT 20'),gauntlet:gauntlet.state,leaderboard:store.db.all('SELECT login,beats,games_approved AS gamesApproved FROM users WHERE beats>0 ORDER BY beats DESC,login LIMIT 5'),resultTicker:resultsSink instanceof MockResultsSink?resultsSink.items:[],settings:settings.read()});
+ const getState=():ArcadeState=>({enabled:store.enabled,mockTwitch,mockCodex:runner.model==='mock replay',pitches:store.pitches(),games:library.all(),steps,acks:acks.map(a=>a.text),builds:store.db.all('SELECT id,pitch_id,model,status,receipt_json FROM builds ORDER BY id DESC LIMIT 20'),gauntlet:gauntlet.state,leaderboard:store.db.all('SELECT login,beats,games_approved AS gamesApproved FROM users WHERE beats>0 ORDER BY beats DESC,login LIMIT 5'),resultTicker:resultsSink.items??[],settings:settings.read()});
  const intake=new Intake(store,{
   getDenylist:()=>settings.read().denylist,cooldownMs:options.cooldownMs??120000,queueCap:options.queueCap??20,moderator:options.moderator??moderatorFromEnv(),
   onToggle:enabled=>{if(enabled)factory.kick();else{factory.pause();gauntlet.stop();}broadcast({type:'arcade.toggle',enabled});}
@@ -120,7 +122,7 @@ export async function createArcade(options:ArcadeOptions={}){
  app.post<{Params:{login:string}}>('/api/users/:login/forget',{schema:{params:{type:'object',required:['login'],properties:{login:{type:'string',pattern:'^[a-zA-Z0-9_]{1,25}$'}}}}},async request=>{
   const pitches=store.pitches().filter(p=>p.login.toLowerCase()===request.params.login.toLowerCase());
   const userIds=new Set(pitches.map(p=>p.user_id));
-  gauntlet.forget(userIds);if(resultsSink instanceof MockResultsSink)resultsSink.forget(userIds);
+  gauntlet.forget(userIds);resultsSink.forget?.(userIds);
   factory.cancelPitches(pitches.map(p=>p.id));
   const deleted=store.forget(request.params.login);
   for(let i=acks.length-1;i>=0;i--)if(userIds.has(acks[i]!.userId))acks.splice(i,1);

@@ -1,13 +1,13 @@
-import {mkdirSync,writeFileSync,renameSync,readFileSync,lstatSync,chmodSync} from 'node:fs';
-import {dirname,resolve,relative} from 'node:path';
+import {mkdirSync,writeFileSync,renameSync,readFileSync,lstatSync,chmodSync,realpathSync,existsSync} from 'node:fs';
+import {dirname,resolve,relative,isAbsolute} from 'node:path';
 import {homedir} from 'node:os';
 export const scopes={bot:['user:read:chat','user:write:chat','user:bot'],broadcaster:['clips:edit']};
 export type Account=keyof typeof scopes;
 export interface Token {accessToken:string;refreshToken:string;login:string;userId:string;scopes:string[]}
 export type Tokens=Partial<Record<Account,Token>>;
 export function tokenPath():string{return resolve(process.env.TWITCH_TOKEN_PATH||homedir()+'/.config/pitch-arcade/tokens.json');}
-function outside(path:string):void{const rel=relative(process.cwd(),resolve(path));if(!rel.startsWith('..')&&!rel.startsWith('/'))throw Error('Store Twitch tokens outside the project.');}
-export function saveTokens(path:string,tokens:Tokens):void{outside(path);mkdirSync(dirname(path),{recursive:true,mode:0o700});const temp=path+'.'+process.pid+'.tmp';writeFileSync(temp,JSON.stringify(tokens),{mode:0o600,flag:'wx'});renameSync(temp,path);chmodSync(path,0o600);}
+function outside(path:string):void{const absolute=resolve(path);const canonical=existsSync(dirname(absolute))?resolve(realpathSync(dirname(absolute)),absolute.split('/').at(-1)!):absolute;for(const candidate of [absolute,canonical]){const rel=relative(process.cwd(),candidate);if(!(rel==='..'||rel.startsWith('../')||isAbsolute(rel)))throw Error('Store Twitch tokens outside the project.');}}
+export function saveTokens(path:string,tokens:Tokens):void{outside(path);mkdirSync(dirname(path),{recursive:true,mode:0o700});outside(path);const temp=path+'.'+process.pid+'.tmp';writeFileSync(temp,JSON.stringify(tokens),{mode:0o600,flag:'wx'});renameSync(temp,path);chmodSync(path,0o600);}
 export function loadTokens(path:string):Tokens{outside(path);const stat=lstatSync(path);if(!stat.isFile()||stat.isSymbolicLink()||(stat.mode&0o077)!==0)throw Error('Token file must be a regular private file with mode 0600.');const value=JSON.parse(readFileSync(path,'utf8')) as Tokens;for(const role of ['bot','broadcaster'] as const){const t=value[role];if(t&&(!t.accessToken||!t.refreshToken||!t.login||!t.userId||!Array.isArray(t.scopes)))throw Error('Invalid Twitch token file.');}return value;}
 export function authorizationUrl(client:string,redirect:string,state:string,role:Account,stretch=false):string{const u=new URL('https://id.twitch.tv/oauth2/authorize');u.search=new URLSearchParams({client_id:client,redirect_uri:redirect,response_type:'code',scope:[...scopes[role],...(stretch?[role==='bot'?'moderator:manage:chat_messages':'channel:manage:broadcast']:[])].join(' '),state,force_verify:'true'}).toString();return u.href;}
 interface Options {clientId:string;clientSecret:string;tokens:Tokens;save:(tokens:Tokens)=>void;idBase?:string}

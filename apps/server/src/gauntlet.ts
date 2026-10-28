@@ -91,6 +91,8 @@ export class Gauntlet {
  }
  private finish(reason:GauntletState['reason']):void{
   this.value.phase='finished';this.value.reason=reason;this.value.phaseFrames=0;
+  try{void Promise.resolve(this.sink.gauntletFinished?.(this.value.score,this.value.lives)).catch(()=>this.store.event('results.failed',{gauntletId:this.value.id}));}catch{this.store.event('results.failed',{gauntletId:this.value.id});}
+  try{void Promise.resolve(this.sink.chat('Gauntlet finished: '+this.value.score+' wins, '+this.value.lives+' lives left.',null)).catch(()=>this.store.event('results.failed',{gauntletId:this.value.id}));}catch{this.store.event('results.failed',{gauntletId:this.value.id});}
   this.store.db.run('UPDATE gauntlets SET ended_at=?,lives_left=?,score=? WHERE id=?',Date.now(),this.value.lives,this.value.score,this.value.id!);this.notify();
  }
 }

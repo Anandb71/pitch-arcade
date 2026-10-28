@@ -25,15 +25,17 @@ export class EventSubChatSource extends FakeChatSource {
  onWelcome:(sessionId:string)=>Promise<void>=async()=>{};
  private active:WebSocket|undefined;private candidate:WebSocket|undefined;
  private sockets=new Set<WebSocket>();private timers=new Map<WebSocket,ReturnType<typeof setTimeout>>();
+ private migrationDeadline:ReturnType<typeof setTimeout>|undefined;
  private retry:ReturnType<typeof setTimeout>|undefined;private stopped=true;private seen=new Set<string>();
  constructor(private options:EventSubOptions={}){super();}
  start():void{if(!this.stopped)return;this.stopped=false;this.open(this.options.url??'wss://eventsub.wss.twitch.tv/ws',false);}
- stop():void{this.stopped=true;clearTimeout(this.retry);for(const timer of this.timers.values())clearTimeout(timer);this.timers.clear();for(const socket of this.sockets)socket.terminate();this.sockets.clear();this.active=undefined;this.candidate=undefined;}
+ stop():void{this.stopped=true;clearTimeout(this.retry);clearTimeout(this.migrationDeadline);for(const timer of this.timers.values())clearTimeout(timer);this.timers.clear();for(const socket of this.sockets)socket.terminate();this.sockets.clear();this.active=undefined;this.candidate=undefined;}
  private open(url:string,migration:boolean):void{
   if(this.stopped||this.candidate)return;
   let parsed:URL;try{parsed=new URL(url);}catch{this.options.onError?.();return;}
   const local=parsed.protocol==='ws:'&&['127.0.0.1','localhost'].includes(parsed.hostname)&&!!this.options.url;
   if(parsed.username||parsed.password||(!local&&!(parsed.protocol==='wss:'&&parsed.hostname==='eventsub.wss.twitch.tv'))){this.options.onError?.();return;}
+  if(migration){clearTimeout(this.migrationDeadline);this.migrationDeadline=setTimeout(()=>{this.candidate?.terminate();this.active?.terminate();},30000);}
   const socket=new WebSocket(url,{maxPayload:1048576});this.candidate=socket;this.sockets.add(socket);let welcomed=false,keepaliveMs=10000;
   const arm=(ms:number)=>{clearTimeout(this.timers.get(socket));this.timers.set(socket,setTimeout(()=>{this.options.onError?.();socket.terminate();},ms));};
   arm(migration?Math.min(this.options.welcomeMs??10000,30000):this.options.welcomeMs??10000);
@@ -42,7 +44,7 @@ export class EventSubChatSource extends FakeChatSource {
    let envelope:unknown;try{envelope=JSON.parse(raw.toString());}catch{return;}
    const e=obj(envelope),meta=obj(e.metadata),payload=obj(e.payload),session=obj(payload.session);
    if(meta.message_type==='session_welcome'&&typeof session.id==='string'){
-    if(welcomed)return;welcomed=true;
+    if(welcomed)return;welcomed=true;clearTimeout(this.migrationDeadline);
     if(typeof session.keepalive_timeout_seconds==='number'&&session.keepalive_timeout_seconds>0)keepaliveMs=session.keepalive_timeout_seconds*1000;
     const previous=this.active;this.active=socket;this.candidate=undefined;previous?.close();arm(keepaliveMs+(this.options.graceMs??1000));
     if(!migration){const deadline=setTimeout(()=>socket.terminate(),9000);void this.onWelcome(session.id).catch(()=>{this.options.onError?.();socket.terminate();}).finally(()=>clearTimeout(deadline));}

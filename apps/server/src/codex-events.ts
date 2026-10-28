@@ -3,6 +3,7 @@ export interface FactoryStep {kind:StepKind;label:string;simulated:boolean}
 export interface Receipt {
  source:'codex-cli'|'mock-codex';simulated:boolean;threadId:string|null;model:string;
  durationMs:number;playtests:number;tokensIn:number|null;tokensOut:number|null;
+ usageLimitReset?:string;
  status:'completed'|'failed'|'timeout'|'cancelled';
 }
 export function emptyReceipt(model:string,simulated=false):Receipt {
@@ -34,6 +35,12 @@ export class CodexEventParser {
  private line(line:string):void{
   let parsed:unknown;try{parsed=JSON.parse(line);}catch{throw Error('INVALID_EVENT');}
   const e=record(parsed),item=record(e.item);
+  if(e.type==='error'||e.type==='turn.failed'){
+   const message=typeof e.message==='string'?e.message:typeof record(e.error).message==='string'?record(e.error).message as string:'';
+   if(/usage.limit|limit.reached|out of.*(?:credits|usage)|hit your.*limit/i.test(message)){
+    this.receipt.usageLimitReset=message.match(/(?:try again|reset[ s:]*)[^\n]{0,100}/i)?.[0]?.replace(/[^a-zA-Z0-9 :.,()+/-]/g,'')??'Reset time was not supplied.';
+   }
+  }
   if(e.type==='thread.started'&&typeof e.thread_id==='string'&&/^[a-zA-Z0-9-]{8,80}$/.test(e.thread_id))this.receipt.threadId=e.thread_id;
   if(e.type==='item.started'||e.type==='item.completed'){
    const id=typeof item.id==='string'?item.id:'';

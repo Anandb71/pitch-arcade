@@ -38,7 +38,7 @@ await build({
  entryPoints:['apps/server/src/validator.ts'],outfile:'dist/validator.mjs',
  bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'
 });
-for(const [entry,outfile] of [['main','server'],['demo-check','demo-check'],['forget','forget']]){
+for(const [entry,outfile] of [['main','server'],['demo-check','demo-check'],['forget','forget'],['factory-spike','factory-spike']]){
  await build({
   entryPoints:['apps/server/src/'+entry+'.ts'],outfile:'dist/'+outfile+'.mjs',
   bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'
@@ -46,6 +46,8 @@ for(const [entry,outfile] of [['main','server'],['demo-check','demo-check'],['fo
 }
 
 await build({entryPoints:['packages/twitch/src/auth-cli.ts'],outfile:'dist/auth.mjs',bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'});
+
+await build({entryPoints:['packages/twitch/src/oauth.ts'],outfile:'dist/oauth.mjs',bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'});
 
 const {build:buildWeb}=await import('vite');
 await buildWeb();

@@ -51,7 +51,9 @@ export class Library {
    const raw=JSON.parse(readFileSync(join(dir,file),'utf8')) as unknown,game=validateGame(raw);
    if(!game.ok)throw Error('Seed library validation failed: '+file);
    const receipt=JSON.parse(readFileSync(join(dir,file.replace('.json','.receipt.json')),'utf8')) as Record<string,unknown>;
-   if(typeof receipt.source!=='string'||!/^seed library written during the build in Codex thread [a-f0-9-]{36}$/.test(receipt.source)||receipt.threadId!==null||receipt.durationMs!==null)throw Error('Invalid seed receipt.');
+   const seed=typeof receipt.source==='string'&&/^seed library written during the build in Codex thread [a-f0-9-]{36}$/.test(receipt.source)&&receipt.threadId===null&&receipt.durationMs===null;
+   const runtime=receipt.source==='codex-cli'&&receipt.simulated===false&&receipt.status==='completed'&&typeof receipt.threadId==='string'&&/^[a-f0-9-]{36}$/.test(receipt.threadId)&&typeof receipt.durationMs==='number'&&receipt.durationMs>0&&typeof receipt.tokensIn==='number'&&typeof receipt.tokensOut==='number';
+   if(!seed&&!runtime)throw Error('Invalid seed receipt.');
    const result=this.store.db.run("INSERT INTO games(spec_json,title,verb,report_json,difficulty,approved_by,approved_at,classic,status,seed_key,receipt_json) VALUES(?,?,?,?,?,'seed library',?,1,'approved',?,?) ON CONFLICT(seed_key) DO NOTHING",JSON.stringify(game.spec),game.spec.title,game.spec.verb,JSON.stringify(game.report),game.difficulty.challenge,Date.now(),file,JSON.stringify(receipt));
    added+=Number(result.changes);
   }

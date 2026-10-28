@@ -115,3 +115,6 @@ test('hourly job budget leaves excess work queued',async()=>{
  factory.kick();await factory.idle();
  expect(db.queue()).toHaveLength(1);expect(db.db.all('SELECT * FROM builds')).toHaveLength(2);
 });
+test('reports a Codex usage limit without reflecting arbitrary upstream text',()=>{
+ const parser=new CodexEventParser('gpt-6-luna');parser.push(JSON.stringify({type:'error',message:'You have hit your usage limit. Try again at 04:00 UTC.'})+'\n');expect(parser.receipt.usageLimitReset).toBe('Try again at 04:00 UTC.');
+});

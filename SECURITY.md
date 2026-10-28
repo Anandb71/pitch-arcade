@@ -50,3 +50,5 @@ All snapshots carry monotonic revisions. The accelerated clock still consumes fi
 The mock-only screenshot freeze control is disabled outside the explicit auto demo.
 Mock result requests are labeled and contain no invented clip URLs.
 Automatic token refresh and real clip integration remain planned.
+
+Twitch OAuth tokens live outside the project in a private file. Login verifies state, the expected account, client ID and required scopes. Live sessions validate at startup and hourly. The local EventSub and Helix simulation uses fixture credentials only, binds to loopback and labels clip links as simulated. Upstream error bodies and credentials are never forwarded into result tickers or logs.

@@ -14,3 +14,8 @@ it('honors reset headers and exposes safe typed errors',async()=>{
  let now=100000,calls=0;const client=new HelixClient({clientId:'c',broadcasterId:'b',botId:'u',token:async()=>'',now:()=>now,sleep:async ms=>{now+=ms;},request:async()=>++calls===1?new Response('{}',{status:429,headers:{'Ratelimit-Remaining':'0','Ratelimit-Reset':'102'}}):new Response('{}',{status:403})});
  await expect(client.subscribe('s')).rejects.toMatchObject({code:'RATE_LIMIT',status:429});await expect(client.subscribe('s')).rejects.toBeInstanceOf(TwitchError);expect(now).toBe(102000);client.stop();
 });
+it('bounds unavailable clip polling and masks network errors',async()=>{
+ let now=0;const client=new HelixClient({clientId:'c',broadcasterId:'b',botId:'u',token:async()=>'',now:()=>now,sleep:async ms=>{now+=ms;},clipTimeoutMs:100,pollMs:20,request:async(_url,init)=>new Response(JSON.stringify({data:init?.method==='POST'?[{id:'fixture'}]:[]}))});
+ await expect(client.createClip('Safe game by @viewer')).rejects.toMatchObject({code:'CLIP_TIMEOUT'});expect(now).toBe(100);client.stop();
+ const failed=new HelixClient({clientId:'c',broadcasterId:'b',botId:'u',token:async()=>'',request:async()=>{throw Error('private headers');}});await expect(failed.subscribe('session')).rejects.toMatchObject({code:'NETWORK_ERROR'});failed.stop();
+});
