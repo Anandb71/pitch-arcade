@@ -3,7 +3,7 @@ import type {Snapshot} from '../../engine/src/engine.js';
 import type {Report} from '../../harness/src/report.js';
 export interface Difficulty {humanishWinRate:number;idleWinRate:number;randomWinRate:number;challenge:number}
 export interface ArcadeGame {
- id:number;title:string;verb:string;authorId:string|null;authorLogin:string;classic:boolean;approvedAt:number;
+ id:number;pitchId:number|null;title:string;verb:string;authorId:string|null;authorLogin:string;classic:boolean;approvedAt:number;
  status:'built'|'approved'|'rejected';spec:GameSpec;report:Report;difficulty:Difficulty;receipt:unknown;
 }
 export interface RoundGame {id:number;title:string;verb:string;spec:GameSpec;authorId:string|null;authorLogin:string;classic:boolean}

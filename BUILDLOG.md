@@ -65,3 +65,9 @@ Added shared browser protocol types and a server authoritative gauntlet with fiv
 The server pushes snapshots over WebSocket and accepts input only from a claimed local play connection. The play page now renders those snapshots and offers sound, skip and start controls. Added persistent gauntlet and play records, designer beats and ResultsSink hooks. MockResultsSink records honest simulated clip requests and result chat lines, with no fabricated clip URLs. Privacy deletion resets sessions referencing the forgotten designer.
 
 Added 12 state machine, life exhaustion, determinism, speed, API and socket input tests. npm test passed on Node 22.11 and npm 10.9: 18 files, 139 tests. Type checks and Vite build passed.
+
+## T14
+
+Added a transparent 1920 by 1080 OBS overlay with a 48 pixel safe margin, live factory job cards and stages, truthful receipt labels, a now playing designer card, lives, speed, actual designer beats, gauntlet score and queue or mock result ticker. The center remains transparent for gameplay. A backdrop query supports transparency inspection without changing the OBS source. There are no flashing or scrolling effects.
+
+Added shared receipt formatting tests to keep mock and seed receipts distinct from completed live CLI receipts. npm test passed on Node 22.11 and npm 10.9: 19 files, 141 tests. Type checks and the Vite build passed. Full screenshot inspection follows in the integrated demo task.

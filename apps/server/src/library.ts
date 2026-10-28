@@ -12,7 +12,7 @@ export class Library {
  all():LibraryGame[]{
   return this.store.db.all<GameRow>('SELECT g.*,u.login AS author_login FROM games g LEFT JOIN users u ON u.twitch_id=g.author_id ORDER BY g.id').map(row=>{
    const report=JSON.parse(row.report_json) as Report,m=report.metrics!;
-   return {id:row.id,title:row.title,verb:row.verb,authorId:row.author_id,authorLogin:row.author_login??'arcade',classic:!!row.classic,approvedAt:row.approved_at??0,status:row.status,spec:JSON.parse(row.spec_json) as GameSpec,report,difficulty:{humanishWinRate:m.humanish.rate,idleWinRate:m.idle.rate,randomWinRate:m.random.rate,challenge:1-m.humanish.rate},receipt:JSON.parse(row.receipt_json)};
+   return {id:row.id,pitchId:row.pitch_id,title:row.title,verb:row.verb,authorId:row.author_id,authorLogin:row.author_login??'arcade',classic:!!row.classic,approvedAt:row.approved_at??0,status:row.status,spec:JSON.parse(row.spec_json) as GameSpec,report,difficulty:{humanishWinRate:m.humanish.rate,idleWinRate:m.idle.rate,randomWinRate:m.random.rate,challenge:1-m.humanish.rate},receipt:JSON.parse(row.receipt_json)};
   });
  }
  approved():LibraryGame[]{return this.all().filter(game=>game.status==='approved');}
