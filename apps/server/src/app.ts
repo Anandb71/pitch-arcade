@@ -177,5 +177,6 @@ export async function createArcade(options:ArcadeOptions={}){
   store.close();
  });
  await app.ready();factory.kick();
- return {app,store,library,intake,factory,source,gauntlet,resultsSink,getState,close:()=>app.close()};
+ const announce=(text:string)=>{acks.push({userId:'',text});if(acks.length>50)acks.shift();broadcast({type:'demo.notice'});void Promise.resolve(resultsSink.chat(text,null)).catch(()=>{});};
+ return {app,store,library,intake,factory,source,gauntlet,resultsSink,getState,announce,close:()=>app.close()};
 }

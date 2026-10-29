@@ -2,6 +2,7 @@ import type {ArcadeState,GauntletState} from '../../packages/shared/src/protocol
 import type {Input} from '../../packages/engine/src/types.js';
 export class ArcadeClient {
  state:ArcadeState|undefined;gauntlet:GauntletState|undefined;connected=false;hasControl=false;
+ private videoIntro:HTMLElement|undefined;
  private socket:WebSocket|undefined;private disposed=false;private retry=0;private refreshTimer=0;
  constructor(private onState:(state:ArcadeState)=>void,private onGame:(state:GauntletState)=>void=()=>{},private player=false){this.connect();void this.refresh();}
  private connect():void{
@@ -18,9 +19,14 @@ export class ArcadeClient {
   socket.onclose=()=>{this.connected=false;this.hasControl=false;if(!this.disposed)this.retry=window.setTimeout(()=>{this.connect();void this.refresh();},800);};
  }
  private acceptGame(state:GauntletState):void{if(this.gauntlet&&state.revision<this.gauntlet.revision)return;this.gauntlet=state;this.onGame(state);}
- private accept(state:ArcadeState):void{if(this.gauntlet&&state.gauntlet.revision<this.gauntlet.revision)state.gauntlet=this.gauntlet;this.state=state;this.onState(state);this.acceptGame(state.gauntlet);}
+ private accept(state:ArcadeState):void{if(this.gauntlet&&state.gauntlet.revision<this.gauntlet.revision)state.gauntlet=this.gauntlet;this.state=state;this.showVideoIntro(state);this.onState(state);this.acceptGame(state.gauntlet);}
  private scheduleRefresh():void{if(!this.refreshTimer)this.refreshTimer=window.setTimeout(()=>{this.refreshTimer=0;void this.refresh();},80);}
+ private showVideoIntro(state:ArcadeState):void{
+  const visible=state.acks.at(-1)?.includes('🎮 VIDEO DEMO')===true;
+  if(visible&&!this.videoIntro){this.videoIntro=document.createElement('section');this.videoIntro.className='video-hype';const logo=document.createElement('strong'),copy=document.createElement('p'),label=document.createElement('span');logo.textContent='PITCH ARCADE';copy.textContent='Chat dreams it. The factory builds it. You survive it.';label.textContent='A NEW ROUND OF BEAUTIFUL NONSENSE';this.videoIntro.append(label,logo,copy);document.body.append(this.videoIntro);}
+  if(this.videoIntro)this.videoIntro.hidden=!visible;
+ }
  async refresh():Promise<void>{try{const response=await fetch('/api/state');if(response.ok)this.accept(await response.json() as ArcadeState);}catch{/* Reconnect retries preserve the last valid screen. */}}
  input(input:Input):void{if(this.hasControl&&this.socket?.readyState===WebSocket.OPEN)this.socket.send(JSON.stringify({type:'input',control:'local',input}));}
- dispose():void{this.disposed=true;clearTimeout(this.retry);clearTimeout(this.refreshTimer);this.socket?.close();}
+ dispose():void{this.videoIntro?.remove();this.disposed=true;clearTimeout(this.retry);clearTimeout(this.refreshTimer);this.socket?.close();}
 }

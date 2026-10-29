@@ -29,7 +29,10 @@
     "doctor": "npm run build && node tools/doctor.mjs",
     "demo:twitch-sim": "npm run build && node --experimental-sqlite tools/start.mjs --twitch-sim",
     "lint:prose": "node tools/lint-prose.mjs",
-    "library:variety": "npm run build && node tools/build-variety.mjs"
+    "library:variety": "npm run build && node tools/build-variety.mjs",
+    "demo:video": "npm run build && node --experimental-sqlite tools/start.mjs --video",
+    "demo:video:check": "npm run build && node --experimental-sqlite tools/video-check.mjs",
+    "record": "npm run build && node tools/record.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

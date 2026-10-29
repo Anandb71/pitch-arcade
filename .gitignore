@@ -9,3 +9,5 @@ factory/jobs/
 factory/job-*/
 coverage/
 *.tsbuildinfo
+
+shots/demo.webm

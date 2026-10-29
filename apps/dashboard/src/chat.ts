@@ -31,6 +31,7 @@ function drawState(state:ArcadeState):void{
   if(ack){const bot=node('div','bot-message');bot.append(node('span','bot-mark','p'),node('p','',ack.replace('🎮 ','')));feed.append(bot);}
  }
  for(const item of state.resultTicker.filter(item=>item.kind==='chat').slice(-2)){const result=node('div','result-message');result.append(node('span','pill orange',item.simulated?'SIMULATED RESULT':'TWITCH RESULT'),node('p','',item.text));feed.append(result);}
+ for(const line of state.acks.filter(line=>/^(🛡|✓|🎮 VIDEO|GO!)/u.test(line)).slice(-8))feed.append(node('div','bot-message',line));
  feed.scrollTop=feed.scrollHeight;
 }
 function drawGame(state:GauntletState):void{nowLabel.textContent=state.phase==='play'?'NOW PLAYING':'THE SHOW';nowTitle.textContent=state.game?.title??'The games are ready.';nowBy.textContent=state.game?'by @'+state.game.authorLogin+' · '+state.lives+' lives left':'Your idea could be next.';}

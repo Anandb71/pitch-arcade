@@ -172,3 +172,7 @@ The factory permission profile currently accepts codex-cli 0.165 only. Other hos
 MIT license, copyright Anand Biju. See [assets and licenses](ASSETS.md), [setup](docs/setup.md) and [Devpost draft](DEVPOST.md).
 
 See [game quality](docs/quality.md) for thresholds, novelty fingerprints, the new seed collection and honest v1 mechanic limits. The demo now uses seed 8 and a finite bank of thirty eight distinct measured mock variants.
+
+## Record the whole show
+
+Run `npm run demo:video` for a repeatable 110 second loop with chat, moderation, simulated builds, approvals and humanish play. Use `npm run demo:video -- --hold` to keep the final leaderboard. Run `npm run record` to save a silent Playwright video to `shots/demo.webm`. See [the recording guide](docs/video.md) for the schedule and OBS checklist.

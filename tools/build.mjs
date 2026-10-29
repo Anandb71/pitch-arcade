@@ -39,7 +39,7 @@ await build({
  entryPoints:['apps/server/src/validator.ts'],outfile:'dist/validator.mjs',
  bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'
 });
-for(const [entry,outfile] of [['main','server'],['demo-check','demo-check'],['forget','forget'],['factory-spike','factory-spike'],['quality','quality']]){
+for(const [entry,outfile] of [['main','server'],['demo-check','demo-check'],['forget','forget'],['factory-spike','factory-spike'],['quality','quality'],['video-check','video-check']]){
  await build({
   entryPoints:['apps/server/src/'+entry+'.ts'],outfile:'dist/'+outfile+'.mjs',
   bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'
