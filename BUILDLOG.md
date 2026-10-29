@@ -143,3 +143,7 @@ Added synthesized hit, tick, countdown, GO, win, lose and pitch sounds with boun
 ### M6 B broadcast intro and overlay
 
 Added a branded gauntlet intro, server timed countdown and GO cue, eased scene changes, a new pitch toast, persistent league panels, designer badges and OBS sound controls. Fixed panel slots keep the safe area stable. Transition tests cover queue, pitching, factory, gauntlet and results priority without changing engine time. Reduced motion skips spatial animation. The working suite is green and the browser capture run exercises the new presentation.
+
+### M6 B player score cards
+
+Added the branded play intro, countdown impact and GO cue, live points and streaks, sanitized designer badges, round score feedback and a complete final score card. Results include all five game credits plus designer totals and player high scores. Human and bot ties remain distinct and deterministic. Sound defaults on for play with query mute and volume controls. npm test passes with 179 tests in 31 files.

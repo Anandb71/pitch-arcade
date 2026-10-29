@@ -2,3 +2,5 @@ import {test,expect} from 'vitest';
 import {scoreRound,safeName,rankScores} from './scoring.js';
 test('win streaks multiply points with a cap and losses or skips reset the combo',()=>{expect(scoreRound('win',0)).toEqual({player:100,designer:0,combo:1,multiplier:1});expect(scoreRound('win',5)).toEqual({player:500,designer:0,combo:6,multiplier:5});expect(scoreRound('lose',3)).toEqual({player:0,designer:100,combo:0,multiplier:1});expect(scoreRound('skip',3).combo).toBe(0);});
 test('ranking handles empty inputs, safe names and stable ties',()=>{expect(rankScores([])).toEqual([]);expect(safeName('<img onerror=x>')).toBe('anonymous');expect(safeName('priya')).toBe('priya');expect(rankScores([{login:'zoe',score:100},{login:'lee',score:100},{login:'max',score:200}]).map(x=>x.login)).toEqual(['max','lee','zoe']);});
+
+test('human and bot ties are distinct and deterministically favor the human entry',()=>{expect(rankScores([{login:'same',score:100,simulated:true},{login:'same',score:100,simulated:false}]).map(e=>e.simulated)).toEqual([false,true]);});
