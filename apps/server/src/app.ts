@@ -44,7 +44,7 @@ export async function createArcade(options:ArcadeOptions={}){
    if(client.bufferedAmount>1048576)client.terminate();else client.send(raw);
   }
  };
- const runner=options.runner??((options.mockCodex??process.env.MOCK_CODEX==='1')?new MockCodexRunner({stepMs:options.stepMs??350,examplesDir:options.seedDir??resolve('library')}):new CodexCliRunner({model:process.env.FACTORY_MODEL||'gpt-6-luna'}));
+ const runner=options.runner??((options.mockCodex??process.env.MOCK_CODEX==='1')?new MockCodexRunner({stepMs:options.stepMs??350,examplesDir:options.seedDir??resolve('library')}):new CodexCliRunner({model:process.env.FACTORY_MODEL||'gpt-6.1-sol'}));
  const factory=new Factory(store,runner,{
   ...(options.jobsRoot?{jobsRoot:options.jobsRoot}:{}),...(options.timeoutMs!==undefined?{timeoutMs:options.timeoutMs}:{}),
   ...(options.maxJobsPerHour!==undefined?{maxJobsPerHour:options.maxJobsPerHour}:{}),

@@ -10,7 +10,7 @@ The engine, harness and Twitch work started with tests. Each task closed with a 
 
 ## Runtime
 
-Live generation uses CodexCliRunner with codex-cli 0.165.0 and gpt-6-luna by default. Each job gets a copied designer template, a fresh git repository, a fixed prompt and inbox JSON. The pitch is untrusted data. Command network access is disabled. Only out is writable. An OS boundary preflight runs before every model job.
+Live generation uses CodexCliRunner with codex-cli 0.165.0 and gpt-6.1-sol by default. Each job gets a copied designer template, a fresh git repository, a fixed prompt and inbox JSON. The pitch is untrusted data. Command network access is disabled. Only out is writable. An OS boundary preflight runs before every model job.
 
 The CLI emits JSONL. The parser extracts fixed factory step labels, thread ID, model, duration, playtest count and turn usage. Raw prose and tool output are not published. Jobs have a 150 second deadline and four playtests. The server independently validates the output and reruns the bot harness. Approval comes afterward.
 

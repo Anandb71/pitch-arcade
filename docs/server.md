@@ -35,7 +35,7 @@ The newer injection helper requires an ESM loading behavior unavailable in that 
 | PITCH_COOLDOWN_MS | User cooldown, default 120000 |
 | PITCH_QUEUE_CAP | Active factory capacity, default and maximum 20 |
 | FACTORY_MAX_JOBS_PER_HOUR | Job budget, default 20 |
-| FACTORY_MODEL | Live CLI model, default gpt-6-luna |
+| FACTORY_MODEL | Live CLI model, default gpt-6.1-sol |
 | OPENAI_API_KEY | Optional OpenAI moderation key |
 | TWITCH_CLIENT_ID | Registered Twitch application ID |
 | TWITCH_CLIENT_SECRET | Application secret kept in .env |

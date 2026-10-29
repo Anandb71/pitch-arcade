@@ -11,7 +11,7 @@ export class CodexCliRunner implements CodexRunner {
  readonly model:string;private binary:string;private roots:string[];
  constructor(private options:CliOptions={}){
   const installation=options.binary?{binary:options.binary,runtimeRoots:options.runtimeRoots??[]}:resolveCodex();
-  this.binary=installation.binary;this.roots=installation.runtimeRoots;this.model=options.model??'gpt-6-luna';
+  this.binary=installation.binary;this.roots=installation.runtimeRoots;this.model=options.model??'gpt-6.1-sol';
  }
  async run(dir:string,emit:(step:FactoryStep)=>void,signal:AbortSignal):Promise<Receipt>{
   const started=Date.now(),settings=sandboxSettings(this.roots);

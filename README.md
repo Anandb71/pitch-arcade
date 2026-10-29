@@ -85,7 +85,7 @@ Demo commands set their own mock flags. Live mode needs the four Twitch settings
 | PORT | Optional | Local server port, default 3000 |
 | ARCADE_DB_PATH | Optional | SQLite file, default data/arcade.sqlite |
 | OPENAI_API_KEY | Optional | OpenAI moderation only |
-| FACTORY_MODEL | Optional | CLI model, default gpt-6-luna |
+| FACTORY_MODEL | Optional | CLI model, default gpt-6.1-sol |
 | FACTORY_MAX_JOBS_PER_HOUR | Optional | Job budget, default 20, maximum 100 |
 | PITCH_COOLDOWN_MS | Optional | Per user cooldown, default 120000 |
 | PITCH_QUEUE_CAP | Optional | Queue capacity, default and maximum 20 |
