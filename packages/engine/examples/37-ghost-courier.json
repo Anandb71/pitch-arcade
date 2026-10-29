@@ -1,0 +1,37 @@
+{
+  "v": 1,
+  "title": "Ghost Courier",
+  "verb": "ESCAPE",
+  "seconds": 5,
+  "palette": "forest",
+  "pattern": "stars",
+  "player": {
+    "emoji": "🦊",
+    "control": "move_4",
+    "speed": 2,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "👻",
+      "role": "goal",
+      "from": "random",
+      "every": "once",
+      "max": 1,
+      "motion": "flee",
+      "speed": 1,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "reach"
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [
+    "speedup",
+    "wind_left"
+  ],
+  "sfx": "ding"
+}

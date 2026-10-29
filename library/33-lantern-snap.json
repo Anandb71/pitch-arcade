@@ -1,0 +1,37 @@
+{
+  "v": 1,
+  "title": "Lantern Snap",
+  "verb": "POP",
+  "seconds": 5,
+  "palette": "sunset",
+  "pattern": "stars",
+  "player": {
+    "emoji": "🦉",
+    "control": "click",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "💡",
+      "role": "target",
+      "from": "random",
+      "every": 0.25,
+      "max": 12,
+      "motion": "popup",
+      "speed": 5,
+      "size": "s"
+    }
+  ],
+  "win": {
+    "type": "hit",
+    "n": 7
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [
+    "mirror"
+  ],
+  "sfx": "pop"
+}

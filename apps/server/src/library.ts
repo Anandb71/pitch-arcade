@@ -1,3 +1,5 @@
+import {qualityCheck} from './quality.js';
+import {safeName} from '../../../packages/shared/src/scoring.js';
 import {readFileSync,readdirSync} from 'node:fs';
 import {join} from 'node:path';
 import type {GameSpec} from '../../../packages/engine/src/index.js';
@@ -11,14 +13,14 @@ export class Library {
  constructor(private store:Repository){}
  all():LibraryGame[]{
   return this.store.db.all<GameRow>('SELECT g.*,u.login AS author_login FROM games g LEFT JOIN users u ON u.twitch_id=g.author_id ORDER BY g.id').map(row=>{
-   const report=JSON.parse(row.report_json) as Report,m=report.metrics!;
-   return {id:row.id,pitchId:row.pitch_id,title:row.title,verb:row.verb,authorId:row.author_id,authorLogin:row.author_login??'arcade',classic:!!row.classic,approvedAt:row.approved_at??0,status:row.status,spec:JSON.parse(row.spec_json) as GameSpec,report,difficulty:{humanishWinRate:m.humanish.rate,idleWinRate:m.idle.rate,randomWinRate:m.random.rate,challenge:1-m.humanish.rate},receipt:JSON.parse(row.receipt_json)};
+   const report=JSON.parse(row.report_json) as Report,m=report.metrics!,receipt=JSON.parse(row.receipt_json) as {designer?:{login?:string}};
+   return {id:row.id,pitchId:row.pitch_id,title:row.title,verb:row.verb,authorId:row.author_id,authorLogin:row.author_login??(receipt.designer?.login?safeName(receipt.designer.login):'arcade'),classic:!!row.classic,approvedAt:row.approved_at??0,status:row.status,spec:JSON.parse(row.spec_json) as GameSpec,report,difficulty:{humanishWinRate:m.humanish.rate,idleWinRate:m.idle.rate,randomWinRate:m.random.rate,challenge:1-m.humanish.rate},receipt:JSON.parse(row.receipt_json)};
   });
  }
  approved():LibraryGame[]{return this.all().filter(game=>game.status==='approved');}
  addBuilt(pitch:Pitch,game:ValidatedGame,receipt:unknown):number{
   return this.store.transaction(()=>{
-   const row=this.store.db.run("INSERT INTO games(pitch_id,spec_json,title,verb,author_id,report_json,difficulty,status,receipt_json) VALUES(?,?,?,?,?,?,?,'built',?)",pitch.id,JSON.stringify(game.spec),game.spec.title,game.spec.verb,pitch.user_id,JSON.stringify(game.report),game.difficulty.challenge,JSON.stringify(receipt));
+   const row=this.store.db.run("INSERT INTO games(pitch_id,spec_json,title,verb,author_id,report_json,difficulty,status,receipt_json) VALUES(?,?,?,?,?,?,?,'built',?)",pitch.id,JSON.stringify(game.spec),game.spec.title,game.spec.verb,pitch.user_id,JSON.stringify({...game.report,...(game.quality?{quality:game.quality}:{})}),game.difficulty.challenge,JSON.stringify(receipt));
    this.store.setPitch(pitch.id,'built');
    this.store.event('game.built',{pitchId:pitch.id,gameId:Number(row.lastInsertRowid)},Date.now(),pitch.user_id);
    return Number(row.lastInsertRowid);
@@ -54,6 +56,7 @@ export class Library {
    const seed=typeof receipt.source==='string'&&/^seed library written during the build in Codex thread [a-f0-9-]{36}$/.test(receipt.source)&&receipt.threadId===null&&receipt.durationMs===null;
    const runtime=receipt.source==='codex-cli'&&receipt.simulated===false&&receipt.status==='completed'&&typeof receipt.threadId==='string'&&/^[a-f0-9-]{36}$/.test(receipt.threadId)&&typeof receipt.durationMs==='number'&&receipt.durationMs>0&&typeof receipt.tokensIn==='number'&&typeof receipt.tokensOut==='number';
    if(!seed&&!runtime)throw Error('Invalid seed receipt.');
+   if(receipt.qualityVersion===1){const peers=files.filter(other=>other!==file).map(other=>JSON.parse(readFileSync(join(dir,other),'utf8')) as GameSpec);const quality=qualityCheck(game.spec,game.report,peers);if(!quality.pass)throw Error('Seed quality validation failed: '+file);}
    const result=this.store.db.run("INSERT INTO games(spec_json,title,verb,report_json,difficulty,approved_by,approved_at,classic,status,seed_key,receipt_json) VALUES(?,?,?,?,?,'seed library',?,1,'approved',?,?) ON CONFLICT(seed_key) DO NOTHING",JSON.stringify(game.spec),game.spec.title,game.spec.verb,JSON.stringify(game.report),game.difficulty.challenge,Date.now(),file,JSON.stringify(receipt));
    added+=Number(result.changes);
   }

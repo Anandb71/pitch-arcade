@@ -1,0 +1,48 @@
+{
+  "v": 1,
+  "title": "Garden Reflex",
+  "verb": "CLICK",
+  "seconds": 5,
+  "palette": "forest",
+  "pattern": "dots",
+  "player": {
+    "emoji": "🐝",
+    "control": "click",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🦋",
+      "role": "target",
+      "from": "random",
+      "every": 0.35,
+      "max": 12,
+      "motion": "flee",
+      "speed": 1,
+      "size": "s"
+    },
+    {
+      "emoji": "🌳",
+      "role": "decor",
+      "from": "center",
+      "every": "once",
+      "max": 1,
+      "motion": "still",
+      "speed": 1,
+      "size": "l"
+    }
+  ],
+  "win": {
+    "type": "hit",
+    "n": 6
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [
+    "speedup",
+    "spotlight"
+  ],
+  "sfx": "pop"
+}

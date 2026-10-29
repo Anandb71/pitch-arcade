@@ -1,0 +1,38 @@
+{
+  "v": 1,
+  "title": "Orbit Avoid",
+  "verb": "SURVIVE",
+  "seconds": 5,
+  "palette": "mono",
+  "pattern": "stars",
+  "player": {
+    "emoji": "🧑‍🚀",
+    "control": "move_4",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🪨",
+      "role": "hazard",
+      "from": "edges",
+      "every": 0.2,
+      "max": 12,
+      "motion": "bounce",
+      "speed": 3,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "survive"
+  },
+  "lose": {
+    "type": "touch",
+    "role": "hazard"
+  },
+  "mods": [
+    "speedup",
+    "mirror"
+  ],
+  "sfx": "pop"
+}

@@ -16,7 +16,7 @@ export async function prepareAutoDemo(arcade:Arcade,arrivalMs=180):Promise<void>
  await arcade.factory.idle();
  const games=arcade.library.all().filter(g=>!g.classic&&g.status==='built').sort((a,b)=>b.id-a.id);
  for(const game of games){arcade.library.approve(game.id,'scripted demo approval');await delay(5);}
- arcade.gauntlet.start({seed:1,autoplay:true});
+ arcade.gauntlet.start({seed:8,autoplay:true});
 }
 export async function addDemoReviewPitches(arcade:Arcade):Promise<void>{
  for(const [index,[login,text]] of [

@@ -1,0 +1,62 @@
+{
+  "source": "seed library written during the build in Codex thread 01a18380-92df-7fb1-84cd-1b45659bee41",
+  "buildThreadId": "01a18380-92df-7fb1-84cd-1b45659bee41",
+  "threadId": null,
+  "model": null,
+  "durationMs": null,
+  "playtests": null,
+  "tokensIn": null,
+  "tokensOut": null,
+  "designer": {
+    "login": "arcade_studio",
+    "kind": "seed"
+  },
+  "qualityVersion": 1,
+  "quality": {
+    "version": 1,
+    "pass": true,
+    "issues": [],
+    "fingerprint": "{\"control\":\"move_lr\",\"seconds\":5,\"win\":\"collect\",\"n\":5,\"lose\":\"timeout\",\"mods\":[\"speedup\"],\"player\":[6,\"m\"],\"spawners\":[{\"role\":\"goal\",\"from\":\"bottom\",\"motion\":\"rise\",\"every\":0.35,\"max\":12,\"speed\":2,\"size\":\"m\"}]}"
+  },
+  "validation": {
+    "seedsPerBot": 40,
+    "report": {
+      "pass": true,
+      "issues": [],
+      "metrics": {
+        "seeds": 40,
+        "idle": {
+          "wins": 0,
+          "runs": 40,
+          "rate": 0
+        },
+        "random": {
+          "wins": 0,
+          "runs": 40,
+          "rate": 0
+        },
+        "humanish": {
+          "wins": 31,
+          "runs": 40,
+          "rate": 0.775
+        },
+        "neverEnds": 0,
+        "firstHazardFrame": null,
+        "peakEntities": 12,
+        "maxFrames": 300,
+        "engagement": {
+          "pairedOutcomeChanges": 0.775,
+          "meanEvents": 16.6,
+          "scoreVariance": 0.634375,
+          "durationVariance": 2881.984375
+        }
+      }
+    },
+    "difficulty": {
+      "humanishWinRate": 0.775,
+      "idleWinRate": 0,
+      "randomWinRate": 0,
+      "challenge": 0.22499999999999998
+    }
+  }
+}

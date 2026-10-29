@@ -1,7 +1,9 @@
 export type Code='SCHEMA_ERROR'|'TOO_EASY'|'TOO_HARD'|'IDLE_WINS'|'NEVER_ENDS'|'SPAWN_KILL'|'OVERCROWDED'|'VERB_MISMATCH';
 export interface Finding {code:Code;hint:string}
 export interface BotMetric {wins:number;runs:number;rate:number}
+export interface Engagement {pairedOutcomeChanges:number;meanEvents:number;scoreVariance:number;durationVariance:number}
 export interface Metrics {
+ engagement?:Engagement;
  seeds:number;idle:BotMetric;random:BotMetric;humanish:BotMetric;
  neverEnds:number;firstHazardFrame:number|null;peakEntities:number;maxFrames:number;
 }
@@ -20,6 +22,6 @@ export function assess(m:Metrics,winType:string):Finding[] {
 }
 export function compact(report:Report):string {
  const m=report.metrics;
- return (report.pass?'PASS':'FAIL')+(m?' | 40 seeds | idle '+Math.round(m.idle.rate*100)+'% | random '+Math.round(m.random.rate*100)+'% | humanish '+Math.round(m.humanish.rate*100)+'% | peak '+m.peakEntities:'')+
+ return (report.pass?'PASS':'FAIL')+(m?' | 40 seeds | idle '+Math.round(m.idle.rate*100)+'% | random '+Math.round(m.random.rate*100)+'% | humanish '+Math.round(m.humanish.rate*100)+'% | peak '+m.peakEntities:'')+(m?.engagement?' | input '+Math.round(m.engagement.pairedOutcomeChanges*100)+'% | events '+m.engagement.meanEvents.toFixed(1)+' | score variance '+m.engagement.scoreVariance.toFixed(2):'')+
  report.issues.map(i=>'\n'+i.code+': '+i.hint).join('');
 }

@@ -17,6 +17,7 @@ await build({
  minify:true, legalComments:'inline'
 });
 chmodSync(tool,0o444);
+copyFileSync('docs/quality.md','factory/template/spec/QUALITY.md');
 for(const file of ['SPEC.md','schema.json'])copyFileSync('packages/engine/'+file,'factory/template/spec/'+file);
 const licenses=[
  ['ajv','LICENSE'],['fast-deep-equal','LICENSE'],['fast-uri','LICENSE'],
@@ -38,7 +39,7 @@ await build({
  entryPoints:['apps/server/src/validator.ts'],outfile:'dist/validator.mjs',
  bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'
 });
-for(const [entry,outfile] of [['main','server'],['demo-check','demo-check'],['forget','forget'],['factory-spike','factory-spike']]){
+for(const [entry,outfile] of [['main','server'],['demo-check','demo-check'],['forget','forget'],['factory-spike','factory-spike'],['quality','quality']]){
  await build({
   entryPoints:['apps/server/src/'+entry+'.ts'],outfile:'dist/'+outfile+'.mjs',
   bundle:true,packages:'external',platform:'node',format:'esm',target:'node22'

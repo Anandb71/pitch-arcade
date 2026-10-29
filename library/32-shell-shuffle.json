@@ -1,0 +1,38 @@
+{
+  "v": 1,
+  "title": "Shell Shuffle",
+  "verb": "GRAB",
+  "seconds": 5,
+  "palette": "ocean",
+  "pattern": "dots",
+  "player": {
+    "emoji": "🐙",
+    "control": "move_4",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🐚",
+      "role": "goal",
+      "from": "bottom",
+      "every": 0.35,
+      "max": 12,
+      "motion": "bounce",
+      "speed": 4,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "collect",
+    "n": 5
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [
+    "speedup",
+    "wind_right"
+  ],
+  "sfx": "ding"
+}

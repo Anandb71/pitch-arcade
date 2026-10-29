@@ -1,0 +1,37 @@
+{
+  "v": 1,
+  "title": "Star Sprint Gallery",
+  "verb": "POP",
+  "seconds": 5,
+  "palette": "ice",
+  "pattern": "grid",
+  "player": {
+    "emoji": "🧑‍🚀",
+    "control": "click",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "⭐",
+      "role": "target",
+      "from": "left",
+      "every": 0.3,
+      "max": 12,
+      "motion": "sweep",
+      "speed": 2,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "hit",
+    "n": 8
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [
+    "speedup"
+  ],
+  "sfx": "ding"
+}

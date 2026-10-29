@@ -11,6 +11,6 @@ test('demo:auto reaches a finished five game gauntlet using actual humanish inpu
   expect(arcade.gauntlet.state).toMatchObject({phase:'finished',round:5,autoplay:true,score:4,lives:2,reason:'complete'});
   expect(arcade.gauntlet.state.outcomes).toHaveLength(5);
   expect(arcade.getState().leaderboard).toEqual(expect.arrayContaining([expect.objectContaining({login:'lee',beats:1})]));
-  expect(arcade.getState().resultTicker.some(item=>item.kind==='clip'&&item.text==='Bubble Pop by @lee')).toBe(true);
+  expect(arcade.getState().resultTicker.some(item=>item.kind==='clip'&&item.text==='Lantern Snap by @lee')).toBe(true);
  }finally{await arcade.close();}
 },10000);

@@ -1,0 +1,38 @@
+{
+  "v": 1,
+  "title": "Honey Balance",
+  "verb": "DODGE",
+  "seconds": 5,
+  "palette": "sunset",
+  "pattern": "stripes",
+  "player": {
+    "emoji": "🐝",
+    "control": "move_4",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🌧️",
+      "role": "hazard",
+      "from": "top",
+      "every": 0.2,
+      "max": 12,
+      "motion": "fall",
+      "speed": 2,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "survive"
+  },
+  "lose": {
+    "type": "touch",
+    "role": "hazard"
+  },
+  "mods": [
+    "speedup",
+    "wind_left"
+  ],
+  "sfx": "pop"
+}

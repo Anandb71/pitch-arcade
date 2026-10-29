@@ -1,0 +1,37 @@
+{
+  "v": 1,
+  "title": "Neon Taco Shuffle",
+  "verb": "DODGE",
+  "seconds": 5,
+  "palette": "midnight",
+  "pattern": "grid",
+  "player": {
+    "emoji": "🐼",
+    "control": "move_lr",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🌮",
+      "role": "hazard",
+      "from": "top",
+      "every": 0.18,
+      "max": 12,
+      "motion": "fall",
+      "speed": 4,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "survive"
+  },
+  "lose": {
+    "type": "touch",
+    "role": "hazard"
+  },
+  "mods": [
+    "speedup"
+  ],
+  "sfx": "pop"
+}

@@ -26,7 +26,7 @@ Open these pages:
 | Mock chat | http://127.0.0.1:3000/chat/ |
 | OBS overlay | http://127.0.0.1:3000/overlay/ |
 
-Send `!pitch dodge falling tacos` in mock chat. Approve the built game in the dashboard. Start a gauntlet. Twenty seed classics and three validated real Codex spike games fill the library.
+Send `!pitch dodge falling tacos` in mock chat. Approve the built game in the dashboard. Start a gauntlet. Thirty seed classics and three validated real Codex spike games fill the library. Ten new seeds and thirty eight measured mock variants add distinct routes, timing windows, moving targets and themes.
 
 The demo needs no credentials or Codex installation. It works offline after dependencies are installed. Factory generation is a labeled replay. No Twitch clip is published. Press Ctrl+C to stop.
 
@@ -128,7 +128,7 @@ Dashboard approval → library → server gauntlet at 60 Hz
 
 ## Safety model
 
-Games are data. The closed schema permits known verbs, emoji and behaviors. Chat text never becomes a command, HTML or file path. Factory commands have a verified sandbox, no network, protected instructions and a 150 second deadline. The server independently checks output and reruns forty seeds with three bots. Human approval or an explicit trusted role rule gates viewer games.
+Games are data. The closed schema permits known verbs, emoji and behaviors. Chat text never becomes a command, HTML or file path. Factory commands have a verified sandbox, no network, protected instructions and a 150 second deadline. The server independently checks output and reruns forty seeds with three bots. New games then pass skill, input, engagement and duplicate gates. A bounded repair gets fixed server feedback. Human approval or an explicit trusted role rule gates viewer games.
 
 Local controls bind to 127.0.0.1 and check Host, Origin and a custom mutation header. Use them on a trusted machine. The heuristic moderation fallback and secret scanner have limits. They are defense layers, not guarantees. See [security](SECURITY.md) and the [six finding review](docs/review.md).
 
@@ -142,7 +142,7 @@ npm run playtest -- library/01-taco-rain.json
 npm run shots
 ```
 
-The suite has 180 passing tests. It covers deterministic outcomes, schema and semantic checks, bot acceptance, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols and a finished unattended gauntlet. [Fresh clone proof](docs/fresh-clone.md) records a clean installation.
+The suite has 201 passing tests. It covers deterministic outcomes, schema and semantic checks, bot acceptance, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols and a finished unattended gauntlet. [Fresh clone proof](docs/fresh-clone.md) records a clean installation.
 
 Shots use installed Chrome or Playwright Chromium. They include three games, browser control checks, a literal HTML injection check, a transparent overlay check and a completed gauntlet. The gallery combines a mock authoring session with a local Twitch protocol simulation. The overlay's real Codex receipt comes from the measured spike. Its clip URL comes from fake Helix.
 
@@ -170,3 +170,5 @@ The application, real Codex spike, browser controls and local Twitch protocol te
 The factory permission profile currently accepts codex-cli 0.165 only. Other hosts or versions must pass a fresh policy review. The local moderation fallback is limited. Clip publication needs a live channel, enabled clips and valid grants. Final account setup, a live stream check and the submission video remain human tasks.
 
 MIT license, copyright Anand Biju. See [assets and licenses](ASSETS.md), [setup](docs/setup.md) and [Devpost draft](DEVPOST.md).
+
+See [game quality](docs/quality.md) for thresholds, novelty fingerprints, the new seed collection and honest v1 mechanic limits. The demo now uses seed 8 and a finite bank of thirty eight distinct measured mock variants.

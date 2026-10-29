@@ -1,0 +1,1618 @@
+{
+  "source": "Original measured mock variants from the ten M7 seed games",
+  "games": [
+    {
+      "family": "31-neon-taco-shuffle.json",
+      "spec": {
+        "v": 1,
+        "title": "Neon Taco Shuffle",
+        "verb": "DODGE",
+        "seconds": 5,
+        "palette": "midnight",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🐼",
+          "control": "move_lr",
+          "speed": 9.6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🌮",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.18,
+            "max": 12,
+            "motion": "fall",
+            "speed": 6.4,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "31-neon-taco-shuffle.json",
+      "spec": {
+        "v": 1,
+        "title": "Neon Taco Shuffle",
+        "verb": "DODGE",
+        "seconds": 5,
+        "palette": "midnight",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🐼",
+          "control": "move_lr",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🌮",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.18,
+            "max": 12,
+            "motion": "fall",
+            "speed": 4,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "speedup",
+          "mirror"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "31-neon-taco-shuffle.json",
+      "spec": {
+        "v": 1,
+        "title": "Neon Taco Shuffle",
+        "verb": "DODGE",
+        "seconds": 5,
+        "palette": "midnight",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🐼",
+          "control": "move_lr",
+          "speed": 9.6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🌮",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.18,
+            "max": 12,
+            "motion": "fall",
+            "speed": 6.4,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "speedup",
+          "mirror"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "31-neon-taco-shuffle.json",
+      "spec": {
+        "v": 1,
+        "title": "Neon Taco Shuffle",
+        "verb": "DODGE",
+        "seconds": 5,
+        "palette": "midnight",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🐼",
+          "control": "move_lr",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🌮",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.18,
+            "max": 12,
+            "motion": "fall",
+            "speed": 4,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "speedup",
+          "wind_left"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "32-shell-shuffle.json",
+      "spec": {
+        "v": 1,
+        "title": "Shell Shuffle",
+        "verb": "GRAB",
+        "seconds": 5,
+        "palette": "ocean",
+        "pattern": "dots",
+        "player": {
+          "emoji": "🐙",
+          "control": "move_4",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🐚",
+            "role": "goal",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "bounce",
+            "speed": 4,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "collect",
+          "n": 6
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "32-shell-shuffle.json",
+      "spec": {
+        "v": 1,
+        "title": "Shell Shuffle",
+        "verb": "GRAB",
+        "seconds": 5,
+        "palette": "ocean",
+        "pattern": "dots",
+        "player": {
+          "emoji": "🐙",
+          "control": "move_4",
+          "speed": 3.9,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🐚",
+            "role": "goal",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "bounce",
+            "speed": 2.6,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "collect",
+          "n": 6
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "32-shell-shuffle.json",
+      "spec": {
+        "v": 1,
+        "title": "Shell Shuffle",
+        "verb": "GRAB",
+        "seconds": 5,
+        "palette": "ocean",
+        "pattern": "dots",
+        "player": {
+          "emoji": "🐙",
+          "control": "move_4",
+          "speed": 9.6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🐚",
+            "role": "goal",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "bounce",
+            "speed": 6.4,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "collect",
+          "n": 6
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "32-shell-shuffle.json",
+      "spec": {
+        "v": 1,
+        "title": "Shell Shuffle",
+        "verb": "GRAB",
+        "seconds": 5,
+        "palette": "ocean",
+        "pattern": "dots",
+        "player": {
+          "emoji": "🐙",
+          "control": "move_4",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🐚",
+            "role": "goal",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "bounce",
+            "speed": 4,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "collect",
+          "n": 6
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup",
+          "mirror"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "33-lantern-snap.json",
+      "spec": {
+        "v": 1,
+        "title": "Lantern Snap",
+        "verb": "POP",
+        "seconds": 5,
+        "palette": "sunset",
+        "pattern": "stars",
+        "player": {
+          "emoji": "🦉",
+          "control": "click",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "💡",
+            "role": "target",
+            "from": "random",
+            "every": 0.25,
+            "max": 12,
+            "motion": "popup",
+            "speed": 5,
+            "size": "s"
+          }
+        ],
+        "win": {
+          "type": "hit",
+          "n": 10
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "33-lantern-snap.json",
+      "spec": {
+        "v": 1,
+        "title": "Lantern Snap",
+        "verb": "POP",
+        "seconds": 5,
+        "palette": "sunset",
+        "pattern": "stars",
+        "player": {
+          "emoji": "🦉",
+          "control": "click",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "💡",
+            "role": "target",
+            "from": "random",
+            "every": 0.25,
+            "max": 12,
+            "motion": "popup",
+            "speed": 5,
+            "size": "s"
+          }
+        ],
+        "win": {
+          "type": "hit",
+          "n": 10
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup",
+          "mirror"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "34-star-sprint-gallery.json",
+      "spec": {
+        "v": 1,
+        "title": "Star Sprint Gallery",
+        "verb": "POP",
+        "seconds": 5,
+        "palette": "ice",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🧑‍🚀",
+          "control": "click",
+          "speed": 3.9,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "⭐",
+            "role": "target",
+            "from": "left",
+            "every": 0.462,
+            "max": 12,
+            "motion": "sweep",
+            "speed": 1.3,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "hit",
+          "n": 10
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "34-star-sprint-gallery.json",
+      "spec": {
+        "v": 1,
+        "title": "Star Sprint Gallery",
+        "verb": "POP",
+        "seconds": 5,
+        "palette": "ice",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🧑‍🚀",
+          "control": "click",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "⭐",
+            "role": "target",
+            "from": "left",
+            "every": 0.3,
+            "max": 12,
+            "motion": "sweep",
+            "speed": 2,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "hit",
+          "n": 8
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup",
+          "mirror"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "34-star-sprint-gallery.json",
+      "spec": {
+        "v": 1,
+        "title": "Star Sprint Gallery",
+        "verb": "POP",
+        "seconds": 5,
+        "palette": "ice",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🧑‍🚀",
+          "control": "click",
+          "speed": 4.8,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "⭐",
+            "role": "target",
+            "from": "left",
+            "every": 0.375,
+            "max": 12,
+            "motion": "sweep",
+            "speed": 1.6,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "hit",
+          "n": 11
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup",
+          "mirror"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "34-star-sprint-gallery.json",
+      "spec": {
+        "v": 1,
+        "title": "Star Sprint Gallery",
+        "verb": "POP",
+        "seconds": 5,
+        "palette": "ice",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🧑‍🚀",
+          "control": "click",
+          "speed": 7.8,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "⭐",
+            "role": "target",
+            "from": "left",
+            "every": 0.231,
+            "max": 12,
+            "motion": "sweep",
+            "speed": 2.6,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "hit",
+          "n": 4
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup",
+          "mirror"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "35-pancake-stack.json",
+      "spec": {
+        "v": 1,
+        "title": "Pancake Stack",
+        "verb": "CATCH",
+        "seconds": 5,
+        "palette": "citrus",
+        "pattern": "stripes",
+        "player": {
+          "emoji": "🧑‍🍳",
+          "control": "move_lr",
+          "speed": 3.9,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🥞",
+            "role": "goal",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "rise",
+            "speed": 1.3,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "collect",
+          "n": 5
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "35-pancake-stack.json",
+      "spec": {
+        "v": 1,
+        "title": "Pancake Stack",
+        "verb": "CATCH",
+        "seconds": 5,
+        "palette": "citrus",
+        "pattern": "stripes",
+        "player": {
+          "emoji": "🧑‍🍳",
+          "control": "move_lr",
+          "speed": 9.6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🥞",
+            "role": "goal",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "rise",
+            "speed": 3.2,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "collect",
+          "n": 5
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "35-pancake-stack.json",
+      "spec": {
+        "v": 1,
+        "title": "Pancake Stack",
+        "verb": "CATCH",
+        "seconds": 5,
+        "palette": "citrus",
+        "pattern": "stripes",
+        "player": {
+          "emoji": "🧑‍🍳",
+          "control": "move_lr",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🥞",
+            "role": "goal",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "rise",
+            "speed": 2,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "collect",
+          "n": 5
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup",
+          "mirror"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "35-pancake-stack.json",
+      "spec": {
+        "v": 1,
+        "title": "Pancake Stack",
+        "verb": "CATCH",
+        "seconds": 5,
+        "palette": "citrus",
+        "pattern": "stripes",
+        "player": {
+          "emoji": "🧑‍🍳",
+          "control": "move_lr",
+          "speed": 3.9,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🥞",
+            "role": "goal",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "rise",
+            "speed": 1.3,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "collect",
+          "n": 5
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup",
+          "mirror"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "36-robot-rave.json",
+      "spec": {
+        "v": 1,
+        "title": "Robot Rave",
+        "verb": "MASH",
+        "seconds": 5,
+        "palette": "candy",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🤖",
+          "control": "mash",
+          "speed": 3.9,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "⭐",
+            "role": "decor",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "rise",
+            "speed": 5,
+            "size": "m"
+          },
+          {
+            "emoji": "🌧️",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.231,
+            "max": 20,
+            "motion": "fall",
+            "speed": 1.3,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "mash",
+          "n": 22
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "boom"
+      }
+    },
+    {
+      "family": "36-robot-rave.json",
+      "spec": {
+        "v": 1,
+        "title": "Robot Rave",
+        "verb": "MASH",
+        "seconds": 5,
+        "palette": "candy",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🤖",
+          "control": "mash",
+          "speed": 9.6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "⭐",
+            "role": "decor",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "rise",
+            "speed": 5,
+            "size": "m"
+          },
+          {
+            "emoji": "🌧️",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.15,
+            "max": 20,
+            "motion": "fall",
+            "speed": 3.2,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "mash",
+          "n": 19
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "boom"
+      }
+    },
+    {
+      "family": "36-robot-rave.json",
+      "spec": {
+        "v": 1,
+        "title": "Robot Rave",
+        "verb": "MASH",
+        "seconds": 5,
+        "palette": "candy",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🤖",
+          "control": "mash",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "⭐",
+            "role": "decor",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "rise",
+            "speed": 5,
+            "size": "m"
+          },
+          {
+            "emoji": "🌧️",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.15,
+            "max": 20,
+            "motion": "fall",
+            "speed": 2,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "mash",
+          "n": 20
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "mirror"
+        ],
+        "sfx": "boom"
+      }
+    },
+    {
+      "family": "36-robot-rave.json",
+      "spec": {
+        "v": 1,
+        "title": "Robot Rave",
+        "verb": "MASH",
+        "seconds": 5,
+        "palette": "candy",
+        "pattern": "grid",
+        "player": {
+          "emoji": "🤖",
+          "control": "mash",
+          "speed": 3.9,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "⭐",
+            "role": "decor",
+            "from": "bottom",
+            "every": 0.35,
+            "max": 12,
+            "motion": "rise",
+            "speed": 5,
+            "size": "m"
+          },
+          {
+            "emoji": "🌧️",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.231,
+            "max": 20,
+            "motion": "fall",
+            "speed": 1.3,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "mash",
+          "n": 24
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "mirror"
+        ],
+        "sfx": "boom"
+      }
+    },
+    {
+      "family": "37-ghost-courier.json",
+      "spec": {
+        "v": 1,
+        "title": "Ghost Courier",
+        "verb": "ESCAPE",
+        "seconds": 5,
+        "palette": "forest",
+        "pattern": "stars",
+        "player": {
+          "emoji": "🦊",
+          "control": "move_4",
+          "speed": 1.3,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "👻",
+            "role": "goal",
+            "from": "random",
+            "every": "once",
+            "max": 1,
+            "motion": "flee",
+            "speed": 1,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "reach"
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "37-ghost-courier.json",
+      "spec": {
+        "v": 1,
+        "title": "Ghost Courier",
+        "verb": "ESCAPE",
+        "seconds": 5,
+        "palette": "forest",
+        "pattern": "stars",
+        "player": {
+          "emoji": "🦊",
+          "control": "move_4",
+          "speed": 1.3,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "👻",
+            "role": "goal",
+            "from": "random",
+            "every": "once",
+            "max": 1,
+            "motion": "flee",
+            "speed": 1,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "reach"
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup",
+          "mirror"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "37-ghost-courier.json",
+      "spec": {
+        "v": 1,
+        "title": "Ghost Courier",
+        "verb": "ESCAPE",
+        "seconds": 5,
+        "palette": "forest",
+        "pattern": "stars",
+        "player": {
+          "emoji": "🦊",
+          "control": "move_4",
+          "speed": 2,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "👻",
+            "role": "goal",
+            "from": "random",
+            "every": "once",
+            "max": 1,
+            "motion": "flee",
+            "speed": 1,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "reach"
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup",
+          "wind_right"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "37-ghost-courier.json",
+      "spec": {
+        "v": 1,
+        "title": "Ghost Courier",
+        "verb": "ESCAPE",
+        "seconds": 5,
+        "palette": "forest",
+        "pattern": "stars",
+        "player": {
+          "emoji": "🦊",
+          "control": "move_4",
+          "speed": 1.6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "👻",
+            "role": "goal",
+            "from": "random",
+            "every": "once",
+            "max": 1,
+            "motion": "flee",
+            "speed": 1,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "reach"
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "mirror"
+        ],
+        "sfx": "ding"
+      }
+    },
+    {
+      "family": "38-orbit-avoid.json",
+      "spec": {
+        "v": 1,
+        "title": "Orbit Avoid",
+        "verb": "SURVIVE",
+        "seconds": 5,
+        "palette": "mono",
+        "pattern": "stars",
+        "player": {
+          "emoji": "🧑‍🚀",
+          "control": "move_4",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🪨",
+            "role": "hazard",
+            "from": "edges",
+            "every": 0.2,
+            "max": 12,
+            "motion": "bounce",
+            "speed": 3,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "38-orbit-avoid.json",
+      "spec": {
+        "v": 1,
+        "title": "Orbit Avoid",
+        "verb": "SURVIVE",
+        "seconds": 5,
+        "palette": "mono",
+        "pattern": "stars",
+        "player": {
+          "emoji": "🧑‍🚀",
+          "control": "move_4",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🪨",
+            "role": "hazard",
+            "from": "edges",
+            "every": 0.2,
+            "max": 12,
+            "motion": "bounce",
+            "speed": 3,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "speedup",
+          "wind_left"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "38-orbit-avoid.json",
+      "spec": {
+        "v": 1,
+        "title": "Orbit Avoid",
+        "verb": "SURVIVE",
+        "seconds": 5,
+        "palette": "mono",
+        "pattern": "stars",
+        "player": {
+          "emoji": "🧑‍🚀",
+          "control": "move_4",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🪨",
+            "role": "hazard",
+            "from": "edges",
+            "every": 0.2,
+            "max": 12,
+            "motion": "bounce",
+            "speed": 3,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "speedup",
+          "wind_right"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "38-orbit-avoid.json",
+      "spec": {
+        "v": 1,
+        "title": "Orbit Avoid",
+        "verb": "SURVIVE",
+        "seconds": 5,
+        "palette": "mono",
+        "pattern": "stars",
+        "player": {
+          "emoji": "🧑‍🚀",
+          "control": "move_4",
+          "speed": 7.8,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🪨",
+            "role": "hazard",
+            "from": "edges",
+            "every": 0.2,
+            "max": 12,
+            "motion": "bounce",
+            "speed": 3.9,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "mirror"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "39-garden-reflex.json",
+      "spec": {
+        "v": 1,
+        "title": "Garden Reflex",
+        "verb": "CLICK",
+        "seconds": 5,
+        "palette": "forest",
+        "pattern": "dots",
+        "player": {
+          "emoji": "🐝",
+          "control": "click",
+          "speed": 3.9,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🦋",
+            "role": "target",
+            "from": "random",
+            "every": 0.538,
+            "max": 12,
+            "motion": "flee",
+            "speed": 1,
+            "size": "s"
+          },
+          {
+            "emoji": "🌳",
+            "role": "decor",
+            "from": "center",
+            "every": "once",
+            "max": 1,
+            "motion": "still",
+            "speed": 1,
+            "size": "l"
+          }
+        ],
+        "win": {
+          "type": "hit",
+          "n": 8
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "39-garden-reflex.json",
+      "spec": {
+        "v": 1,
+        "title": "Garden Reflex",
+        "verb": "CLICK",
+        "seconds": 5,
+        "palette": "forest",
+        "pattern": "dots",
+        "player": {
+          "emoji": "🐝",
+          "control": "click",
+          "speed": 9.6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🦋",
+            "role": "target",
+            "from": "random",
+            "every": 0.219,
+            "max": 12,
+            "motion": "flee",
+            "speed": 1.6,
+            "size": "s"
+          },
+          {
+            "emoji": "🌳",
+            "role": "decor",
+            "from": "center",
+            "every": "once",
+            "max": 1,
+            "motion": "still",
+            "speed": 1,
+            "size": "l"
+          }
+        ],
+        "win": {
+          "type": "hit",
+          "n": 6
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "39-garden-reflex.json",
+      "spec": {
+        "v": 1,
+        "title": "Garden Reflex",
+        "verb": "CLICK",
+        "seconds": 5,
+        "palette": "forest",
+        "pattern": "dots",
+        "player": {
+          "emoji": "🐝",
+          "control": "click",
+          "speed": 10,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🦋",
+            "role": "target",
+            "from": "random",
+            "every": 0.175,
+            "max": 12,
+            "motion": "flee",
+            "speed": 2,
+            "size": "s"
+          },
+          {
+            "emoji": "🌳",
+            "role": "decor",
+            "from": "center",
+            "every": "once",
+            "max": 1,
+            "motion": "still",
+            "speed": 1,
+            "size": "l"
+          }
+        ],
+        "win": {
+          "type": "hit",
+          "n": 4
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "39-garden-reflex.json",
+      "spec": {
+        "v": 1,
+        "title": "Garden Reflex",
+        "verb": "CLICK",
+        "seconds": 5,
+        "palette": "forest",
+        "pattern": "dots",
+        "player": {
+          "emoji": "🐝",
+          "control": "click",
+          "speed": 6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🦋",
+            "role": "target",
+            "from": "random",
+            "every": 0.35,
+            "max": 12,
+            "motion": "flee",
+            "speed": 1,
+            "size": "s"
+          },
+          {
+            "emoji": "🌳",
+            "role": "decor",
+            "from": "center",
+            "every": "once",
+            "max": 1,
+            "motion": "still",
+            "speed": 1,
+            "size": "l"
+          }
+        ],
+        "win": {
+          "type": "hit",
+          "n": 8
+        },
+        "lose": {
+          "type": "timeout"
+        },
+        "mods": [
+          "speedup",
+          "mirror"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "40-honey-balance.json",
+      "spec": {
+        "v": 1,
+        "title": "Honey Balance",
+        "verb": "DODGE",
+        "seconds": 5,
+        "palette": "sunset",
+        "pattern": "stripes",
+        "player": {
+          "emoji": "🐝",
+          "control": "move_4",
+          "speed": 9.6,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🌧️",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.2,
+            "max": 12,
+            "motion": "fall",
+            "speed": 3.2,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "speedup",
+          "wind_left"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "40-honey-balance.json",
+      "spec": {
+        "v": 1,
+        "title": "Honey Balance",
+        "verb": "DODGE",
+        "seconds": 5,
+        "palette": "sunset",
+        "pattern": "stripes",
+        "player": {
+          "emoji": "🐝",
+          "control": "move_4",
+          "speed": 7.8,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🌧️",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.2,
+            "max": 12,
+            "motion": "fall",
+            "speed": 2.6,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "speedup",
+          "wind_right"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "40-honey-balance.json",
+      "spec": {
+        "v": 1,
+        "title": "Honey Balance",
+        "verb": "DODGE",
+        "seconds": 5,
+        "palette": "sunset",
+        "pattern": "stripes",
+        "player": {
+          "emoji": "🐝",
+          "control": "move_4",
+          "speed": 7.8,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🌧️",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.2,
+            "max": 12,
+            "motion": "fall",
+            "speed": 2.6,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "wind_left"
+        ],
+        "sfx": "pop"
+      }
+    },
+    {
+      "family": "40-honey-balance.json",
+      "spec": {
+        "v": 1,
+        "title": "Honey Balance",
+        "verb": "DODGE",
+        "seconds": 5,
+        "palette": "sunset",
+        "pattern": "stripes",
+        "player": {
+          "emoji": "🐝",
+          "control": "move_4",
+          "speed": 10,
+          "size": "m"
+        },
+        "spawners": [
+          {
+            "emoji": "🌧️",
+            "role": "hazard",
+            "from": "top",
+            "every": 0.2,
+            "max": 12,
+            "motion": "fall",
+            "speed": 4,
+            "size": "m"
+          }
+        ],
+        "win": {
+          "type": "survive"
+        },
+        "lose": {
+          "type": "touch",
+          "role": "hazard"
+        },
+        "mods": [
+          "wind_left"
+        ],
+        "sfx": "pop"
+      }
+    }
+  ]
+}

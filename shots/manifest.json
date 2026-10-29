@@ -3,7 +3,7 @@
     "width": 1920,
     "height": 1080
   },
-  "seed": 1,
+  "seed": 8,
   "source": "Actual scripted mock session plus a local Twitch protocol simulation. Real Codex spike receipts are labeled separately. Clip URLs are fake Helix fixtures.",
   "captures": [
     {
@@ -22,23 +22,23 @@
     {
       "file": "play-game.png",
       "phase": "play",
-      "game": "Taco Rain",
+      "game": "Neon Taco Shuffle",
       "round": 1,
       "frame": 111
     },
     {
       "file": "play-game-2.png",
       "phase": "play",
-      "game": "Bubble Pop",
+      "game": "Lantern Snap",
       "round": 2,
       "frame": 112
     },
     {
       "file": "play-game-3.png",
       "phase": "play",
-      "game": "Berry Basket",
+      "game": "Shell Shuffle",
       "round": 3,
-      "frame": 111
+      "frame": 110
     },
     {
       "file": "overlay-mock.png",
@@ -69,8 +69,8 @@
           "playerPoints": 100,
           "designerPoints": 0,
           "combo": 1,
-          "gameId": 24,
-          "title": "Taco Rain",
+          "gameId": 34,
+          "title": "Neon Taco Shuffle",
           "designer": "priya",
           "outcome": "win",
           "round": 1,
@@ -80,8 +80,8 @@
           "playerPoints": 0,
           "designerPoints": 100,
           "combo": 0,
-          "gameId": 25,
-          "title": "Bubble Pop",
+          "gameId": 35,
+          "title": "Lantern Snap",
           "designer": "lee",
           "outcome": "lose",
           "round": 2,
@@ -91,41 +91,41 @@
           "playerPoints": 100,
           "designerPoints": 0,
           "combo": 1,
-          "gameId": 26,
-          "title": "Berry Basket",
+          "gameId": 36,
+          "title": "Shell Shuffle",
           "designer": "mira",
           "outcome": "win",
           "round": 3,
-          "ms": 2583
+          "ms": 3450
         },
         {
           "playerPoints": 200,
           "designerPoints": 0,
           "combo": 2,
-          "gameId": 27,
-          "title": "Moon Escape",
+          "gameId": 37,
+          "title": "Ghost Courier",
           "designer": "arun",
           "outcome": "win",
           "round": 4,
-          "ms": 967
+          "ms": 2867
         },
         {
           "playerPoints": 300,
           "designerPoints": 0,
           "combo": 3,
-          "gameId": 28,
-          "title": "Rocket Charge",
+          "gameId": 38,
+          "title": "Robot Rave",
           "designer": "zoe",
           "outcome": "win",
           "round": 5,
-          "ms": 3267
+          "ms": 2017
         }
       ]
     },
     {
       "file": "overlay.png",
       "source": "Actual EventSub mock and fake Helix with real Twitch clients. Factory workers are mock replays. Real spike receipt was measured in milestone four.",
-      "game": "Taco Rain",
+      "game": "Neon Taco Shuffle",
       "realReceipt": {
         "source": "codex-cli",
         "simulated": false,
@@ -172,8 +172,8 @@
       "clip": {
         "id": 3,
         "kind": "chat",
-        "text": "Berry Basket by @mira https://clips.twitch.tv/Simulated1",
-        "authorId": "viewer-mira",
+        "text": "Lantern Snap by @lee https://clips.twitch.tv/Simulated1",
+        "authorId": "viewer-lee",
         "simulated": true
       }
     }
@@ -186,8 +186,8 @@
         "playerPoints": 100,
         "designerPoints": 0,
         "combo": 1,
-        "gameId": 24,
-        "title": "Taco Rain",
+        "gameId": 34,
+        "title": "Neon Taco Shuffle",
         "designer": "priya",
         "outcome": "win",
         "round": 1,
@@ -197,8 +197,8 @@
         "playerPoints": 0,
         "designerPoints": 100,
         "combo": 0,
-        "gameId": 25,
-        "title": "Bubble Pop",
+        "gameId": 35,
+        "title": "Lantern Snap",
         "designer": "lee",
         "outcome": "lose",
         "round": 2,
@@ -208,34 +208,34 @@
         "playerPoints": 100,
         "designerPoints": 0,
         "combo": 1,
-        "gameId": 26,
-        "title": "Berry Basket",
+        "gameId": 36,
+        "title": "Shell Shuffle",
         "designer": "mira",
         "outcome": "win",
         "round": 3,
-        "ms": 2583
+        "ms": 3450
       },
       {
         "playerPoints": 200,
         "designerPoints": 0,
         "combo": 2,
-        "gameId": 27,
-        "title": "Moon Escape",
+        "gameId": 37,
+        "title": "Ghost Courier",
         "designer": "arun",
         "outcome": "win",
         "round": 4,
-        "ms": 967
+        "ms": 2867
       },
       {
         "playerPoints": 300,
         "designerPoints": 0,
         "combo": 3,
-        "gameId": 28,
-        "title": "Rocket Charge",
+        "gameId": 38,
+        "title": "Robot Rave",
         "designer": "zoe",
         "outcome": "win",
         "round": 5,
-        "ms": 3267
+        "ms": 2017
       }
     ]
   },

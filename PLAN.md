@@ -78,3 +78,11 @@ Three real Codex CLI jobs passed independent validation in the factory spike.
 Their actual receipts and bot difficulty reports join the twenty seed classics.
 The measured median was 15.900 seconds. The injection pitch became harmless game data.
 Live Twitch publication still requires user credentials and an active channel.
+
+## Seventh milestone implementation
+
+Task C strengthens the designer instructions with a recent mechanics and theme digest, feedback guidance and an honest mapping to v1 controls. The harness adds paired input outcomes and engagement telemetry without changing its acceptance rules.
+
+New server quality checks run after every original validation gate. They measure skill advantage, input impact, idle wins, engagement and novelty. One repair receives fixed rejection codes and shares the original deadline and playtest budget. Rejected library entries stay in the novelty catalog.
+
+Ten newly measured seeds add eight palettes, all four controls and seed studio credits. Thirty eight pairwise distinct mock variants keep offline generation varied without bypassing validation. The full library now contains thirty seed classics and three historical real CLI games.

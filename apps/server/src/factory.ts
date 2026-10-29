@@ -1,3 +1,5 @@
+import {writeFileSync,rmSync} from 'node:fs';
+import {join} from 'node:path';
 import {resolve} from 'node:path';
 import {Repository,type Pitch} from './storage.js';
 import {emptyReceipt,type FactoryStep,type Receipt} from './codex-events.js';
@@ -5,7 +7,8 @@ import type {CodexRunner} from './runners.js';
 import {prepareJob,removeJob} from './jobs.js';
 export interface FactoryOptions {
  jobsRoot?:string;timeoutMs?:number;maxJobsPerHour?:number;
- complete:(pitch:Pitch,dir:string,receipt:Receipt)=>Promise<void>;
+ context?:()=>unknown;
+ complete:(pitch:Pitch,dir:string,receipt:Receipt)=>Promise<void|{retry:{code:string;hint:string}[]}>;
  emit?:(pitchId:number,step:FactoryStep)=>void;
 }
 export class Factory {
@@ -43,19 +46,32 @@ export class Factory {
   let timedOut=false;
   const timer=setTimeout(()=>{timedOut=true;controller.abort('timeout');},this.options.timeoutMs??150000);
   try{
-   dir=prepareJob(pitch,this.options.jobsRoot??resolve('factory/jobs'));this.directories.set(pitch.id,dir);
+   dir=prepareJob(pitch,this.options.jobsRoot??resolve('factory/jobs'),this.options.context?.()??{recent:[]});this.directories.set(pitch.id,dir);
    const abort=new Promise<never>((_,reject)=>{
     if(controller.signal.aborted)reject(Error('CANCELLED'));
     else controller.signal.addEventListener('abort',()=>reject(Error('CANCELLED')),{once:true});
    });
-   receipt=await Promise.race([this.runner.run(dir,step=>{
+   const attempts:Receipt[]=[];
+   for(let attempt=0;attempt<2;attempt++){
+   const current=await Promise.race([this.runner.run(dir,step=>{
     if(!this.store.pitch(pitch.id)){controller.abort('forgotten');return;}
     this.store.event('factory.step',{pitchId:pitch.id,kind:step.kind,label:step.label,simulated:step.simulated},Date.now(),pitch.user_id);
     this.options.emit?.(pitch.id,step);
    },controller.signal),abort]);
    if(controller.signal.aborted||!this.store.pitch(pitch.id))throw Error('CANCELLED');
-   if(receipt.status!=='completed')throw Error('RUN_FAILED');
-   await this.options.complete(pitch,dir,receipt);
+   attempts.push(current);
+   const total=(key:'tokensIn'|'tokensOut')=>attempts.every(r=>r[key]!==null)?attempts.reduce((sum,r)=>sum+r[key]!,0):null;
+   receipt={...current,playtests:attempts.reduce((sum,r)=>sum+r.playtests,0),tokensIn:total('tokensIn'),tokensOut:total('tokensOut'),...(attempts.length>1?{attempts:[...attempts]}:{})};
+   if(receipt.status!=='completed'||receipt.playtests>4)throw Error('RUN_FAILED');
+   const result=await this.options.complete(pitch,dir,receipt);
+   if(!result?.retry)break;
+   if(attempt===1||receipt.playtests>=4){this.store.setPitch(pitch.id,'rejected',result.retry.map(issue=>issue.code).join(','));this.store.event('game.quality_rejected',{pitchId:pitch.id,codes:result.retry.map(issue=>issue.code)},Date.now(),pitch.user_id);this.options.emit?.(pitch.id,{kind:'failed',label:'server quality checks rejected this game',simulated:current.simulated});break;}
+   this.store.event('game.quality_retry',{pitchId:pitch.id,codes:result.retry.map(issue=>issue.code)},Date.now(),pitch.user_id);
+   writeFileSync(join(dir,'inbox/feedback.json'),JSON.stringify({attempt:2,remainingPlaytests:4-receipt.playtests,issues:result.retry}),{mode:0o444});
+   for(const file of ['game.json','reject.json','notes.md'])rmSync(join(dir,'out',file),{force:true});
+   this.options.emit?.(pitch.id,{kind:'tuning',label:'server quality check requested a repair',simulated:current.simulated});
+
+   }
    if(this.store.pitch(pitch.id)?.status==='building')this.store.setPitch(pitch.id,'built');
   }catch{
    receipt.status=timedOut?'timeout':controller.signal.aborted?'cancelled':'failed';

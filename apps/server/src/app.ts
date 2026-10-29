@@ -1,3 +1,4 @@
+import {recentDigest,mechanicsKey} from './quality.js';
 import {scoreboard} from './scoreboard.js';
 import Fastify from 'fastify';
 import {WebSocketServer,WebSocket} from 'ws';
@@ -45,15 +46,18 @@ export async function createArcade(options:ArcadeOptions={}){
    if(client.bufferedAmount>1048576)client.terminate();else client.send(raw);
   }
  };
- const runner=options.runner??((options.mockCodex??process.env.MOCK_CODEX==='1')?new MockCodexRunner({stepMs:options.stepMs??350,examplesDir:options.seedDir??resolve('library')}):new CodexCliRunner({model:process.env.FACTORY_MODEL||'gpt-6.1-sol'}));
+ const runner=options.runner??((options.mockCodex??process.env.MOCK_CODEX==='1')?new MockCodexRunner({stepMs:options.stepMs??350}):new CodexCliRunner({model:process.env.FACTORY_MODEL||'gpt-6.1-sol'}));
+ const catalog=()=>library.all().map(game=>game.spec);
  const factory=new Factory(store,runner,{
+  context:()=>({recent:recentDigest(catalog()),knownFingerprints:catalog().slice(-256).map(mechanicsKey)}),
   ...(options.jobsRoot?{jobsRoot:options.jobsRoot}:{}),...(options.timeoutMs!==undefined?{timeoutMs:options.timeoutMs}:{}),
   ...(options.maxJobsPerHour!==undefined?{maxJobsPerHour:options.maxJobsPerHour}:{}),
   emit:(pitchId,step)=>{steps.push({pitchId,...step});if(steps.length>100)steps.shift();broadcast({type:'factory.step',pitchId,...step});},
   complete:async(pitch,dir,receipt)=>{
-   const result=validateJobOutput(dir,settings.read().denylist);
+   const result=validateJobOutput(dir,settings.read().denylist,catalog());
    if(result.ok){const id=library.addBuilt(pitch,result,receipt);const policy=settings.read();if((pitch.role==='mod'&&policy.autoApproveMods)||(pitch.role==='vip'&&policy.autoApproveVips))library.approve(id,'auto rule: '+pitch.role);}
    else{
+    if(result.issues.every(issue=>issue.code.startsWith('FUN_')))return {retry:result.issues};
     store.setPitch(pitch.id,'rejected',result.issues.map(i=>i.code).join(','));
     store.event('game.validation_rejected',{pitchId:pitch.id,codes:result.issues.map(i=>i.code)},Date.now(),pitch.user_id);
    }

@@ -3,6 +3,7 @@ export interface FactoryStep {kind:StepKind;label:string;simulated:boolean}
 export interface Receipt {
  source:'codex-cli'|'mock-codex';simulated:boolean;threadId:string|null;model:string;
  durationMs:number;playtests:number;tokensIn:number|null;tokensOut:number|null;
+ attempts?:Receipt[];
  usageLimitReset?:string;
  status:'completed'|'failed'|'timeout'|'cancelled';
 }
@@ -15,7 +16,7 @@ export class CodexEventParser {
  readonly receipt:Receipt;
  readonly steps:FactoryStep[]=[];
  private buffer='';private bytes=0;private counted=new Set<string>();private completed=new Set<string>();
- constructor(model:string,private emit:(step:FactoryStep)=>void=()=>{}){this.receipt=emptyReceipt(model);}
+ constructor(model:string,private emit:(step:FactoryStep)=>void=()=>{},private maxPlaytests=4){this.receipt=emptyReceipt(model);}
  private step(kind:StepKind,label:string):void {
   const step={kind,label,simulated:false};
   if(this.steps.length>=200)throw Error('EVENT_LIMIT');
@@ -47,7 +48,7 @@ export class CodexEventParser {
    const id=typeof item.id==='string'?item.id:'';
    const command=typeof item.command==='string'?item.command:'';
    if(item.type==='command_execution'&&/\bnode\s+tools\/playtest\.mjs\s+out\/game\.json\b/.test(command)){
-    if(!this.counted.has(id)){this.counted.add(id);this.receipt.playtests++;if(this.receipt.playtests>4)throw Error('PLAYTEST_LIMIT');}
+    if(!this.counted.has(id)){this.counted.add(id);this.receipt.playtests++;if(this.receipt.playtests>this.maxPlaytests)throw Error('PLAYTEST_LIMIT');}
     if(e.type==='item.completed'&&!this.completed.has(id)){
      this.completed.add(id);
      const output=typeof item.aggregated_output==='string'?item.aggregated_output:'';

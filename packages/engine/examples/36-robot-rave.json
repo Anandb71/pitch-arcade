@@ -1,0 +1,47 @@
+{
+  "v": 1,
+  "title": "Robot Rave",
+  "verb": "MASH",
+  "seconds": 5,
+  "palette": "candy",
+  "pattern": "grid",
+  "player": {
+    "emoji": "🤖",
+    "control": "mash",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "⭐",
+      "role": "decor",
+      "from": "bottom",
+      "every": 0.35,
+      "max": 12,
+      "motion": "rise",
+      "speed": 5,
+      "size": "m"
+    },
+    {
+      "emoji": "🌧️",
+      "role": "hazard",
+      "from": "top",
+      "every": 0.15,
+      "max": 20,
+      "motion": "fall",
+      "speed": 2,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "mash",
+    "n": 20
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [
+    "speedup"
+  ],
+  "sfx": "boom"
+}

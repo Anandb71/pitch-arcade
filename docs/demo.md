@@ -46,7 +46,7 @@ That query adds a dark checker backdrop. It does not change the production sourc
 npm run demo:auto uses the same chat source, queue, factory adapter,
 validator, approval method, library and gauntlet as a manual session.
 It supplies actual humanish bot inputs to the deterministic engine.
-The fixed seed of 1 produces four wins and one loss across five viewer games.
+The fixed seed of 8 produces four wins and one loss across five viewer games.
 The loss records a real designer beat in the demo database and emits a mock clip request.
 It does not fabricate a live Twitch clip or a model generation receipt.
 

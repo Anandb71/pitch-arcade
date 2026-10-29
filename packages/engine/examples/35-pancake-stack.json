@@ -1,0 +1,37 @@
+{
+  "v": 1,
+  "title": "Pancake Stack",
+  "verb": "CATCH",
+  "seconds": 5,
+  "palette": "citrus",
+  "pattern": "stripes",
+  "player": {
+    "emoji": "🧑‍🍳",
+    "control": "move_lr",
+    "speed": 6,
+    "size": "m"
+  },
+  "spawners": [
+    {
+      "emoji": "🥞",
+      "role": "goal",
+      "from": "bottom",
+      "every": 0.35,
+      "max": 12,
+      "motion": "rise",
+      "speed": 2,
+      "size": "m"
+    }
+  ],
+  "win": {
+    "type": "collect",
+    "n": 5
+  },
+  "lose": {
+    "type": "timeout"
+  },
+  "mods": [
+    "speedup"
+  ],
+  "sfx": "ding"
+}

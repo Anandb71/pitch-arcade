@@ -24,7 +24,7 @@ A transparent OBS overlay shows the factory, designer credit, lives, queue and t
 
 One main Codex thread built the original TypeScript application, deterministic engine, JSON format, bots, Twitch adapters, dashboard and demo tooling. Tests guided the engine, harness and Twitch work. The same thread reviewed the boundaries, fixed six findings and captured browser evidence.
 
-The final suite has 180 passing tests. The build record names each task and its validation. The main session is 01a18380-92df-7fb1-84cd-1b45659bee41.
+The final suite has 201 passing tests. The build record names each task and its validation. The main session is 01a18380-92df-7fb1-84cd-1b45659bee41.
 
 ### Runtime
 

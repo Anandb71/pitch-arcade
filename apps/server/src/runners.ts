@@ -1,5 +1,8 @@
+import poolData from './mock-pool.json';
+import {mechanicsKey} from './quality.js';
+import type {GameSpec} from '../../../packages/engine/src/index.js';
 import {spawn as nodeSpawn} from 'node:child_process';
-import {readFileSync,writeFileSync} from 'node:fs';
+import {readFileSync,writeFileSync,existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {setTimeout as delay} from 'node:timers/promises';
 import {StringDecoder} from 'node:string_decoder';
@@ -17,7 +20,10 @@ export class CodexCliRunner implements CodexRunner {
   const started=Date.now(),settings=sandboxSettings(this.roots);
   await (this.options.preflight??verifySandbox)(this.binary,dir,settings,signal);
   signal.throwIfAborted();
-  const parser=new CodexEventParser(this.model,emit);
+  const feedbackPath=join(dir,'inbox/feedback.json');
+  const remaining=existsSync(feedbackPath)?(JSON.parse(readFileSync(feedbackPath,'utf8')) as {remainingPlaytests:number}).remainingPlaytests:4;
+  if(!Number.isInteger(remaining)||remaining<1||remaining>4)throw Error('INVALID_PLAYTEST_BUDGET');
+  const parser=new CodexEventParser(this.model,emit,remaining);
   const child=(this.options.spawn??nodeSpawn)(this.binary,codexArgs(dir,this.model,settings),{
    cwd:dir,env:scrubEnvironment(),detached:process.platform!=='win32',stdio:['ignore','pipe','pipe']
   });
@@ -44,16 +50,21 @@ export class CodexCliRunner implements CodexRunner {
   });
  }
 }
-export interface MockOptions {stepMs?:number;examplesDir?:string}
+export interface MockOptions {stepMs?:number}
 export class MockCodexRunner implements CodexRunner {
- readonly model='mock replay';
+ readonly model='mock replay';private used=new Set<string>();private families=new Map<string,number>();
  constructor(private options:MockOptions={}){}
  async run(dir:string,emit:(step:FactoryStep)=>void,signal:AbortSignal):Promise<Receipt>{
   const started=Date.now(),receipt=emptyReceipt(this.model,true);
   const inbox=JSON.parse(readFileSync(join(dir,'inbox/pitch.json'),'utf8')) as {untrusted_text:string};
   const idea=inbox.untrusted_text.toLowerCase();
-  const name=/mash|pump|charge|rocket/.test(idea)?'05-rocket-charge.json':/pop|click|bubble/.test(idea)?'02-bubble-pop.json':/catch|collect|berry/.test(idea)?'03-berry-basket.json':/escape|reach|moon/.test(idea)?'04-moon-escape.json':'01-taco-rain.json';
-  const spec=JSON.parse(readFileSync(join(this.options.examplesDir??'factory/template/examples',name),'utf8'));
+  const contextPath=join(dir,'inbox/context.json'),context=existsSync(contextPath)?JSON.parse(readFileSync(contextPath,'utf8')) as {knownFingerprints?:string[]}:{};
+  const known=new Set(context.knownFingerprints??[]),pool=poolData.games as unknown as {family:string;spec:GameSpec}[];
+  const preferred=/mash|pump|charge|rocket|rhythm|robot|dance/.test(idea)?'mash':/pop|click|bubble|aim|shoot|timing|reflex|tap/.test(idea)?'hit':/catch|collect|berry|stack|pancake|harvest|scoop/.test(idea)?'collect':/escape|reach|moon|memory|find|chase|ghost|deliver/.test(idea)?'reach':/dodge|avoid|survive/.test(idea)?'survive':null;
+  const score=(entry:{spec:GameSpec})=>(entry.spec.win.type===preferred?4:0)+entry.spec.title.toLowerCase().split(' ').filter(word=>word.length>3&&idea.includes(word)).length;
+  const selected=pool.filter(entry=>!known.has(mechanicsKey(entry.spec))&&!this.used.has(mechanicsKey(entry.spec))).sort((a,b)=>score(b)-score(a)||(this.families.get(a.family)??0)-(this.families.get(b.family)??0))[0];
+  if(!selected){writeFileSync(join(dir,'out/reject.json'),JSON.stringify({reason:'The mock replay pool has no unused mechanic. Start a fresh demo or use live generation.'}));receipt.status='completed';receipt.durationMs=Date.now()-started;return receipt;}
+  const spec=structuredClone(selected.spec);this.used.add(mechanicsKey(spec));this.families.set(selected.family,(this.families.get(selected.family)??0)+1);
   const step=async(kind:FactoryStep['kind'],label:string)=>{
    signal.throwIfAborted();emit({kind,label,simulated:true});
    if(this.options.stepMs!==0)await delay(this.options.stepMs??350,undefined,{signal});
@@ -62,7 +73,7 @@ export class MockCodexRunner implements CodexRunner {
   writeFileSync(join(dir,'out/game.json'),JSON.stringify(spec,null,2));
   await step('tuning','preparing game parameters');
   await step('playtest','playtest 1: PASS');
-  writeFileSync(join(dir,'out/notes.md'),'A simulated factory replay uses a curated game.');
+  writeFileSync(join(dir,'out/notes.md'),'A simulated replay uses a measured mechanical variant from the expanded seed library.');
   await step('done','done');
   receipt.playtests=1;receipt.status='completed';receipt.durationMs=Date.now()-started;
   return receipt;
