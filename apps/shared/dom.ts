@@ -11,6 +11,6 @@ export function topbar(active:string):HTMLElement{
  header.append(brand(),nav);return header;
 }
 export async function post<T=unknown>(path:string,body?:unknown):Promise<T>{
- const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Arcade-Control':'local'},body:JSON.stringify(body??{})});
+ const response=await fetch(path,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-Arcade-Control':'local'},body:JSON.stringify(body??{})});
  const value=await response.json() as T&{error?:string};if(!response.ok)throw Error(value.error??'That action could not finish.');return value;
 }

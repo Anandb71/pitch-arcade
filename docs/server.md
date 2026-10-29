@@ -13,7 +13,7 @@ The WebSocket at /events broadcasts sanitized factory and state events.
 * npm run forget -- <login> deletes a user's stored records.
 * npm run mock:twitch starts the local EventSub wire fixture on port 8081.
 * npm run mock:replay sends five pitches through that fixture.
-* npm run library:seed rebuilds the twenty seed games and honest validation receipts.
+* npm run library:seed rebuilds the canonical seed collection and honest validation receipts.
 * npm run factory:check verifies the Codex sandbox without a model call.
 
 Node 22.11 needs --experimental-sqlite. The npm scripts supply it.
@@ -32,6 +32,8 @@ The newer injection helper requires an ESM loading behavior unavailable in that 
 | MOCK_TWITCH_PORT | Port for the separate mock server, default 8081 |
 | PORT | Arcade port, default 3000 |
 | ARCADE_DB_PATH | Persistent SQLite path |
+| ARCADE_ACCESS_TOKEN | Secret with at least 24 characters, required for public hosts |
+| ARCADE_PUBLIC_HOSTS | Comma separated exact hostnames or leading wildcard subdomains |
 | PITCH_COOLDOWN_MS | User cooldown, default 120000 |
 | PITCH_QUEUE_CAP | Active factory capacity, default and maximum 20 |
 | FACTORY_MAX_JOBS_PER_HOUR | Job budget, default 20 |
@@ -51,7 +53,7 @@ See [Twitch setup](twitch.md) for authorization, scopes, reconnect behavior and 
 Read state with GET /api/state and approved games with GET /api/library.
 GET /api/health identifies this server and its mock flags.
 Mutation requests require the X-Arcade-Control header with value local.
-The server rejects unrelated Host and Origin values and does not enable CORS.
+The server rejects unrelated Host and Origin values and does not enable CORS. Public allowlisted hosts also require the access key or its private cookie.
 The header is a browser request guard, not a secret. Local OS users are trusted.
 
 ```sh
@@ -146,3 +148,43 @@ RealResultsSink uses the live Helix client, posts confirmed clip links and sends
 GET /api/leaderboards returns designer point totals and player high scores. The same boards travel in /api/state. Round scores reference persisted plays and player identities reference gauntlets. Existing databases gain the two score tables automatically. Legacy wins without streak data count 100 points each. Bots are labeled independently of human players.
 
 Each win earns 100 times the consecutive win count, capped at 5×. A loss gives the designer 100 and resets the player streak. A skip also resets it. Results include per game points, streak and designer credit. Render combo effects are decorative and do not write scores.
+
+## Private access through a quick tunnel
+
+Keep the arcade listener on 127.0.0.1. Install cloudflared separately. Put ARCADE_ACCESS_TOKEN in your private environment or .env file using a URL safe random value of at least 24 characters. Do not print it. Configure the allowed public hostname before restarting the server. Quick tunnels can use this nonsecret setting:
+
+```text
+ARCADE_PUBLIC_HOSTS=*.trycloudflare.com
+```
+
+For a stable tunnel, prefer its exact hostname. Hosts are ASCII hostnames without a scheme, port, path or trailing dot. Commas separate entries. A leading wildcard matches real subdomains, not the apex or names that only resemble the suffix. Unknown hosts remain forbidden. Forwarded host headers do not grant access.
+
+Start the arcade as usual, then start the tunnel separately:
+
+```sh
+npm run start
+```
+
+```sh
+cloudflared tunnel --url http://localhost:3000
+```
+
+The first command is the live Twitch mode. Use npm run demo instead when rehearsing without credentials. cloudflared forwards locally to the same server. Keep its default public Host forwarding and do not set httpHostHeader to localhost. The server never prints an access URL containing the key.
+
+Replace the example hostname with the HTTPS hostname cloudflared prints. Replace YOUR_PRIVATE_KEY privately in the browser or OBS source settings:
+
+```text
+https://your-tunnel.trycloudflare.com/overlay/?key=YOUR_PRIVATE_KEY&sound=0
+https://your-tunnel.trycloudflare.com/play/?key=YOUR_PRIVATE_KEY&sound=1
+https://your-tunnel.trycloudflare.com/dashboard/?key=YOUR_PRIVATE_KEY
+```
+
+The OBS overlay is a 1920 by 1080 browser source. The play page can be captured from the streamer machine. Leave backdrop off for a transparent overlay. Each browser profile or OBS source cookie profile must authenticate once. Do not screenshot source settings while the private URL is visible.
+
+A valid key query produces a 303 redirect without the key and a host bound __Host-arcade cookie. The cookie is derived from the secret, not its raw value. It has HttpOnly, Secure, SameSite=Lax and Path=/ attributes and no Domain. Remaining query options such as sound are preserved. The browser attaches the cookie to assets, fetches and WebSockets. Dashboard fetches explicitly use same origin credentials and retain the X-Arcade-Control header. WebSockets need the same host HTTPS Origin. The initial query never reaches browser application code.
+
+API tools may send X-Arcade-Key instead of using a cookie. They still need X-Arcade-Control: local for mutations. Missing or wrong credentials return only Unauthorized. with status 401. No state is returned. Cross origin actions and WebSockets remain forbidden. The server does not trust X-Forwarded-Host or X-Forwarded-Proto for access. Cache and referrer headers protect the entry redirect, and no CORS headers are added.
+
+The shared key grants full dashboard access, including pause, approval and deletion. It is not a public viewer link. Session cookies stay valid for that host while the configured secret is unchanged. Rotate the secret and restart the server to invalidate cookies and close old WebSockets. Invalid public settings fail closed with a message naming only the configuration variables. Loopback access keeps working without a key.
+
+Tests use synthetic credentials and local HTTP and WebSocket fixtures. Browser verification uses a local TLS terminating proxy with a public shaped Host and same host Origin. No Cloudflare tunnel was opened for these checks.

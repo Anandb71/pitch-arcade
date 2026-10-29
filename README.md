@@ -72,7 +72,7 @@ Mock generation is explicitly simulated. No Twitch clip is published by these co
 
 ## How Codex was used
 
-**Build:** one main Codex thread wrote the original engine, game format, bot harness, Twitch adapters, browser clients, tests and recording tools. The session is `01a18380-92df-7fb1-84cd-1b45659bee41`. The current suite has **267 passing tests**.
+**Build:** one main Codex thread wrote the original engine, game format, bot harness, Twitch adapters, browser clients, tests and recording tools. The session is `01a18380-92df-7fb1-84cd-1b45659bee41`. The current suite has **281 passing tests**.
 
 **Runtime:** live jobs use the installed Codex CLI with **gpt-6.1-sol** by default. Each isolated job receives untrusted pitch data and a short digest of recent mechanics and themes. It writes JSON, uses the trusted playtest tool and gets at most one repair within the same total budget. The server independently checks everything before approval. Mock mode makes no model call.
 
@@ -105,6 +105,26 @@ Wins earn 100 points times the current win streak, capped at 5×. Losses award t
 
 The dashboard has approve, reject, preview, skip, stop and pause controls. Pause stops intake and active work. Optional auto approval applies to validated mod or VIP pitches. Chat cannot control gameplay.
 
+## Load it from another machine
+
+Public access is opt in. Set ARCADE_ACCESS_TOKEN to a private random value with at least 24 characters. Set ARCADE_PUBLIC_HOSTS to the exact tunnel hostname, or `*.trycloudflare.com` for quick tunnels. Keep the secret in your local environment or private .env file. Restart the arcade, then run this in another terminal:
+
+```sh
+cloudflared tunnel --url http://localhost:3000
+```
+
+Use the HTTPS hostname printed by cloudflared. Enter these links privately in the streamer browser and OBS, replacing both placeholders:
+
+```text
+https://your-tunnel.trycloudflare.com/play/?key=YOUR_PRIVATE_KEY&sound=1
+https://your-tunnel.trycloudflare.com/overlay/?key=YOUR_PRIVATE_KEY&sound=0
+https://your-tunnel.trycloudflare.com/dashboard/?key=YOUR_PRIVATE_KEY
+```
+
+The first visit removes the key from the URL and sets a Secure, HttpOnly cookie. Each browser or OBS cookie profile needs its own first visit. Later requests and WebSocket connections use that cookie. The overlay remains 1920 by 1080 with transparency. Anyone holding the key has dashboard control too. Never share a full access link or capture it in a screenshot.
+
+The server stays bound to 127.0.0.1. cloudflared must preserve the public Host header. Do not configure a loopback Host override. Missing or short keys keep public access disabled. See [server details](docs/server.md) and [security](SECURITY.md). Local TLS proxy fixtures verify the access path; this task does not claim a deployed Cloudflare tunnel test.
+
 ## Environment variables
 
 Demo commands set their own mock flags. Live mode needs the four Twitch settings below plus saved OAuth grants. Blank optional values use defaults.
@@ -120,6 +140,8 @@ Demo commands set their own mock flags. Live mode needs the four Twitch settings
 | MOCK_CODEX | Optional | 1 uses curated factory replays |
 | PORT | Optional | Local server port, default 3000 |
 | ARCADE_DB_PATH | Optional | SQLite file, default data/arcade.sqlite |
+| ARCADE_ACCESS_TOKEN | Public access | Private secret of at least 24 characters |
+| ARCADE_PUBLIC_HOSTS | Optional | Comma separated public hostnames, with optional leading wildcard |
 | OPENAI_API_KEY | Optional | OpenAI moderation only |
 | FACTORY_MODEL | Optional | CLI model, default gpt-6.1-sol |
 | FACTORY_MAX_JOBS_PER_HOUR | Optional | Job budget, default 20, maximum 100 |
@@ -169,7 +191,7 @@ The pure engine lives in `packages/engine`. The harness, renderer, Twitch client
 
 Games are data. The closed schema allows known controls, motions, verbs and emoji. Chat text never becomes code, HTML, a shell command or a file path. The factory has protected instructions, disabled command network access, OS boundary probes and a total 150 second deadline. The server ignores the agent's claimed report and reruns its own validation. Human approval or an explicit trusted role rule gates viewer games.
 
-Local controls bind to 127.0.0.1 and check Host, Origin and a custom mutation header. Keep them on a trusted machine. Heuristic moderation and secret scanning have limits. See [security](SECURITY.md) and the [six finding review](docs/review.md).
+The server binds to 127.0.0.1 and checks Host, Origin and a custom mutation header. Optional public hosts also require the private access token or its host bound cookie. Public WebSockets require a same host HTTPS Origin. Heuristic moderation and secret scanning have limits. See [security](SECURITY.md) and the [six finding review](docs/review.md).
 
 ## Tests and evidence
 
@@ -182,7 +204,7 @@ npm run playtest -- library/01-taco-rain.json
 npm run shots
 ```
 
-267 tests cover deterministic outcomes, validation, quality gates, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols, rankings and repeated recording cycles. [Fresh clone proof](docs/fresh-clone.md) records installation, the suite and the recording command from a clean checkout.
+281 tests cover deterministic outcomes, validation, quality gates, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols, rankings and repeated recording cycles. [Fresh clone proof](docs/fresh-clone.md) records installation, the suite and the recording command from a clean checkout.
 
 The screenshot script captures actual gameplay, hit feedback, factory work, opening cards, approvals and credited results at 1920 by 1080. It also checks sound, reduced motion, input, preview isolation and literal untrusted HTML rendering.
 

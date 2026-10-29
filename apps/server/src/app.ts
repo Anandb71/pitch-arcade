@@ -1,3 +1,4 @@
+import {PublicAccess,type PublicAccessOptions} from './public-access.js';
 import {recentDigest,mechanicsKey} from './quality.js';
 import {scoreboard} from './scoreboard.js';
 import Fastify from 'fastify';
@@ -19,16 +20,13 @@ import {SettingsStore} from './settings.js';
 import type {Settings,ArcadeState} from '../../../packages/shared/src/protocol.js';
 import type {FactoryStep} from './codex-events.js';
 export interface ArcadeOptions {
+ publicAccess?:PublicAccessOptions;
  dbPath?:string;mockTwitch?:boolean;mockCodex?:boolean;seedLibrary?:boolean;seedDir?:string;stepMs?:number;
  cooldownMs?:number;queueCap?:number;maxJobsPerHour?:number;timeoutMs?:number;jobsRoot?:string;
  resultsSink?:ResultsSink;allowDemoControl?:boolean;chatSource?:ChatSource;runner?:CodexRunner;moderator?:Moderator;sendChat?:(text:string)=>Promise<void>;
 }
-const trustedHost=(host:string|undefined):boolean=>!!host&&/^(?:localhost|127\.0\.0\.1)(?::\d+)?$/i.test(host);
-function trustedOrigin(origin:string|undefined,host:string|undefined):boolean {
- if(!trustedHost(host))return false;if(!origin)return true;
- try{const url=new URL(origin);return url.host===host&&(url.protocol==='http:'||url.protocol==='https:');}catch{return false;}
-}
 export async function createArcade(options:ArcadeOptions={}){
+ const access=new PublicAccess(options.publicAccess??{hosts:process.env.ARCADE_PUBLIC_HOSTS,token:process.env.ARCADE_ACCESS_TOKEN});
  const path=options.dbPath??resolve('data/arcade.sqlite');if(path!==':memory:')mkdirSync(dirname(path),{recursive:true});
  const store=new Repository(openSqlite(path)),library=new Library(store);
  try{if(options.seedLibrary!==false)library.importSeeds(options.seedDir??resolve('library'));}catch(error){store.close();throw error;}
@@ -89,9 +87,19 @@ export async function createArcade(options:ArcadeOptions={}){
  const unsubscribe=[source.subscribe(receive)];
  if(options.chatSource)unsubscribe.push(options.chatSource.subscribe(receive));
  app.addHook('onRequest',async(request,reply)=>{
-  if(!trustedOrigin(request.headers.origin,request.headers.host))return reply.code(403).send({error:'Local control only.'});
+  const kind=access.kind(request.headers.host);
+  if(kind==='unknown')return reply.code(403).send({error:'Local control only.'});
+  let auth:ReturnType<PublicAccess['authorize']>|undefined;
+  if(kind==='public'){
+   reply.header('Cache-Control','no-store').header('Referrer-Policy','no-referrer');
+   auth=access.authorize(request.headers.host!,request.headers,request.raw.url??'/');
+   if(!auth.authorized)return reply.code(401).type('text/plain').send('Unauthorized.');
+  }
+  if(!access.originAllowed(request.headers.origin,request.headers.host))return reply.code(403).send({error:'Local control only.'});
   if(!['GET','HEAD'].includes(request.method)&&request.headers['x-arcade-control']!=='local')return reply.code(403).send({error:'A local control header is required.'});
+  if(auth?.location!==undefined)return reply.code(303).header('Set-Cookie',auth.cookie!).header('Location',auth.location).send('Continue.');
  });
+ app.setNotFoundHandler(async(_request,reply)=>reply.code(404).send({error:'Not found.'}));
  app.setErrorHandler((_error,_request,reply)=>reply.code(400).send({error:'That request could not be handled.'}));
  const html=(path:string,reply:import('fastify').FastifyReply)=>reply.header('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'none'; frame-ancestors 'self'").type('text/html').send(readFileSync(resolve(path),'utf8'));
  app.get('/',async(_request,reply)=>html('dist/web/apps/dashboard/index.html',reply));
@@ -149,7 +157,13 @@ export async function createArcade(options:ArcadeOptions={}){
  if(options.allowDemoControl&&mockTwitch)app.post<{Body:{frozen:boolean}}>('/api/demo/freeze',{schema:{body:{type:'object',required:['frozen'],properties:{frozen:{type:'boolean'}}}}},async request=>{gauntlet.frozen=request.body.frozen;return {frozen:gauntlet.frozen};});
  let playerSocket:WebSocket|undefined;
  app.server.on('upgrade',(request,socket,head)=>{
-  if(request.url!=='/events'||!trustedOrigin(request.headers.origin,request.headers.host)){socket.destroy();return;}
+  socket.on('error',()=>socket.destroy());
+  const deny=(status:401|403)=>{const body=status===401?'Unauthorized.':'Forbidden.';socket.end('HTTP/1.1 '+status+' '+(status===401?'Unauthorized':'Forbidden')+'\r\nContent-Type: text/plain\r\nContent-Length: '+Buffer.byteLength(body)+'\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n'+body);};
+  const kind=access.kind(request.headers.host);if(kind==='unknown'){deny(403);return;}
+  const auth=kind==='public'?access.authorize(request.headers.host!,request.headers,request.url??'/',true):undefined;
+  if(kind==='public'&&!auth?.authorized){deny(401);return;}
+  if((auth?.path??request.url)!=='/events'||!access.originAllowed(request.headers.origin,request.headers.host,kind==='public')){deny(403);return;}
+  if(kind==='public')request.url='/events';
   sockets.handleUpgrade(request,socket,head,ws=>{
    ws.on('error',()=>{});
    ws.send(JSON.stringify({type:'arcade',state:getState()}));

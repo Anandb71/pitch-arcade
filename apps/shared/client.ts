@@ -26,7 +26,7 @@ export class ArcadeClient {
   if(visible&&!this.videoIntro){this.videoIntro=document.createElement('section');this.videoIntro.className='video-hype';const logo=document.createElement('strong'),copy=document.createElement('p'),label=document.createElement('span');logo.textContent='PITCH ARCADE';copy.textContent='Chat dreams it. The factory builds it. You survive it.';label.textContent='A NEW ROUND OF BEAUTIFUL NONSENSE';this.videoIntro.append(label,logo,copy);document.body.append(this.videoIntro);}
   if(this.videoIntro)this.videoIntro.hidden=!visible;
  }
- async refresh():Promise<void>{try{const response=await fetch('/api/state');if(response.ok)this.accept(await response.json() as ArcadeState);}catch{/* Reconnect retries preserve the last valid screen. */}}
+ async refresh():Promise<void>{try{const response=await fetch('/api/state',{credentials:'same-origin'});if(response.ok)this.accept(await response.json() as ArcadeState);}catch{/* Reconnect retries preserve the last valid screen. */}}
  input(input:Input):void{if(this.hasControl&&this.socket?.readyState===WebSocket.OPEN)this.socket.send(JSON.stringify({type:'input',control:'local',input}));}
  dispose():void{this.videoIntro?.remove();this.disposed=true;clearTimeout(this.retry);clearTimeout(this.refreshTimer);this.socket?.close();}
 }
