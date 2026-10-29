@@ -72,7 +72,7 @@ Mock generation is explicitly simulated. No Twitch clip is published by these co
 
 ## How Codex was used
 
-**Build:** one main Codex thread wrote the original engine, game format, bot harness, Twitch adapters, browser clients, tests and recording tools. The session is `01a18380-92df-7fb1-84cd-1b45659bee41`. The current suite has **204 passing tests**.
+**Build:** one main Codex thread wrote the original engine, game format, bot harness, Twitch adapters, browser clients, tests and recording tools. The session is `01a18380-92df-7fb1-84cd-1b45659bee41`. The current suite has **219 passing tests**.
 
 **Runtime:** live jobs use the installed Codex CLI with **gpt-6.1-sol** by default. Each isolated job receives untrusted pitch data and a short digest of recent mechanics and themes. It writes JSON, uses the trusted playtest tool and gets at most one repair within the same total budget. The server independently checks everything before approval. Mock mode makes no model call.
 
@@ -82,14 +82,14 @@ Three actual runtime jobs were measured earlier with gpt-6-luna. All passed the 
 
 1. Create a separate Twitch bot account. Enable 2FA on the account that will register the developer app.
 2. In the broadcaster's chat, run `/mod your_bot_login`.
-3. Register an app at the Twitch developer console. Choose a confidential client. Add `http://localhost:8787/callback` as its OAuth redirect URL.
+3. Register an app at the Twitch developer console. Choose a confidential client. For the redirect flow, add `http://localhost:8787/callback` as its OAuth redirect URL. The device flow does not use a localhost callback.
 4. Copy `.env.example` to `.env`. Set `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`, `TWITCH_BROADCASTER_LOGIN` and `TWITCH_BOT_LOGIN`. Leave mock flags empty for live operation.
-5. Run `npm run auth`. Open the first printed URL as the broadcaster, then the next as the bot. Each login must match its configured account.
+5. On a headless box, run `npm run auth -- --device --role=broadcaster`, then `npm run auth -- --device --role=bot`. Open the verification page on any browser, enter the displayed user code and sign in as the expected account. Keep the terminal running while it waits. On a machine with a local browser, `npm run auth` keeps the redirect flow available. Each login must match its configured account.
 6. Run `npm run auth:check` to validate scopes. Run `npm run doctor` to check the environment.
 7. Sign in to the installed Codex CLI with ChatGPT. The runtime profile is verified for codex-cli 0.165.0. Run `npm run factory:check` before using real generation.
 8. Run `npm run start`. Open the dashboard and play page. Start a stream with clips enabled before testing clip publication.
 
-The bot requests `user:read:chat`, `user:write:chat` and `user:bot`. The broadcaster requests `clips:edit`. Tokens live outside the repo at `~/.config/pitch-arcade/tokens.json` with mode 0600. Never paste tokens into chat. `OPENAI_API_KEY` is optional and enables moderation only. Codex generation uses the CLI sign in.
+The bot requests `user:read:chat`, `user:write:chat` and `user:bot`. The broadcaster requests `channel:bot`, `clips:edit` and `user:read:chat`. Device authorization prints only the verification page, user code, expiry and safe account guidance. Client credentials and the device code stay private. Both grants support refresh. Tokens live outside the repo at `~/.config/pitch-arcade/tokens.json` with mode 0600. Never paste tokens into chat. `OPENAI_API_KEY` is optional and enables moderation only. Codex generation uses the CLI sign in.
 
 See [setup](docs/setup.md) for the checklist and [Twitch details](docs/twitch.md) for refresh, scopes and reconnect behavior.
 
@@ -182,7 +182,7 @@ npm run playtest -- library/01-taco-rain.json
 npm run shots
 ```
 
-204 tests cover deterministic outcomes, validation, quality gates, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols, rankings and repeated recording cycles. [Fresh clone proof](docs/fresh-clone.md) records installation, the suite and the recording command from a clean checkout.
+219 tests cover deterministic outcomes, validation, quality gates, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols, rankings and repeated recording cycles. [Fresh clone proof](docs/fresh-clone.md) records installation, the suite and the recording command from a clean checkout.
 
 The screenshot script captures actual gameplay, hit feedback, factory work, opening cards, approvals and credited results at 1920 by 1080. It also checks sound, reduced motion, input, preview isolation and literal untrusted HTML rendering.
 
