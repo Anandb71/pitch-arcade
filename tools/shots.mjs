@@ -14,7 +14,7 @@ const child=spawn(process.execPath,['--experimental-sqlite','tools/start.mjs','-
  env:{...process.env,PORT:String(port),ARCADE_DB_PATH:join(data,'arcade.sqlite'),MOCK_FACTORY_STEP_MS:'700'},stdio:['ignore','pipe','pipe']
 });
 let serverLog='';child.stdout.on('data',chunk=>{serverLog=(serverLog+chunk).slice(-8000);});child.stderr.on('data',chunk=>{serverLog=(serverLog+chunk).slice(-8000);});
-let browser,simChild;
+let browser,simChild,videoChild;
 const errors=[],captures=[];
 async function state(){const response=await fetch(base+'/api/state',{signal:AbortSignal.timeout(2000)});if(!response.ok)throw Error('State unavailable.');return response.json();}
 async function post(path,body={}){const response=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json','X-Arcade-Control':'local'},body:JSON.stringify(body)});assert.ok(response.ok,path+' returned '+response.status);return response.json();}
@@ -51,6 +51,16 @@ try{
  await until(s=>s.gauntlet.phase==='countdown');await play.waitForFunction(()=>document.querySelector('.count-number')?.getAnimations().length>0);await post('/api/demo/freeze',{frozen:true});await play.waitForFunction(()=>document.getElementById('app').dataset.phase==='countdown');await capture(play,'play-countdown.png',{phase:'countdown'});await play.emulateMedia({reducedMotion:'reduce'});await post('/api/demo/freeze',{frozen:false});
  const ids=new Set();
  for(let index=0;index<3;index++){
+  if(index===1){
+   await play.emulateMedia({reducedMotion:'no-preference'});
+   await play.evaluate(()=>{const original=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(text,...args){if(String(text).includes('× COMBO'))window.__lastCombo={text,time:performance.now()};return original.call(this,text,...args);};});
+   const hit=await until(s=>s.gauntlet.phase==='play'&&s.gauntlet.round===2&&s.gauntlet.snapshot.score>0);
+   await post('/api/demo/freeze',{frozen:true});
+   await play.waitForFunction(()=>window.__lastCombo&&performance.now()-window.__lastCombo.time<100);
+   await capture(play,'play-hit.png',{phase:'play',game:hit.gauntlet.game.title,source:'Actual bot hit with render particles and cosmetic combo feedback',score:hit.gauntlet.snapshot.score});
+   await post('/api/demo/freeze',{frozen:false});
+  }
+
   const live=await until(s=>s.gauntlet.phase==='play'&&s.gauntlet.snapshot.frame>=110&&!ids.has(s.gauntlet.game.id));
   ids.add(live.gauntlet.game.id);
   await post('/api/demo/freeze',{frozen:true});
@@ -94,6 +104,8 @@ try{
  await play.waitForFunction(()=>document.querySelectorAll('.round-receipt').length===5&&document.querySelector('.results-leaders').textContent.includes('humanish_bot'));
  assert.ok(await play.evaluate(()=>window.__audioNotes>0),'Unmuted audio must synthesize oscillator cues.');
  await capture(play,'play-results.png',{phase:'finished',points:finished.gauntlet.points,outcomes:finished.gauntlet.outcomes});
+ await overlay.waitForFunction(()=>document.querySelector('.player-list')?.textContent.includes('700'));
+ await capture(overlay,'leaderboard.png',{phase:'finished',source:'Actual persistent designer totals and labeled bot high score',scoreboards:finished.scoreboards});
  const muted=await context.newPage();await muted.goto(base+'/play/?sound=0');await muted.getByRole('button',{name:'Sound off',exact:true}).waitFor();await muted.close();
  await dashboard.getByRole('button',{name:'Start gauntlet',exact:false}).waitFor();
  await until(()=>true);
@@ -141,10 +153,18 @@ try{
  assert.ok(await overlay.locator('.overlay-panel,.overlay-ticker').evaluateAll(elements=>elements.every(el=>{const r=el.getBoundingClientRect();return r.left>=48&&r.top>=48&&r.right<=1872&&r.bottom<=1032;})));
  await capture(overlay,'overlay.png',{source:'Actual EventSub mock and fake Helix with real Twitch clients. Factory workers are mock replays. Real spike receipt was measured in milestone four.',game:protocol.gauntlet.game.title,realReceipt:(await state()).games.find(game=>game.receipt.source==='codex-cli').receipt,clip:protocol.resultTicker.find(item=>item.kind==='chat'&&item.text.includes('https://clips.twitch.tv/'))});
  await post('/api/demo/freeze',{frozen:false});
+ await capture(overlay,'factory-floor.png',{source:'Actual two mock jobs, real spike receipt and simulated clip ticker',phase:'play'});
+ // A separate video session supplies the opening card from the real recording mode.
+ const videoPort=await new Promise((resolve,reject)=>{const server=createServer();server.once('error',reject);server.listen(0,'127.0.0.1',()=>{const address=server.address();server.close(()=>resolve(address.port));});});
+ videoChild=spawn(process.execPath,['--experimental-sqlite','tools/start.mjs','--video','--hold'],{env:{...process.env,PORT:String(videoPort),ARCADE_DB_PATH:join(data,'video.sqlite')},stdio:['ignore','pipe','pipe']});
+ videoChild.stdout.on('data',()=>{});videoChild.stderr.on('data',()=>{});
+ base='http://127.0.0.1:'+videoPort;await until(()=>true,20000);
+ await play.goto(base+'/play/?sound=0');await play.locator('.video-hype').waitFor({state:'visible'});
+ await capture(play,'video-intro.png',{source:'Actual demo:video opening card',phase:'intro'});
  assert.deepEqual(errors,[],'Browser pages must have no uncaught errors.');
  writeFileSync('shots/manifest.json',JSON.stringify({viewport:{width:1920,height:1080},seed:8,source:'Actual scripted mock session plus a local Twitch protocol simulation. Real Codex spike receipts are labeled separately. Clip URLs are fake Helix fixtures.',captures,finished:{score:finished.gauntlet.score,lives:finished.gauntlet.lives,outcomes:finished.gauntlet.outcomes},manualControls:{keyboardMovement:true,doubleTapSkip:true,previewIsolated:true,approvalRules:true,wordFilter:true,audioUnlocked:true,volume:true,queryMute:true,resultsCredits:true,motionAndReducedMotion:true},browserErrors:errors},null,2)+'\n');
- console.log('PASS: eleven screenshots, synthesized audio, three distinct games, working controls and a finished five game gauntlet.');
+ console.log('PASS: '+captures.length+' screenshots, synthesized audio, three distinct games, working controls and a finished five game gauntlet.');
 }finally{
- await browser?.close();simChild?.kill('SIGTERM');child.kill('SIGTERM');
+ await browser?.close();videoChild?.kill('SIGTERM');simChild?.kill('SIGTERM');child.kill('SIGTERM');
  await Promise.race([new Promise(resolve=>child.once('exit',resolve)),delay(5000).then(()=>child.kill('SIGKILL'))]);
 }

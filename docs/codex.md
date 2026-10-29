@@ -4,7 +4,7 @@
 
 The project was built in one main Codex thread: 01a18380-92df-7fb1-84cd-1b45659bee41. The thread wrote original code, tests, documentation and browser tooling. The build includes fifteen planned engineering tasks: T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14 and T15. The final review, documentation, screenshots and clean installation checks are recorded separately in BUILDLOG.md.
 
-The current suite has 201 tests in 33 files. Milestones one through four produced sixteen implementation commits, including the real factory spike. Five final packaging commits cover review, docs, screenshots, fresh clone proof and the final audit. Milestone five closed with twenty one commits. The polish sprint adds the model switch, scoring, sound, render feedback and broadcast presentation.
+The current suite has 204 tests in 34 files. Milestones one through four produced sixteen implementation commits, including the real factory spike. Five final packaging commits cover review, docs, screenshots, fresh clone proof and the final audit. Milestone five closed with twenty one commits. Milestone six added six commits for the model switch, scoring, sound, render feedback, broadcast presentation and browser evidence. Milestone seven added varied prompts, quality gates and seeds. Milestone eight added the recording loop and Playwright recorder. Through milestone eight the repository contains 29 commits. Milestone nine packages the refreshed docs and screenshots.
 
 The engine, harness and Twitch work started with tests. Each task closed with a green suite and a build log entry. The final self review found six defects and added regression tests for each. Browser tooling captures real running application state and checks controls, previews, rendering and a finished unattended session.
 
@@ -16,7 +16,7 @@ The CLI emits JSONL. The parser extracts fixed factory step labels, thread ID, m
 
 The optional Codex SDK is not installed. The CLI already supports the signed in ChatGPT session, constrained job execution and JSONL receipts needed here. OPENAI_API_KEY is used only for optional moderation. The application never reads the Codex authentication file.
 
-MockCodexRunner is a labeled replay of curated games. Its thread ID and usage are null. Its duration measures the replay, not model generation. Twenty seed receipts credit the main build thread without inventing per game timings. Three later runtime receipts contain actual measurements.
+MockCodexRunner is a labeled replay of curated games. Its thread ID and usage are null. Its duration measures the replay, not model generation. Thirty seed receipts credit the main build thread without inventing per game timings. Three later runtime receipts contain actual measurements.
 
 See [factory configuration](factory.md) for exact verified keys and platform limits. Browser screenshots use mock authoring or local Twitch protocol fixtures. The overlay labels an actual spike receipt separately. Its clip URL is simulated. Public Twitch chat and clips remain unverified without account credentials.
 
@@ -32,7 +32,7 @@ On October 29, 2026, the installed codex-cli 0.165.0 ran three jobs with gpt-6-l
 
 Median build time was 15.900 seconds, including sandbox preflight. All six playtests are actual tool calls counted from CLI JSONL. Tokens are the unmodified turn.completed usage fields, including input processed across tool turns. These are not unique prompt lengths or billing estimates. Total reported input was 461039 tokens and output was 3096 tokens. No timeout or usage limit was reported.
 
-The independent server validator reran all three games over forty seeds with each bot. All passed schema, semantics, allowed emoji and verbs, title filtering, secret patterns, entropy scanning and gameplay acceptance. Their full passing reports and real CLI receipts are committed beside library/spike-1.json through library/spike-3.json. These receipts are distinct from the twenty seed library receipts.
+The independent server validator reran all three games over forty seeds with each bot. All passed schema, semantics, allowed emoji and verbs, title filtering, secret patterns, entropy scanning and gameplay acceptance. Their full passing reports and real CLI receipts are committed beside library/spike-1.json through library/spike-3.json. These receipts are distinct from the thirty seed library receipts.
 
 The injection produced a rabbit catching stars called Moonberry Catch. The published output contains no instruction text, credential or URL. Environment credentials are excluded by scrubEnvironment, protected file and network probes passed before every job, and the output string scanner passed. The application did not inspect the Codex authentication file. This is evidence for these three jobs, not a claim that prompt injection is solved.
 
@@ -45,3 +45,11 @@ CLI JSONL and usage fields follow the [official non interactive mode documentati
 The designer receives a bounded recent mechanics and theme digest. The server adds quality checks only after the original validation and bot harness pass. Duplicate fingerprints ignore reskins and unused parameters. Fixed rejection codes can request one repair within the original total deadline and playtest budget. These changes were tested locally without another live model spike.
 
 Ten new seed games and thirty eight measured mock variants improve offline variety. Their receipts identify the build thread and seed studio, with no fabricated runtime IDs or generation timings. See [quality rules](quality.md) for measurements and format limits.
+
+## Recording and browser evidence
+
+The recording mode runs a fixed 110 second schedule with simulated pitches, visible moderation, independent validation, approvals and humanish autoplay. Seed 8 completes five games with four wins, one loss, two lives and 700 points. The final hold flag keeps the credits visible. A two cycle smoke check verifies identical outcomes and renewed mock replay state.
+
+The screenshot script captures the real opening card, countdown, three games, a scored hit with render feedback, factory work, the dashboard and results with both rankings. Its manifest records scene provenance. A real historical Codex receipt and a simulated clip URL are explicitly distinct. No screenshots imply that a live Twitch broadcast occurred. See [recording](video.md) and [fresh clone proof](fresh-clone.md).
+
+Current library counts are 30 seed games, three historical runtime games and a separate bank of 38 measured mock variants. Ten newer seeds pass the extra quality layer. The older 23 library games retain their historical acceptance rules and are not presented as evidence of the newer thresholds. No new real model calls were made for the documentation or screenshot refresh.

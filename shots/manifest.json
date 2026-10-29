@@ -27,6 +27,13 @@
       "frame": 111
     },
     {
+      "file": "play-hit.png",
+      "phase": "play",
+      "game": "Lantern Snap",
+      "source": "Actual bot hit with render particles and cosmetic combo feedback",
+      "score": 1
+    },
+    {
       "file": "play-game-2.png",
       "phase": "play",
       "game": "Lantern Snap",
@@ -38,7 +45,7 @@
       "phase": "play",
       "game": "Shell Shuffle",
       "round": 3,
-      "frame": 110
+      "frame": 111
     },
     {
       "file": "overlay-mock.png",
@@ -176,6 +183,16 @@
         "authorId": "viewer-lee",
         "simulated": true
       }
+    },
+    {
+      "file": "factory-floor.png",
+      "source": "Actual two mock jobs, real spike receipt and simulated clip ticker",
+      "phase": "play"
+    },
+    {
+      "file": "video-intro.png",
+      "source": "Actual demo:video opening card",
+      "phase": "intro"
     }
   ],
   "finished": {

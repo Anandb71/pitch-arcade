@@ -1,23 +1,65 @@
 # Pitch Arcade
 
-Your chat makes the games. You have to survive them.
+**Chat makes the games. You try to survive.**
 
-## What it is
+One viewer pitches falling tacos. Another wants an octopus picnic. A constrained Codex factory turns those ideas into five second microgames, tests them and sends them for approval. Five games. Three lives. Every designer gets the credit.
 
-Viewers pitch five second games with `!pitch`. A constrained Codex factory writes JSON, tests it with bots and sends it for approval. The streamer plays five approved games with three lives. An OBS overlay credits the designers and shows the factory at work.
+![Pitch Arcade opening card](shots/video-intro.png)
 
-## 60 second quickstart
-
-Use Node 22.11 or newer, npm 10.9 or newer, and git.
+## Watch the whole show
 
 ```sh
 git clone https://github.com/Anandb71/pitch-arcade.git
 cd pitch-arcade
 npm install
-npm run demo
+npm run demo:video
 ```
 
-Open these pages:
+Use Node 22.11 or newer and npm 10.9 or newer. No credentials or Codex installation are needed for the demo. After installation, it runs without network access.
+
+Open **[play](http://127.0.0.1:3000/play/?sound=1)** and **[overlay](http://127.0.0.1:3000/overlay/?backdrop=1&sound=0)**. Click play once to unlock sound. The terminal prints every URL and an OBS checklist.
+
+The repeatable 110 second loop includes an opening hype card, funny chat pitches, visible moderation, simulated factory work, approvals, a humanish bot gauntlet and final credits. Seed 8 wins four games and loses one. Add `--hold` to keep the leaderboard up:
+
+```sh
+npm run demo:video -- --hold
+npm run demo:video -- --seed=8
+npm run record
+```
+
+The recorder saves a silent 1920 by 1080 video to `shots/demo.webm`. It uses local Chromium through Playwright. Use OBS for synthesized audio. See the [recording guide](docs/video.md) for the schedule and browser requirements.
+
+## The stream moment
+
+| The factory is working | One hit can save the run |
+| --- | --- |
+| ![Factory floor, measured real receipt and simulated clip](shots/factory-floor.png) | ![Actual hit feedback and combo pop](shots/play-hit.png) |
+
+| Chat gets the credit | The streamer gets a control room |
+| --- | --- |
+| ![Final scores, designer credits and leaderboards](shots/play-results.png) | ![Approval dashboard with bot difficulty reports](shots/dashboard.png) |
+
+These are screenshots of running local sessions. Factory workers shown here are mock replays. The overlay labels a real historical Codex receipt separately from its simulated clip link. [Capture details](shots/manifest.json) record each scene.
+
+## What makes it an arcade
+
+* **A proper entrance.** Branded intros, a 3 2 1 GO countdown and eased broadcast transitions.
+* **Small games with feel.** Eight palettes, five patterns, emoji sprites, particles, bounded shake, brief hit stop and cosmetic combo pops. Reduced motion is respected. No full screen flashes.
+* **Original sound.** Synthesized hits, countdown beeps, score ticks, pitch whooshes, win fanfares and lose buzzes. Mute and volume controls on play and overlay.
+* **Credit that sticks.** Every game names its viewer designer. SQLite persists designer totals and player high scores. Bot runs are labeled.
+* **A factory you can watch.** Sanitized build steps and honest receipts show what happened. Approval and preview stay in the dashboard.
+* **Quality after correctness.** Forty seeds with three bots, then nine extra quality gates for skill separation, meaningful input, engagement and novelty. A reskin does not count as a new mechanic.
+
+The library has 30 seed classics and three games from real Codex jobs. Ten of those seeds meet the newer quality gates. A bank of 38 measured mock variants keeps demos varied. See [quality rules and v1 limits](docs/quality.md). Physical stacking, precise rhythm scoring and hidden memory rules are outside this format.
+
+## Other ways to play
+
+| Command | Experience |
+| --- | --- |
+| `npm run demo` | Pitch in mock chat, preview, approve and play yourself |
+| `npm run demo:auto` | Five scripted pitches and a humanish run, then hold results |
+| `npm run demo:twitch-sim` | Real EventSub and Helix clients talking to local fake servers |
+| `npm run demo:video` | The complete recording loop with moderation and approvals |
 
 | Page | URL |
 | --- | --- |
@@ -26,23 +68,15 @@ Open these pages:
 | Mock chat | http://127.0.0.1:3000/chat/ |
 | OBS overlay | http://127.0.0.1:3000/overlay/ |
 
-Send `!pitch dodge falling tacos` in mock chat. Approve the built game in the dashboard. Start a gauntlet. Thirty seed classics and three validated real Codex spike games fill the library. Ten new seeds and thirty eight measured mock variants add distinct routes, timing windows, moving targets and themes.
+Mock generation is explicitly simulated. No Twitch clip is published by these commands. Press Ctrl+C to stop. A custom PORT changes all page URLs.
 
-The demo needs no credentials or Codex installation. It works offline after dependencies are installed. Factory generation is a labeled replay. No Twitch clip is published. Press Ctrl+C to stop.
+## How Codex was used
 
-## Let it run itself
+**Build:** one main Codex thread wrote the original engine, game format, bot harness, Twitch adapters, browser clients, tests and recording tools. The session is `01a18380-92df-7fb1-84cd-1b45659bee41`. The current suite has **204 passing tests**.
 
-```sh
-npm run demo:auto
-```
+**Runtime:** live jobs use the installed Codex CLI with **gpt-6.1-sol** by default. Each isolated job receives untrusted pitch data and a short digest of recent mechanics and themes. It writes JSON, uses the trusted playtest tool and gets at most one repair within the same total budget. The server independently checks everything before approval. Mock mode makes no model call.
 
-Five mock designers pitch games. Their games pass validation and receive scripted approvals. The humanish bot plays a full gauntlet. The final score stays on screen. Each run gets a fresh database unless `ARCADE_DB_PATH` is set.
-
-```sh
-npm run demo:twitch-sim
-```
-
-This runs the real EventSub and Helix client code against local fixture servers. Pitches travel over WebSocket. Subscriptions, chat and clip requests travel over HTTP. Mock generation feeds a humanish gauntlet. Clip links are visibly simulated fixtures. No Twitch account is needed.
+Three actual runtime jobs were measured earlier with gpt-6-luna. All passed the validation gates in place at that time. Median build time was **15.900 seconds**, with **two playtests per game**. Reported usage totaled 461039 input tokens and 3096 output tokens across tool turns. The injection pitch became a harmless catching game. These are historical measurements, not a benchmark of the current Sol prompt or newer quality gates. See [Build and Runtime](docs/codex.md).
 
 ## Real Twitch setup
 
@@ -103,6 +137,9 @@ Demo commands set their own mock flags. Live mode needs the four Twitch settings
 | CODEX_HOME | Optional | Standard Codex CLI configuration location |
 | DEMO_AUTO | Internal | Enables scripted demo and mock screenshot controls |
 | TWITCH_SIM | Internal | Selects local EventSub and Helix fixtures |
+| DEMO_VIDEO | Internal | Selects the recording schedule |
+| DEMO_VIDEO_HOLD | Internal | Keeps final recording credits visible |
+| DEMO_VIDEO_SEED | Internal | Recording seed, default 8 |
 
 Standard `HOME`, `PATH`, `LANG`, `LC_ALL`, `TERM` and `TZ` are inherited by the factory controller. Other parent environment values are excluded from its command environment. Do not add secrets to those standard variables.
 
@@ -113,66 +150,58 @@ Twitch EventSub or mock chat
              ↓
 Intake → moderation → SQLite queue
              ↓
-Factory with two isolated Codex CLI jobs
+Two isolated factory jobs → JSON only
              ↓
-JSON schema → semantic checks → independent bot harness
+Schema → semantics → secret scan → independent bot harness
              ↓
-Dashboard approval → library → server gauntlet at 60 Hz
-                                  ↓
-                     Play canvas + OBS overlay + dashboard
-                                  ↓
-                     ResultsSink → Helix chat and clips
+Quality gates → bounded repair or dashboard approval
+             ↓
+Library → server gauntlet at 60 Hz
+             ↓
+Play canvas + OBS overlay + dashboard
+             ↓
+ResultsSink → paced Helix chat and clip requests
 ```
 
-`packages/engine` is pure simulation and validation. `packages/harness` runs bots. `packages/render` draws snapshots and handles local input. `packages/twitch` owns OAuth and wire protocols. `packages/shared` holds browser and server types. `apps/server` owns storage, approval and the authoritative game clock. The build syncs the isolated designer template from canonical sources.
+The pure engine lives in `packages/engine`. The harness, renderer, Twitch clients and shared protocol have their own packages. `apps/server` owns intake, storage, approval and the authoritative clock. The build syncs the isolated designer template from canonical sources.
 
 ## Safety model
 
-Games are data. The closed schema permits known verbs, emoji and behaviors. Chat text never becomes a command, HTML or file path. Factory commands have a verified sandbox, no network, protected instructions and a 150 second deadline. The server independently checks output and reruns forty seeds with three bots. New games then pass skill, input, engagement and duplicate gates. A bounded repair gets fixed server feedback. Human approval or an explicit trusted role rule gates viewer games.
+Games are data. The closed schema allows known controls, motions, verbs and emoji. Chat text never becomes code, HTML, a shell command or a file path. The factory has protected instructions, disabled command network access, OS boundary probes and a total 150 second deadline. The server ignores the agent's claimed report and reruns its own validation. Human approval or an explicit trusted role rule gates viewer games.
 
-Local controls bind to 127.0.0.1 and check Host, Origin and a custom mutation header. Use them on a trusted machine. The heuristic moderation fallback and secret scanner have limits. They are defense layers, not guarantees. See [security](SECURITY.md) and the [six finding review](docs/review.md).
+Local controls bind to 127.0.0.1 and check Host, Origin and a custom mutation header. Keep them on a trusted machine. Heuristic moderation and secret scanning have limits. See [security](SECURITY.md) and the [six finding review](docs/review.md).
 
-## Tests and screenshots
+## Tests and evidence
 
 ```sh
 npm test
 npm run build
 npm run lint:prose
+npm run demo:video:check
 npm run playtest -- library/01-taco-rain.json
 npm run shots
 ```
 
-The suite has 201 passing tests. It covers deterministic outcomes, schema and semantic checks, bot acceptance, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols and a finished unattended gauntlet. [Fresh clone proof](docs/fresh-clone.md) records a clean installation.
+204 tests cover deterministic outcomes, validation, quality gates, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols, rankings and repeated recording cycles. [Fresh clone proof](docs/fresh-clone.md) records installation, the suite and the recording command from a clean checkout.
 
-Shots use installed Chrome or Playwright Chromium. They include three games, browser control checks, a literal HTML injection check, a transparent overlay check and a completed gauntlet. The gallery combines a mock authoring session with a local Twitch protocol simulation. The overlay's real Codex receipt comes from the measured spike. Its clip URL comes from fake Helix.
+The screenshot script captures actual gameplay, hit feedback, factory work, opening cards, approvals and credited results at 1920 by 1080. It also checks sound, reduced motion, input, preview isolation and literal untrusted HTML rendering.
 
-| Intro | Results |
+<details>
+<summary>More from the arcade</summary>
+
+| Countdown | A different kind of chaos |
 | --- | --- |
-| ![Gauntlet intro](shots/overlay-intro.png) | ![Credited results](shots/play-results.png) |
+| ![Countdown](shots/play-countdown.png) | ![Shell collecting game](shots/play-game-3.png) |
+| ![Transparent OBS composition](shots/overlay.png) | ![Mock chat panel](shots/chat-panel.png) |
 
-| Play | Factory and OBS |
-| --- | --- |
-| ![Title card](shots/play-title.png) | ![Factory, real spike receipt and simulated clip](shots/overlay.png) |
-| ![Dodge game](shots/play-game.png) | ![Click game](shots/play-game-2.png) |
-| ![Catch game](shots/play-game-3.png) | ![Control room](shots/dashboard.png) |
-| ![Mock chat](shots/chat-panel.png) | ![Mock factory session](shots/overlay-mock.png) |
+</details>
 
-## How Codex was used
+## Honest status
 
-The build happened in one main Codex thread: `01a18380-92df-7fb1-84cd-1b45659bee41`. Codex wrote original code, tests, docs and demo tooling. At runtime a separate constrained CLI job designs each game as JSON. The mock runner makes no model call.
+Real Codex jobs, browser controls and local Twitch protocol tests have run successfully. OAuth uses a fake ID server in tests. EventSub reconnects and Helix chat and clip requests use local fixtures. **Live Twitch authorization, public chat delivery and a published clip have not been verified here.**
 
-Three real runtime jobs passed validation. Median build time was 15.900 seconds. Each used two playtests. Total reported usage was 461039 input tokens and 3096 output tokens across tool turns. The injection pitch became a harmless catching game. Receipts and difficulty reports are committed beside the games. See [Build and Runtime](docs/codex.md).
+The factory permission profile currently accepts codex-cli 0.165 only. Other versions and hosts need a fresh policy review. The current Sol default and newer quality prompt have not received another real model spike. Clip publication needs a live channel, enabled clips and valid grants.
 
-## Limits and status
+The remaining human steps are real account authorization, a live stream and OBS check, and recording and publishing the submission video.
 
-The application, real Codex spike, browser controls and local Twitch protocol tests have been exercised. OAuth is tested with a local fake ID server. EventSub reconnects and Helix requests are tested with local fixtures. No live Twitch account authorization, public chat delivery or published Twitch clip has been verified here.
-
-The factory permission profile currently accepts codex-cli 0.165 only. Other hosts or versions must pass a fresh policy review. The local moderation fallback is limited. Clip publication needs a live channel, enabled clips and valid grants. Final account setup, a live stream check and the submission video remain human tasks.
-
-MIT license, copyright Anand Biju. See [assets and licenses](ASSETS.md), [setup](docs/setup.md) and [Devpost draft](DEVPOST.md).
-
-See [game quality](docs/quality.md) for thresholds, novelty fingerprints, the new seed collection and honest v1 mechanic limits. The demo now uses seed 8 and a finite bank of thirty eight distinct measured mock variants.
-
-## Record the whole show
-
-Run `npm run demo:video` for a repeatable 110 second loop with chat, moderation, simulated builds, approvals and humanish play. Use `npm run demo:video -- --hold` to keep the final leaderboard. Run `npm run record` to save a silent Playwright video to `shots/demo.webm`. See [the recording guide](docs/video.md) for the schedule and OBS checklist.
+MIT license, copyright Anand Biju. [Assets](ASSETS.md) · [Setup](docs/setup.md) · [Devpost draft](DEVPOST.md)

@@ -1,6 +1,6 @@
 # Pitch Arcade
 
-Tagline: Your chat makes five second games. Codex builds them. You try to survive.
+Tagline: Your chat pitches five second games. Codex builds them. Three lives says you cannot survive all five.
 
 YouTube URL: TODO add the public submission video URL
 
@@ -8,67 +8,77 @@ Codex session ID: 01a18380-92df-7fb1-84cd-1b45659bee41
 
 ## Inspiration
 
-Chat is full of strange game ideas. Most disappear after one joke. We wanted those ideas to become something a streamer could actually play while everyone watched the build happen.
+Every stream has that one chatter with a terrible game idea. We wanted to hand them a design credit and make the streamer play it.
 
-The best moment is a tiny game that looks silly and still takes a life. Its designer gets the credit. The streamer gets another round.
+Falling tacos. An octopus picnic. A ghost who is late for the moon. The joke gets better when it becomes a real challenge and costs the streamer a life. Chat gets to say, "I made that."
 
 ## What it does
 
-Viewers type `!pitch` and a short idea. Pitch Arcade queues the pitch, checks it and gives it to a constrained Codex factory. The factory writes a five second game as JSON and tests it with bots. The streamer approves games in a dashboard and plays a five game gauntlet with three lives.
+Viewers send `!pitch` and a short idea. A constrained Codex factory creates a five second microgame as JSON, runs bot playtests and sends it for approval. The streamer takes on five approved games with three lives and a faster pace each round.
 
-A transparent OBS overlay shows the factory, designer credit, lives, queue and toughest designers. Real Twitch adapters can request a clip after a loss and post a link. A fully local demo works without credentials.
+A hype intro and countdown kick off the run. Synthesized sound, particles, brief hit stop and combo pops give tiny actions some weight. The transparent OBS overlay shows live factory steps, the queue, designer credits and leaderboards. The dashboard handles previews, difficulty reports, approvals and the kill switch.
+
+Wins build a scoring streak. A loss pays the designer and requests a clip through the Twitch adapter. Final results credit every game. Designer totals and player high scores persist in SQLite, with bot runs labeled.
+
+One command, npm run demo:video, runs the whole 110 second show without credentials. Funny pitches, moderation rejections, simulated builds and approvals lead to a humanish bot run with wins and losses. It loops for recording or holds the final leaderboard.
 
 ## How we used Codex
 
 ### Build
 
-One main Codex thread built the original TypeScript application, deterministic engine, JSON format, bots, Twitch adapters, dashboard and demo tooling. Tests guided the engine, harness and Twitch work. The same thread reviewed the boundaries, fixed six findings and captured browser evidence.
+One main Codex thread wrote the original TypeScript application, deterministic engine, closed game format, bot harness, Twitch adapters, browser clients and recording tools. The same thread reviewed the safety boundaries, fixed six findings and inspected browser captures. Tests guided the engine, harness and Twitch implementation.
 
-The final suite has 201 passing tests. The build record names each task and its validation. The main session is 01a18380-92df-7fb1-84cd-1b45659bee41.
+The suite now passes 204 tests in 34 files. BUILDLOG.md records the work and validation. The main session is 01a18380-92df-7fb1-84cd-1b45659bee41.
 
 ### Runtime
 
-Codex is also part of the product. Each live factory job gets an isolated workspace, protected instructions, a pitch inbox and a writable output folder. It writes data and runs the trusted playtest tool. Sanitized tool events show viewers the build steps. The server reruns validation before approval.
+Codex is also the designer inside the product. A live factory job runs the installed CLI with gpt-6.1-sol by default. It gets an isolated workspace, protected tools, an untrusted pitch inbox and a digest of recent mechanics and themes. It writes JSON and runs the trusted playtest tool. Sanitized events show the build steps without publishing raw model or shell output.
 
-Three actual CLI jobs passed. Their median build time was 15.900 seconds, with two playtests each. The prompt injection pitch became a harmless catching game. Receipts record real job thread IDs, usage and difficulty reports. Mock mode is explicitly a replay and makes no model call.
+Three actual runtime jobs were measured earlier with gpt-6-luna. Their median build time was 15.900 seconds, with two playtests per game. Total reported usage was 461039 input tokens and 3096 output tokens across tool turns. The injection pitch became a harmless catching game. Real receipts live beside the games.
+
+Those numbers describe the earlier spike. The current Sol default and newer quality prompt have not had another real spike. Mock mode makes no model call and labels its factory progress as simulated.
 
 ### Technological implementation
 
-The runtime model does not write executable gameplay code. It composes a closed set of controls, motions, goals and visual choices. That makes generation testable within a short stream moment. Deterministic simulation lets the same game run in the bot harness and the streamer's gauntlet.
+The model composes known controls, motions, goals and visual choices rather than executable gameplay code. The server independently validates the output and reruns forty seeds with idle, random and humanish bots. New games then face nine extra quality gates for skill separation, input responsiveness, engagement and novelty. Changing a title or palette cannot hide a duplicate mechanic.
+
+A failed quality check can request one repair within the original 150 second deadline and four playtest budget. Approval happens only after the independent gates pass. The deterministic engine drives both bot evaluation and the streamer's game.
 
 ## How it works
 
-Twitch EventSub WebSocket delivers chat messages. Intake applies length bounds, cooldown, similarity checks, role priority and moderation. SQLite stores the queue, approvals and results. Two factory workers run Codex CLI jobs with a 150 second deadline.
+EventSub WebSocket supplies chat. Intake applies length bounds, cooldown, role priority, duplicate checks and moderation. SQLite stores the queue, approvals, receipts and results. Two factory workers run isolated CLI jobs. A closed JSON Schema, semantic checks and string scans protect the game boundary.
 
-JSON Schema and semantic validation check the game. Forty seeds with idle, random and humanish bots measure difficulty and reject broken games. The server owns the 60 Hz game clock. Canvas renders its snapshots. WebSocket updates keep the play page, overlay and dashboard together.
+The server owns the fixed 60 Hz simulation. Canvas renders its snapshots while WebSocket updates keep the play page, overlay and dashboard together. Render feedback never changes the engine outcome. Effects respect reduced motion and avoid full screen flashes.
 
-OAuth connects a broadcaster and bot. Helix sends paced chat and creates clips with twenty second duration. Clip and chat failures do not block play. The local Twitch simulation uses the same clients against fixture servers.
+OAuth connects the broadcaster and bot. Helix sends paced chat and requests twenty second clips after losses. Failures do not block the game. The Twitch simulator exercises these same clients against local fixture servers.
 
 ## Safety
 
-Chat and model output are untrusted. They cannot choose code, shell commands or file paths. The factory has a verified permission profile with command network access disabled and protected tools. Output strings, emoji, titles and verbs are checked. Secret shaped chat is dropped before persistence. Approval gates viewer games.
+Chat and model output are untrusted data. They cannot select code, shell commands, remote resources or file paths. Factory command network access is disabled. Protected tools and OS boundary probes must pass before generation. The server checks titles, emoji, verbs, secret patterns and game limits before independent playtesting.
 
-Controls bind to loopback and check Host and Origin. The game has bounded effects and no full screen flashes. Viewer messages author ideas rather than control the streamer. This uses no Affiliate features or Extensions.
+Controls bind to loopback and check Host and Origin. Secret shaped chat is dropped before persistence. Human approval or an explicit trusted role rule gates viewer games. Heuristic moderation has limits and is described honestly.
+
+Viewers design ideas rather than control gameplay. No Affiliate features or Extensions are required.
 
 ## Challenges
 
-Fast generation is only useful if a game is playable. We built bots with reaction delay and noise so a technically valid game still had to pass a difficulty check.
+A valid game can still be boring. We added paired input checks, skilled versus random win rate separation, event variance and fingerprints that ignore cosmetic reskins. The v1 vocabulary has limits, so prompts adapt unsupported ideas honestly or reject them.
 
-The host's native SQLite package failed its target runtime check. A small storage interface let us use Node's built in SQLite instead. Codex permission profiles also needed real OS probes. The factory fails closed when those probes or the verified CLI version do not match.
+A polished unattended demo also needed repeatable timing without fake outcomes. Stable approval order, a fixed seed and a humanish bot now produce five games, four wins and one loss. Every loop still passes the independent gates.
 
-Local Twitch fixtures let us test reconnects, refresh and clip polling without accounts. We keep that evidence separate from live channel claims.
+The native SQLite package failed its target runtime check. A small storage interface let us use Node's built in SQLite. Codex permissions needed real OS probes and a version guard. Local Twitch fixtures let us test reconnects and clip polling without claiming a live broadcast.
 
 ## What we learned
 
-A small game vocabulary creates a useful boundary for model output. Independent testing matters more than a model saying its game passed. Showing honest build steps can be part of the entertainment, even before the game starts.
+A small vocabulary makes generated games easier to test and safer to play. Independent evidence matters more than the model saying it passed. Clear credits and an honest factory timeline turn the build itself into part of the show.
 
-A final review also found races that happy path demos missed. Forgetting a designer and pausing intake now invalidate pending moderation work.
+Testing interruption paths also mattered. Forgetting a designer and pausing intake now invalidate pending moderation work. A pretty demo still needs those boundaries.
 
 ## What's next
 
-Authorize the bot and broadcaster on a real channel. Verify public chat delivery, a published clip and OBS composition while live. Record the submission video. More motion combinations and streamer chosen difficulty could follow after that check.
+Authorize real accounts, verify public chat and a published clip, and check OBS composition during a live stream. Record and publish the submission video. A new runtime spike should measure the current Sol prompt and quality gates before making new performance claims.
 
-Live Twitch authorization and clip publication have not been demonstrated in this environment. The committed screenshots use local sessions. Real Codex receipts are labeled separately from simulated clip URLs.
+Live Twitch authorization and clip publication have not been demonstrated in this environment. Screenshots and the recording demo use local sessions. Real Codex receipts are labeled separately from simulated clip URLs.
 
 ## Built with tags
 

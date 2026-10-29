@@ -175,3 +175,9 @@ Added scheduler tests and a two cycle integration smoke check covering repeatabl
 Task D checks: npm test passed 204 tests in 34 files. npm run build passed strict type checking and all bundles. npm run lint:prose passed 13 documents. npm run demo:video:check passed two full cycles with identical five game outcomes and both hold and loop behavior.
 
 Task D recording proof: a clean local clone passed npm ci and demo:video:check without credentials. A real time 112 second Chromium capture produced the optional ignored shots/demo.webm, about 12 MB. The finished state had five rounds, four wins, one loss, two lives and 700 points. A browser reload preserved credits and rankings without page errors. The opening card and final credits were visually inspected. Playwright capture is silent, as documented. Temporary clone removed after verification.
+
+## M9 E docs and screenshot packaging
+
+Rewrote the README around the recording demo, a visual gallery and the stream experience. Updated Devpost with a short tagline, Build and Runtime details, current features and explicit live Twitch limits. Updated Codex notes to 204 tests in 34 files, 30 seed games, three historical runtime games and 38 measured mock variants. Historical Luna measurements remain distinct from the current Sol factory default and newer quality gates.
+
+Extended the screenshot tool to capture an actual scored hit, the recording opening card, the factory floor and persistent leaderboards alongside existing gameplay, controls and credits. Capture provenance remains in the manifest. npm run lint:prose, npm run build and npm test passed. The suite remains 204 tests in 34 files. Clean clone verification and the final visual audit are recorded below when complete.
