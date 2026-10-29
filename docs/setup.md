@@ -38,7 +38,9 @@ npm run doctor
 
 Run the two device commands separately. Each prints its verification page, a user code, the expiry and the account role and login you should use. Open the page on a phone or another computer. Enter the user code and authorize while signed in as the expected account. Leave the terminal running until it confirms the private save. No browser needs to connect back to the headless box.
 
-Polling follows Twitch's interval. A pending request keeps waiting. A slow down adds five seconds to later polls. Connection failures get at most three retries. A denial or expired code exits with a friendly error and a nonzero status. Run the same command again for a fresh code. Do not share the displayed user code during authorization.
+The verification link may contain a device-code query with the public user code. The private polling device_code is never displayed. The CLI accepts only the Twitch activation host and path with that optional query.
+
+Polling follows Twitch's interval. A code with a 1800 second lifetime keeps polling for the full thirty minutes unless approved, denied or interrupted by a bounded connection failure. A pending request keeps waiting. A slow down adds five seconds to later polls. Connection failures get at most three retries. A denial or expired code exits with a friendly error and a nonzero status. Run the same command again for a fresh code. Do not share the displayed user code during authorization.
 
 The bot requests user:read:chat, user:write:chat and user:bot. The broadcaster requests channel:bot, clips:edit and user:read:chat. TWITCH_STRETCH=1 adds the existing optional pin or marker scope for the chosen role. Old broadcaster grants without the added scopes need authorization again.
 

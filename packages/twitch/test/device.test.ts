@@ -105,3 +105,43 @@ it('redirect CLI prints a local launch link without app credentials',async()=>{
  });
  await authCli();await Promise.all(callbacks);expect(index).toBe(2);expect(output).toContain('http://localhost:8787/authorize');for(const secret of [clientId,clientSecret])expect(output.join()).not.toContain(secret);
 });
+
+it('accepts the Twitch activation query shape and prints only safe user guidance',async()=>{
+ for(const host of ['twitch.tv','www.twitch.tv']){
+  const s=setup(['authorization_pending']);const uri='https://'+host+'/activate?device-code=TESTCODE';
+  s.deviceDetails({verification_uri:uri,user_code:'TESTUSER',expires_in:1800,interval:5});
+  await s.manager.authorizeDevice('broadcaster','priya',s.options);
+  expect(s.messages).toContain('Open: '+uri);expect(s.messages).toContain('User code: TESTUSER');expect(s.messages).toContain('Expires in 1800 seconds.');expect(s.waits).toEqual([5000,5000]);
+  for(const secret of [deviceCode,clientId,clientSecret,access,refresh])expect(s.messages.join('\n')).not.toContain(secret);
+ }
+});
+it.each([
+ 'http://www.twitch.tv/activate?device-code=TESTCODE',
+ 'https://www.twitch.tv.evil.invalid/activate?device-code=TESTCODE',
+ 'https://evil.invalid/activate?device-code=TESTCODE',
+ 'https://login@www.twitch.tv/activate?device-code=TESTCODE',
+ 'https://www.twitch.tv:443/activate?device-code=TESTCODE',
+ 'https://www.twitch.tv:8443/activate?device-code=TESTCODE',
+ 'https://www.twitch.tv/activate/?device-code=TESTCODE',
+ 'https://www.twitch.tv/other?device-code=TESTCODE',
+ 'https://www.twitch.tv/activate?device-code=TESTCODE&extra=BAD',
+ 'https://www.twitch.tv/activate?device-code=ONE&device-code=TWO',
+ 'https://www.twitch.tv/activate?other=TESTCODE',
+ 'https://www.twitch.tv/activate?device-code=',
+ 'https://www.twitch.tv/activate?device-code=TESTCODE#fragment',
+ 'https://www.twitch.tv/activate?device-code=TESTCODE%0A',
+ 'https://www.twitch.tv/activate?device-code=TESTCODE\n',
+ 'https://www.twitch.tv/activate?device-code='+deviceCode,
+ 'https://www.twitch.tv/activate?device-code='+clientSecret,
+ 'https://www.twitch.tv/activate?device-code='+clientId,
+])('rejects hostile activation URI fixture %s before guidance',async uri=>{
+ const s=setup();s.deviceDetails({verification_uri:uri});await expect(s.manager.authorizeDevice('broadcaster','priya',s.options)).rejects.toThrow();expect(s.messages).toEqual([]);expect(s.saves).toBe(0);
+});
+it('continues polling for the full 1800 second device lifetime',async()=>{
+ const s=setup(Array(400).fill('authorization_pending'));s.deviceDetails({verification_uri:'https://www.twitch.tv/activate?device-code=TESTCODE',expires_in:1800,interval:5});
+ await expect(s.manager.authorizeDevice('broadcaster','priya',s.options)).rejects.toThrow('expired');expect(s.waits).toHaveLength(360);expect(s.waits.reduce((a,b)=>a+b,0)).toBe(1800000);expect(s.calls.filter(c=>c.body.has('device_code'))).toHaveLength(359);
+});
+it('never prints a private polling code disguised as an activation user code',async()=>{
+ const s=setup();s.deviceDetails({device_code:'PRIVATEFIXTURE',verification_uri:'https://www.twitch.tv/activate?device-code=PRIVATEFIXTURE'});
+ await expect(s.manager.authorizeDevice('broadcaster','priya',s.options)).rejects.toThrow('safely');expect(s.messages).toEqual([]);expect(s.saves).toBe(0);
+});

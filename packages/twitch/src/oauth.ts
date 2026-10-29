@@ -17,6 +17,7 @@ interface Options {clientId:string;clientSecret:string;tokens:Tokens;save:(token
 class IdentityUnavailable extends Error {constructor(){super('Twitch identity service is unavailable. Try authorization again.');}}
 async function body(response:Response):Promise<Record<string,unknown>>{try{const value:unknown=await response.json();if(!value||typeof value!=='object'||Array.isArray(value))throw Error();return value as Record<string,unknown>;}catch{throw Error('Twitch returned an invalid authorization response.');}}
 const positive=(value:unknown):value is number=>typeof value==='number'&&Number.isFinite(value)&&value>0;
+const activationUri=(value:unknown):value is string=>typeof value==='string'&&!/\s/.test(value)&&/^https:\/\/(?:www\.)?twitch\.tv\/activate(?:\?device-code=[A-Za-z0-9-]{4,64})?$/.test(value);
 export class TokenManager {
  private pending=new Map<Account,Promise<void>>();
  constructor(private options:Options){}
@@ -49,8 +50,9 @@ export class TokenManager {
   for(let attempt=0;!issued;attempt++){try{issued=await this.request('/device',{method:'POST',body:new URLSearchParams({client_id:this.options.clientId,scopes:requested.join(' ')})});}catch(error){if(!(error instanceof IdentityUnavailable)||attempt>=3)throw error;await sleep(1000);}}
   if(!issued.ok)throw Error('Twitch device authorization could not start. Check your app settings.');
   const data=await body(issued);
-  if(typeof data.device_code!=='string'||!data.device_code||typeof data.user_code!=='string'||!/[A-Z0-9]/.test(data.user_code)||!/^[-A-Z0-9]{4,24}$/.test(data.user_code)||typeof data.verification_uri!=='string'||!/^https:\/\/(?:www\.)?twitch\.tv\/activate\/?$/.test(data.verification_uri)||!positive(data.expires_in)||data.expires_in>86400||(data.interval!==undefined&&!positive(data.interval)))throw Error('Twitch returned invalid device authorization details.');
-  sensitive.push(data.device_code);const deadline=now()+data.expires_in*1000;let interval=(data.interval===undefined?5:data.interval as number)*1000,failures=0;
+  if(typeof data.device_code!=='string'||!data.device_code||typeof data.user_code!=='string'||!/[A-Z0-9]/.test(data.user_code)||!/^[-A-Z0-9]{4,24}$/.test(data.user_code)||!activationUri(data.verification_uri)||!positive(data.expires_in)||data.expires_in>86400||(data.interval!==undefined&&!positive(data.interval)))throw Error('Twitch returned invalid device authorization details.');
+  const verificationUri=data.verification_uri;
+  sensitive.push(data.device_code);if(sensitive.some(value=>value&&verificationUri.includes(value)))throw Error('Authorization guidance could not be displayed safely.');const deadline=now()+data.expires_in*1000;let interval=(data.interval===undefined?5:data.interval as number)*1000,failures=0;
   say('Sign in as '+expectedLogin+' for the '+role+' account.');say('Open: '+data.verification_uri);say('User code: '+data.user_code);say('Expires in '+Math.ceil(data.expires_in)+' seconds.');
   while(now()<deadline){
    await sleep(Math.min(interval,Math.max(0,deadline-now())));if(now()>=deadline)break;

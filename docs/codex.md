@@ -4,7 +4,7 @@
 
 The project was built in one main Codex thread: 01a18380-92df-7fb1-84cd-1b45659bee41. The thread wrote original code, tests, documentation and browser tooling. The build includes fifteen planned engineering tasks: T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14 and T15. The final review, documentation, screenshots and clean installation checks are recorded separately in BUILDLOG.md.
 
-The current suite has 219 tests in 35 files. The repository has 32 commits through milestone ten. The original implementation covers all fifteen planned tasks. Later milestones add the safety review, scoring, sound, broadcast polish, stricter quality gates, varied seeds and a repeatable recording loop. This final packaging pass refreshes the docs, fifteen screenshots and clean clone evidence.
+The current suite has 240 tests in 35 files. The repository has 33 commits through milestone ten. The original implementation covers all fifteen planned tasks. Later milestones add the safety review, scoring, sound, broadcast polish, stricter quality gates, varied seeds and a repeatable recording loop. This final packaging pass refreshes the docs, fifteen screenshots and clean clone evidence.
 
 The engine, harness and Twitch work started with tests. Each task closed with a green suite and a build log entry. The final self review found six defects and added regression tests for each. Browser tooling captures real running application state and checks controls, previews, rendering and a finished unattended session.
 

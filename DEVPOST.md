@@ -28,7 +28,7 @@ One command, npm run demo:video, runs the whole 110 second show without credenti
 
 One main Codex thread wrote the original TypeScript application, deterministic engine, closed game format, bot harness, Twitch adapters, browser clients and recording tools. The same thread reviewed the safety boundaries, fixed six findings and inspected browser captures. Tests guided the engine, harness and Twitch implementation.
 
-The suite now passes 219 tests in 35 files. BUILDLOG.md records the work and validation. The main session is 01a18380-92df-7fb1-84cd-1b45659bee41.
+The suite now passes 240 tests in 35 files. BUILDLOG.md records the work and validation. The main session is 01a18380-92df-7fb1-84cd-1b45659bee41.
 
 ### Runtime
 
