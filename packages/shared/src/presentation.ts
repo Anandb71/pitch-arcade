@@ -1,0 +1,5 @@
+import type {Phase} from './protocol.js';
+export type Scene='queue'|'pitching'|'factory'|'gauntlet'|'results';
+export class SceneTransitions {private scene:Scene|undefined;next(phase:Phase,building:number,queued:number,newPitch:boolean):{scene:Scene;changed:boolean}{const scene:Scene=phase==='finished'||phase==='result'?'results':phase!=='idle'?'gauntlet':building>0?'factory':newPitch&&queued>0?'pitching':'queue';const changed=scene!==this.scene;this.scene=scene;return {scene,changed};}}
+export function countdownCue(phase:Phase,count:number,frame:number):string{return phase==='countdown'?String(Math.max(1,Math.min(3,count))):phase==='play'&&frame<24?'GO':'';}
+export function feedbackPoints(hits:number,combo:number,lastHit:number,now:number):{hits:number;combo:number;multiplier:number;points:number}{hits=Number.isFinite(hits)?Math.max(0,Math.min(50,Math.floor(hits))):0;const next=hits?Math.min(99,(now-lastHit<=.9?Math.max(0,combo):0)+hits):combo,multiplier=Math.min(5,1+Math.floor(next/2));return {hits,combo:next,multiplier,points:hits*10*multiplier};}

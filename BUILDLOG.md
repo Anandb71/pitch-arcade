@@ -135,3 +135,7 @@ Changed the server and CLI runner defaults to gpt-6.1-sol. Updated current confi
 ### M6 B persistent scoring
 
 Added capped win streak scoring, designer points for beating the streamer, per round credits and SQLite score records linked to existing plays. Added a leaderboards endpoint and state payload for designer totals and player high scores. Humanish bot runs are labeled separately. Ranking sanitizes names, sorts ties consistently and handles empty boards. Tests cover score math, unsafe names, ties, persistence after reopen and idempotent results. npm test passes with 178 tests across the scoring and presentation work prepared for this sprint.
+
+### M6 B sound and render feedback
+
+Added synthesized hit, tick, countdown, GO, win, lose and pitch sounds with bounded volume, mute controls and safe gesture unlock. Added render only hit stop capped at 35 ms, combo pops, particles, shake and a localized edge pulse. Reduced motion disables spatial effects and pulses. Pure tests cover feedback caps, expiry, score math, cue recipes and volume bounds. Engine code is unchanged. npm test passes with 178 tests.

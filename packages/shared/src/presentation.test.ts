@@ -1,0 +1,5 @@
+import {test,expect} from 'vitest';
+import {SceneTransitions,countdownCue,feedbackPoints} from './presentation.js';
+test('scene transitions are stable and prioritize results and gameplay over background jobs',()=>{const t=new SceneTransitions();expect(t.next('idle',0,0,false)).toEqual({scene:'queue',changed:true});expect(t.next('idle',0,0,false).changed).toBe(false);expect(t.next('idle',0,1,true).scene).toBe('pitching');expect(t.next('idle',2,1,false).scene).toBe('factory');expect(t.next('play',2,1,false).scene).toBe('gauntlet');expect(t.next('finished',2,1,false).scene).toBe('results');});
+test('countdown and GO use server frames and never change gameplay time',()=>{expect(countdownCue('countdown',3,0)).toBe('3');expect(countdownCue('play',1,0)).toBe('GO');expect(countdownCue('play',1,25)).toBe('');});
+test('render combo math is bounded, expires and rejects backwards score jumps',()=>{expect(feedbackPoints(1,4,10,10.3)).toEqual({hits:1,combo:5,multiplier:3,points:30});expect(feedbackPoints(1,4,10,12).combo).toBe(1);expect(feedbackPoints(0,3,1,2).points).toBe(0);});

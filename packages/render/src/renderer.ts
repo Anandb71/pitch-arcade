@@ -1,5 +1,6 @@
 import type {GameSpec} from '../../engine/src/types.js';
 import type {Snapshot} from '../../engine/src/engine.js';
+import {HitFeedback} from './feedback.js';
 import {VisualEffects} from './effects.js';
 export const EMOJI_FONT='"Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif';
 export const palettes={
@@ -14,18 +15,21 @@ export const palettes={
 } as const;
 export const patterns=['none','dots','stripes','grid','stars'] as const;
 export class ArcadeRenderer {
- readonly effects=new VisualEffects();
+ readonly effects=new VisualEffects();readonly feedback:HitFeedback;private clock=0;private held:Snapshot|undefined;
  private ctx:CanvasRenderingContext2D;private previousScore=0;private previousOutcome='playing';
  constructor(private canvas:HTMLCanvasElement,readonly spec:GameSpec,private onSfx:(sfx:GameSpec['sfx'])=>void=()=>{}){
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('Canvas 2D is unavailable.');
+  this.feedback=new HitFeedback(typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches);
   this.ctx=ctx;canvas.width=960;canvas.height=540;
  }
  draw(snapshot:Snapshot,dt=1/60,pointer?:{x:number;y:number}):void{
+  this.clock+=Math.max(0,Math.min(.05,dt));
   const ctx=this.ctx,palette=palettes[this.spec.palette as keyof typeof palettes]??palettes.sunset;
-  if(snapshot.score>this.previousScore){this.effects.burst(snapshot.player.x,snapshot.player.y,snapshot.frame);this.onSfx(this.spec.sfx);}
-  if(snapshot.outcome==='lose'&&this.previousOutcome!=='lose'){this.effects.impact(4);this.onSfx('boom');}
+  if(snapshot.score>this.previousScore){this.feedback.hit(snapshot.score-this.previousScore,this.clock);if(!this.feedback.reduced){this.effects.burst(snapshot.player.x,snapshot.player.y,snapshot.frame);this.effects.impact(2);}this.onSfx(this.spec.sfx);}
+  if(snapshot.outcome==='lose'&&this.previousOutcome!=='lose'){if(!this.feedback.reduced)this.effects.impact(4);this.onSfx('boom');}
   this.previousScore=snapshot.score;this.previousOutcome=snapshot.outcome;
-  const shake=this.effects.update(dt);
+  if(this.feedback.hold>0&&this.held&&snapshot.outcome==='playing')snapshot=this.held;else this.held=snapshot;
+  this.feedback.update(dt);const shake=this.effects.update(dt);
   ctx.save();ctx.clearRect(0,0,960,540);ctx.fillStyle=palette.background;ctx.fillRect(0,0,960,540);
   ctx.translate(shake.x,shake.y);
   ctx.strokeStyle=palette.ink;ctx.fillStyle=palette.ink;ctx.globalAlpha=.055;
@@ -65,6 +69,8 @@ export class ArcadeRenderer {
    gradient.addColorStop(0,'rgba(10,12,24,0)');gradient.addColorStop(1,'rgba(10,12,24,.34)');
    ctx.fillStyle=gradient;ctx.fillRect(0,0,960,540);
   }
+  if(this.feedback.flash>0){ctx.strokeStyle=palette.accent;ctx.globalAlpha=this.feedback.flash*3;ctx.lineWidth=9;ctx.strokeRect(5,5,950,530);ctx.globalAlpha=1;}
+  if(this.feedback.pop>0){const y=Math.max(48,p.y-50)-(this.feedback.reduced?0:(.65-this.feedback.pop)*45);ctx.globalAlpha=Math.min(1,this.feedback.pop*4);ctx.fillStyle=palette.ink;ctx.font='bold 22px monospace';ctx.fillText('+'+this.feedback.points+'  '+this.feedback.multiplier+'× COMBO',Math.max(125,Math.min(835,p.x)),y);ctx.globalAlpha=1;}
   ctx.restore();
  }
 }
