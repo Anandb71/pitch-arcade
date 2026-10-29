@@ -147,3 +147,9 @@ Added a branded gauntlet intro, server timed countdown and GO cue, eased scene c
 ### M6 B player score cards
 
 Added the branded play intro, countdown impact and GO cue, live points and streaks, sanitized designer badges, round score feedback and a complete final score card. Results include all five game credits plus designer totals and player high scores. Human and bot ties remain distinct and deterministic. Sound defaults on for play with query mute and volume controls. npm test passes with 179 tests in 31 files.
+
+### M6 B browser proof and final polish
+
+Refreshed eleven screenshots, including the gauntlet intro, countdown and full credited results. Inspected the new layouts and improved credit contrast. Playwright verified actual oscillator synthesis, gesture unlock, query mute, volume, normal motion countdown animation, reduced motion, controls and a finished five game gauntlet. An additional Chrome check verified overlay sound=1, pitch cues, eased panel transitions and master gain mute for active notes. Added a master gain regression test. Updated current docs, scoring rules, audio defaults and the gallery while retaining historical spike measurements.
+
+npm run build passes. Final npm test passes with 180 tests in 31 files, duration 10.89 seconds on Node 22.11 and npm 10.9. npm run lint:prose passes all eleven documentation files. The engine and its fixed step were unchanged. No new dependencies or remote audio assets were added. No blockers.

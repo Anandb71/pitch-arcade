@@ -30,7 +30,7 @@ let state:GauntletState|undefined,renderer:ArcadeRenderer|undefined,key='',phase
 function update(value:GauntletState):void{
  state=value;root.dataset.phase=value.phase;root.dataset.game=value.game?.id.toString()??'';root.dataset.frame=value.snapshot?.frame.toString()??'0';
  const nextKey=value.id+':'+value.round;
- if(value.game&&nextKey!==key){key=nextKey;renderer=new ArcadeRenderer(canvas,value.game.spec,kind=>audio.play(kind==='boom'?'hit':'tick'));}
+ if(value.game&&nextKey!==key){key=nextKey;renderer=new ArcadeRenderer(canvas,value.game.spec,kind=>audio.play(kind==='none'?'none':kind==='boom'?'hit':'tick'));}
  round.textContent=value.phase==='idle'?'THE COMMUNITY GAUNTLET':'GAME '+String(value.round).padStart(2,'0')+' / 05';
  points.textContent=String(value.points).padStart(4,'0')+' PTS';combo.textContent='STREAK '+value.combo+' · '+Math.min(5,Math.max(1,value.combo))+'×';
  title.textContent=value.game?.title??'Your chat made this.';

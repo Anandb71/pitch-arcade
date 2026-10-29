@@ -20,7 +20,7 @@ A normal S press moves down in four direction games.
 Double tap S or use Shift + S to skip without losing WASD movement.
 The dashboard also has a skip button.
 
-Sound starts only when you press Sound off to enable it.
+Play requests sound by default. Browsers unlock its AudioContext on the first interaction. Use ?sound=0 to mute it. The overlay requests audio only with ?sound=1, which works in OBS when browser source autoplay is permitted. Both pages have mute and volume controls.
 All effects are synthesized. There is no music.
 The engine and outcomes run on the server, so previews cannot advance the shared game.
 Only a claimed local play connection can send player input.
@@ -65,6 +65,7 @@ No browser download is performed by the script.
 The script writes:
 
 * shots/overlay.png from the local Twitch protocol simulation, with two mock workers, an actual measured Codex spike receipt and a simulated clip link.
+* shots/overlay-intro.png, play-countdown.png and play-results.png show the intro, countdown and credited scores.
 * shots/overlay-mock.png from the separate scripted mock session.
 * shots/play-title.png with the first viewer game title.
 * shots/play-game.png, play-game-2.png and play-game-3.png from three different games.
@@ -79,8 +80,14 @@ After taking the images, the script waits for the gauntlet to finish.
 It then checks a manual game, keyboard input, double tap skip, preview isolation,
 auto approval settings and the word editor through the browser.
 
-The eight source images were inspected during the final build.
+The eleven source images were inspected during the final build.
 The word editor is collapsed by default so blocked phrases do not appear in a shared dashboard.
 The gameplay HUD sits outside the arena so it cannot hide a simulated target.
 It shows the actual verb, score target and remaining game time. The OBS card mirrors that objective.
 The spotlight retains its last cursor position between clicks and never strobes.
+
+## Points and presentation
+
+Wins earn 100 points times the consecutive win count, capped at 5×. A loss or skip resets that streak. A designer earns 100 points when their game beats the player. Designer totals and each player's best completed run persist in SQLite. Humanish bot records have a BOT label. Old records without streak data count 100 per win.
+
+Hit stop, combo text, particles, shake and edge pulses are render effects only. Hit stop lasts at most 35 ms. The engine keeps running at its fixed step. Reduced motion disables spatial effects and edge pulses. Intro and GO timing follow server frames.

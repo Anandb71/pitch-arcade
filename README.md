@@ -65,7 +65,9 @@ Use a window capture for `http://127.0.0.1:3000/play/`. The logical game is 960 
 
 Add an OBS browser source for `http://127.0.0.1:3000/overlay/`. Set width 1920 and height 1080. Place it above the play capture. The center stays transparent. `?backdrop=1` adds a checker preview for screenshots. Keep that query off in OBS.
 
-Arrows or WASD move. Space or mouse clicks hit targets. Repeated space or mouse taps mash. Double tap S or press Shift + S to skip. A normal S press still moves down. Sound starts only after a gesture and is off by default.
+Arrows or WASD move. Space or mouse clicks hit targets. Repeated space or mouse taps mash. Double tap S or press Shift + S to skip. A normal S press still moves down. Sound defaults on for play and resumes on the first interaction when the browser requires it. Use ?sound=0 to mute play. The overlay defaults to muted; use ?sound=1 for OBS audio. Both pages have mute and volume controls.
+
+Wins earn 100 points times the current win streak, capped at 5×. Losses award the designer 100 points. A loss or skip resets the streak. Designer totals and player high scores persist in SQLite. Bot scores are labeled. Final cards credit every game. Render combo pops are decorative and do not change these scores.
 
 The dashboard has approve, reject, preview, skip, stop and pause controls. Pause stops intake and active work. Optional auto approval applies to validated mod or VIP pitches. Chat cannot control gameplay.
 
@@ -140,9 +142,13 @@ npm run playtest -- library/01-taco-rain.json
 npm run shots
 ```
 
-The suite has 168 passing tests. It covers deterministic outcomes, schema and semantic checks, bot acceptance, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols and a finished unattended gauntlet. [Fresh clone proof](docs/fresh-clone.md) records a clean installation.
+The suite has 180 passing tests. It covers deterministic outcomes, schema and semantic checks, bot acceptance, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols and a finished unattended gauntlet. [Fresh clone proof](docs/fresh-clone.md) records a clean installation.
 
 Shots use installed Chrome or Playwright Chromium. They include three games, browser control checks, a literal HTML injection check, a transparent overlay check and a completed gauntlet. The gallery combines a mock authoring session with a local Twitch protocol simulation. The overlay's real Codex receipt comes from the measured spike. Its clip URL comes from fake Helix.
+
+| Intro | Results |
+| --- | --- |
+| ![Gauntlet intro](shots/overlay-intro.png) | ![Credited results](shots/play-results.png) |
 
 | Play | Factory and OBS |
 | --- | --- |

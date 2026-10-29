@@ -9,7 +9,7 @@ Other machines use their installed system emoji font. Emoji appearance may diffe
 
 All game sound effects are synthesized locally with WebAudio oscillators and gain envelopes.
 No audio recordings, music or copyrighted sound packs are included.
-Audio starts only after a user gesture. Muting does not affect simulation.
+Audio resumes on interaction when the browser requires it. OBS can permit autoplay with sound enabled in the overlay URL. Muting does not affect simulation.
 
 The renderer uses eight palettes and five static patterns.
 Particles are decorative and capped at 96. Shake is capped at six logical pixels.
@@ -35,3 +35,5 @@ Original application source and generated game data are provided under the repos
 | Bundled harness dependencies | Upstream notices | factory/template/tools/LICENSES.txt |
 
 The screenshots are direct browser captures of this application. The final overlay includes a real measured Codex receipt and clearly simulated Helix clip links. No Twitch footage, copyrighted music or external artwork is included. Font rendering can differ on other systems.
+
+The polish sprint adds original synthesized hit, score, countdown, win, lose and pitch cues. Render hit stop is capped at 35 ms and never delays the engine. Reduced motion disables spatial feedback and edge pulses. No sound or image asset files were added.

@@ -140,3 +140,9 @@ See docs/demo.md for unattended capture and OBS placement.
 The loss hook is a ResultsSink interface.
 MockResultsSink records simulated clip requests and chat result lines.
 RealResultsSink uses the live Helix client, posts confirmed clip links and sends the final gauntlet summary. Clip and chat errors stay separate from gameplay. The local protocol demo uses the same sink against fake Helix and labels its links simulated. Public Twitch delivery is not yet verified.
+
+## Points and league tables
+
+GET /api/leaderboards returns designer point totals and player high scores. The same boards travel in /api/state. Round scores reference persisted plays and player identities reference gauntlets. Existing databases gain the two score tables automatically. Legacy wins without streak data count 100 points each. Bots are labeled independently of human players.
+
+Each win earns 100 times the consecutive win count, capped at 5×. A loss gives the designer 100 and resets the player streak. A skip also resets it. Results include per game points, streak and designer credit. Render combo effects are decorative and do not write scores.

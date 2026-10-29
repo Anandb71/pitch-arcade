@@ -11,6 +11,15 @@
       "phase": "title"
     },
     {
+      "file": "overlay-intro.png",
+      "phase": "title",
+      "source": "Actual gauntlet intro"
+    },
+    {
+      "file": "play-countdown.png",
+      "phase": "countdown"
+    },
+    {
       "file": "play-game.png",
       "phase": "play",
       "game": "Taco Rain",
@@ -50,6 +59,68 @@
     {
       "file": "chat-panel.png",
       "source": "actual mock pitches and result messages"
+    },
+    {
+      "file": "play-results.png",
+      "phase": "finished",
+      "points": 700,
+      "outcomes": [
+        {
+          "playerPoints": 100,
+          "designerPoints": 0,
+          "combo": 1,
+          "gameId": 24,
+          "title": "Taco Rain",
+          "designer": "priya",
+          "outcome": "win",
+          "round": 1,
+          "ms": 5000
+        },
+        {
+          "playerPoints": 0,
+          "designerPoints": 100,
+          "combo": 0,
+          "gameId": 25,
+          "title": "Bubble Pop",
+          "designer": "lee",
+          "outcome": "lose",
+          "round": 2,
+          "ms": 4467
+        },
+        {
+          "playerPoints": 100,
+          "designerPoints": 0,
+          "combo": 1,
+          "gameId": 26,
+          "title": "Berry Basket",
+          "designer": "mira",
+          "outcome": "win",
+          "round": 3,
+          "ms": 2583
+        },
+        {
+          "playerPoints": 200,
+          "designerPoints": 0,
+          "combo": 2,
+          "gameId": 27,
+          "title": "Moon Escape",
+          "designer": "arun",
+          "outcome": "win",
+          "round": 4,
+          "ms": 967
+        },
+        {
+          "playerPoints": 300,
+          "designerPoints": 0,
+          "combo": 3,
+          "gameId": 28,
+          "title": "Rocket Charge",
+          "designer": "zoe",
+          "outcome": "win",
+          "round": 5,
+          "ms": 3267
+        }
+      ]
     },
     {
       "file": "overlay.png",
@@ -112,6 +183,9 @@
     "lives": 2,
     "outcomes": [
       {
+        "playerPoints": 100,
+        "designerPoints": 0,
+        "combo": 1,
         "gameId": 24,
         "title": "Taco Rain",
         "designer": "priya",
@@ -120,6 +194,9 @@
         "ms": 5000
       },
       {
+        "playerPoints": 0,
+        "designerPoints": 100,
+        "combo": 0,
         "gameId": 25,
         "title": "Bubble Pop",
         "designer": "lee",
@@ -128,6 +205,9 @@
         "ms": 4467
       },
       {
+        "playerPoints": 100,
+        "designerPoints": 0,
+        "combo": 1,
         "gameId": 26,
         "title": "Berry Basket",
         "designer": "mira",
@@ -136,6 +216,9 @@
         "ms": 2583
       },
       {
+        "playerPoints": 200,
+        "designerPoints": 0,
+        "combo": 2,
         "gameId": 27,
         "title": "Moon Escape",
         "designer": "arun",
@@ -144,6 +227,9 @@
         "ms": 967
       },
       {
+        "playerPoints": 300,
+        "designerPoints": 0,
+        "combo": 3,
         "gameId": 28,
         "title": "Rocket Charge",
         "designer": "zoe",
@@ -158,7 +244,12 @@
     "doubleTapSkip": true,
     "previewIsolated": true,
     "approvalRules": true,
-    "wordFilter": true
+    "wordFilter": true,
+    "audioUnlocked": true,
+    "volume": true,
+    "queryMute": true,
+    "resultsCredits": true,
+    "motionAndReducedMotion": true
   },
   "browserErrors": []
 }

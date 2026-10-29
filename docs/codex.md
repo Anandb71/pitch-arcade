@@ -4,7 +4,7 @@
 
 The project was built in one main Codex thread: 01a18380-92df-7fb1-84cd-1b45659bee41. The thread wrote original code, tests, documentation and browser tooling. The build includes fifteen planned engineering tasks: T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14 and T15. The final review, documentation, screenshots and clean installation checks are recorded separately in BUILDLOG.md.
 
-The final suite has 168 tests in 27 files. Milestones one through four produced sixteen implementation commits, including the real factory spike. Five final packaging commits cover review, docs, screenshots, fresh clone proof and the final audit. The completed build has twenty one commits.
+The current suite has 180 tests in 31 files. Milestones one through four produced sixteen implementation commits, including the real factory spike. Five final packaging commits cover review, docs, screenshots, fresh clone proof and the final audit. Milestone five closed with twenty one commits. The polish sprint adds the model switch, scoring, sound, render feedback and broadcast presentation.
 
 The engine, harness and Twitch work started with tests. Each task closed with a green suite and a build log entry. The final self review found six defects and added regression tests for each. Browser tooling captures real running application state and checks controls, previews, rendering and a finished unattended session.
 
