@@ -1,4 +1,4 @@
-import {EventSubChatSource} from '../../../packages/twitch/src/chat.js';
+import {EventSubChatSource,eventSubDiagnosticLabel} from '../../../packages/twitch/src/chat.js';
 import {HelixClient} from '../../../packages/twitch/src/helix.js';
 import {TokenManager,loadTokens,saveTokens,tokenPath} from '../../../packages/twitch/src/oauth.js';
 export function missingTwitch(env:NodeJS.ProcessEnv):string[]{return ['TWITCH_CLIENT_ID','TWITCH_CLIENT_SECRET','TWITCH_BROADCASTER_LOGIN','TWITCH_BOT_LOGIN'].filter(key=>!env[key]);}
@@ -9,7 +9,7 @@ export async function liveTwitch(env:NodeJS.ProcessEnv=process.env){
  const manager=new TokenManager({clientId:env.TWITCH_CLIENT_ID!,clientSecret:env.TWITCH_CLIENT_SECRET!,tokens,save:t=>saveTokens(path,t)});
  await Promise.all((['bot','broadcaster'] as const).map(role=>manager.validate(role)));
  const helix=new HelixClient({clientId:env.TWITCH_CLIENT_ID!,broadcasterId:manager.account('broadcaster').userId,botId:manager.account('bot').userId,token:role=>manager.access(role),refresh:role=>manager.validate(role),pin:env.TWITCH_PIN==='1',marker:env.TWITCH_MARKERS==='1'});
- const source=new EventSubChatSource({...(env.TWITCH_EVENTSUB_URL?{url:env.TWITCH_EVENTSUB_URL}:{}),onError:()=>console.error('Twitch chat is reconnecting. Events during a drop cannot be replayed.')});source.onWelcome=id=>helix.subscribe(id);
+ const source=new EventSubChatSource({...(env.TWITCH_EVENTSUB_URL?{url:env.TWITCH_EVENTSUB_URL}:{}),onError:cause=>console.error('Twitch chat is reconnecting. Events during a drop cannot be replayed. Cause: '+eventSubDiagnosticLabel(cause))});source.onWelcome=(id,options)=>helix.subscribe(id,options);
  const stopMonitor=manager.monitor(()=>{source.stop();helix.stop();console.error('Twitch authorization ended. Run npm run auth to reconnect.');});
  return {source,helix,stop:()=>{stopMonitor();source.stop();helix.stop();}};
 }

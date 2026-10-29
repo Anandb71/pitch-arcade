@@ -1,13 +1,15 @@
 import {setTimeout as delay} from 'node:timers/promises';
 import type {Account} from './oauth.js';
 export class TwitchError extends Error{constructor(readonly code:string,readonly status=0){super('Twitch request failed: '+code);}}
+export interface SubscriptionOptions {signal?:AbortSignal;timeoutMs?:number;onRetry?:(httpStatus:number)=>void}
 export interface HelixOptions {clientId:string;broadcasterId:string;botId:string;token:(role:Account)=>Promise<string>;refresh?:(role:Account)=>Promise<void>;baseUrl?:string;request?:typeof fetch;now?:()=>number;sleep?:(ms:number)=>Promise<void>;pollMs?:number;clipTimeoutMs?:number;pin?:boolean;marker?:boolean}
 export class HelixClient {
+ private subscriptions=new Map<string,Promise<void>>();
  private tail:Promise<unknown>=Promise.resolve();private sends:number[]=[];private resetAt=0;private controller=new AbortController();
  constructor(private options:HelixOptions){}
  private now():number{return (this.options.now??Date.now)();}
  private async sleep(ms:number):Promise<void>{if(ms>0){this.controller.signal.throwIfAborted();await (this.options.sleep??(n=>delay(n,undefined,{signal:this.controller.signal})))(ms);}}
- stop():void{this.controller.abort();}
+ stop():void{this.controller.abort();this.subscriptions.clear();}
  private async call(path:string,role:Account,body?:unknown,retry=true,timeoutMs=5000):Promise<Record<string,unknown>>{
   this.controller.signal.throwIfAborted();await this.sleep(this.resetAt-this.now());
   let response:Response;try{response=await (this.options.request??fetch)((this.options.baseUrl??'https://api.twitch.tv/helix')+path,{method:body===undefined?'GET':'POST',headers:{'Client-Id':this.options.clientId,Authorization:'Bearer '+await this.options.token(role),'Content-Type':'application/json'},...(body===undefined?{}:{body:JSON.stringify(body)}),signal:AbortSignal.any([this.controller.signal,AbortSignal.timeout(Math.min(5000,Math.max(1,timeoutMs)))])});}catch{throw new TwitchError(this.controller.signal.aborted?'CANCELLED':'NETWORK_ERROR');}
@@ -16,7 +18,39 @@ export class HelixClient {
   if(!response.ok)throw new TwitchError(response.status===401?'UNAUTHORIZED':response.status===403?'FORBIDDEN':response.status===429?'RATE_LIMIT':'HTTP_ERROR',response.status);
   try{return await response.json() as Record<string,unknown>;}catch{throw new TwitchError('INVALID_RESPONSE');}
  }
- async subscribe(session:string):Promise<void>{await this.call('/eventsub/subscriptions','bot',{type:'channel.chat.message',version:'1',condition:{broadcaster_user_id:this.options.broadcasterId,user_id:this.options.botId},transport:{method:'websocket',session_id:session}});}
+ subscribe(session:string,options:SubscriptionOptions={}):Promise<void>{
+  const existing=this.subscriptions.get(session);if(existing)return existing;
+  const task=this.createSubscription(session,options);this.subscriptions.set(session,task);
+  void task.catch(()=>{if(this.subscriptions.get(session)===task)this.subscriptions.delete(session);});
+  while(this.subscriptions.size>32)this.subscriptions.delete(this.subscriptions.keys().next().value!);return task;
+ }
+ private async createSubscription(session:string,options:SubscriptionOptions):Promise<void>{
+  const signal=options.signal?AbortSignal.any([this.controller.signal,options.signal]):this.controller.signal;
+  const deadline=this.now()+Math.min(8500,Math.max(1,options.timeoutMs??8500));let refreshed=false,lastStatus=0;
+  const cancelled=()=>{if(signal.aborted)throw new TwitchError('CANCELLED');};
+  const pause=async(ms:number)=>{cancelled();try{await (this.options.sleep??(n=>delay(n,undefined,{signal})))(ms);}catch{throw new TwitchError('CANCELLED');}cancelled();};
+  const body={type:'channel.chat.message',version:'1',condition:{broadcaster_user_id:this.options.broadcasterId,user_id:this.options.botId},transport:{method:'websocket',session_id:session}};
+  for(let attempt=0;attempt<5&&this.now()<deadline;attempt++){
+   cancelled();let response:Response|undefined;
+   try{const token=await this.options.token('bot');cancelled();if(this.now()>=deadline)throw new TwitchError('SUBSCRIPTION_TIMEOUT');response=await (this.options.request??fetch)((this.options.baseUrl??'https://api.twitch.tv/helix')+'/eventsub/subscriptions',{method:'POST',headers:{'Client-Id':this.options.clientId,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.any([signal,AbortSignal.timeout(Math.max(1,Math.min(2500,deadline-this.now())))])});}
+   catch{cancelled();lastStatus=0;}
+   cancelled();
+   if(response){
+    void response.body?.cancel().catch(()=>{});
+    lastStatus=response.status;if(response.ok||response.status===409)return;
+    if(response.status===401){if(refreshed||!this.options.refresh)throw new TwitchError('UNAUTHORIZED',401);refreshed=true;try{await this.options.refresh('bot');}catch{throw new TwitchError('UNAUTHORIZED',401);}cancelled();continue;}
+    if(![403,429].includes(response.status)&&response.status<500)throw new TwitchError('HTTP_ERROR',response.status);
+   }
+   try{options.onRetry?.(lastStatus);}catch{/* Diagnostic consumers cannot break subscription recovery. */}
+   if(attempt===4)break;
+   let wait=250*2**attempt;
+   if(response?.status===429){const reset=Number(response.headers.get('Ratelimit-Reset'));wait=Number.isFinite(reset)&&reset>0?Math.max(wait,reset*1000-this.now()):1000;}
+   if(wait>=deadline-this.now())throw new TwitchError('SUBSCRIPTION_TIMEOUT',lastStatus);
+   await pause(wait);
+  }
+  throw new TwitchError(this.now()>=deadline?'SUBSCRIPTION_TIMEOUT':lastStatus===403?'FORBIDDEN':lastStatus===429?'RATE_LIMIT':lastStatus?'HTTP_ERROR':'NETWORK_ERROR',lastStatus);
+ }
+
  sendChat(text:string):Promise<void>{const task=this.tail.then(async()=>{
   if(!text||[...text].length>500)throw new TwitchError('MESSAGE_LENGTH');
   const now=this.now();this.sends=this.sends.filter(t=>now-t<30000);const wait=Math.max(0,(this.sends.at(-1)??-Infinity)+1000-now,this.sends.length>=20?this.sends[this.sends.length-20]!+30000-now:0);await this.sleep(wait);this.sends.push(this.now());

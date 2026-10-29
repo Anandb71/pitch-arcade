@@ -4,7 +4,8 @@ export interface EventSubMock {
  chat:(login:string,text:string,role?:string)=>void;
  keepalive:()=>void;
  reconnect:(url:string)=>void;
- drop:()=>void;
+ drop:(code?:number,reason?:string)=>void;
+ connections:()=>number;inbound:()=>number;pongs:()=>number;ping:()=>void;revoke:(type?:string,status?:string)=>void;
  close:()=>Promise<void>;
 }
 let mockInstance=0;
@@ -14,7 +15,7 @@ export async function startEventSubMock(port=0,options:{welcomeDelayMs?:number;k
  await new Promise<void>((resolve,reject)=>{
   server.once('listening',resolve);server.once('error',reject);
  });
- const instance=++mockInstance;let sequence=0,session=0;
+ const instance=++mockInstance;let sequence=0,session=0,inbound=0,pongs=0;
  const envelope=(type:string,payload:unknown,chat=false)=>({
   metadata:{message_id:'mock-message-'+(++sequence),message_type:type,message_timestamp:new Date().toISOString(),...(chat?{subscription_type:'channel.chat.message',subscription_version:'1'}:{})},
   payload
@@ -31,7 +32,8 @@ export async function startEventSubMock(port=0,options:{welcomeDelayMs?:number;k
   },true);
  server.on('connection',socket=>{
   socket.on('error',()=>{});
-  socket.on('message',raw=>{
+  socket.on('pong',()=>{pongs++;});
+  socket.on('message',raw=>{inbound++;
    try{const value=JSON.parse(raw.toString());if(value.mock==='chat'&&typeof value.login==='string'&&/^[a-zA-Z0-9_]{1,25}$/.test(value.login)&&typeof value.text==='string'&&value.text.length<=512&&['viewer','sub','vip','mod','broadcaster'].includes(value.role??'viewer'))chat(value.login,value.text,value.role??'viewer');}catch{}
   });
   const welcome=setTimeout(()=>send(socket,'session_welcome',{session:{id:'mock-'+(++session),status:'connected',keepalive_timeout_seconds:options.keepaliveSeconds??10,reconnect_url:null,connected_at:new Date().toISOString()}}),options.welcomeDelayMs??0);
@@ -45,7 +47,8 @@ export async function startEventSubMock(port=0,options:{welcomeDelayMs?:number;k
   chat,
   keepalive:()=>broadcast('session_keepalive',{}),
   reconnect:reconnectUrl=>broadcast('session_reconnect',{session:{id:'mock-'+session,status:'reconnecting',keepalive_timeout_seconds:null,reconnect_url:reconnectUrl,connected_at:new Date().toISOString()}}),
-  drop:()=>{for(const socket of server.clients)socket.close(4000,'Mock connection drop');},
+  drop:(code=4000,reason='Mock connection drop')=>{for(const socket of server.clients)socket.close(code,reason);},
+  connections:()=>server.clients.size,inbound:()=>inbound,pongs:()=>pongs,ping:()=>{for(const socket of server.clients)socket.ping();},revoke:(type='channel.chat.message',status='authorization_revoked')=>broadcast('revocation',{subscription:{type,status}}),
   close:()=>new Promise<void>((resolve,reject)=>{
    for(const socket of server.clients)socket.terminate();
    server.close(error=>error?reject(error):resolve());

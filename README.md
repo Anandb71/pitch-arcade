@@ -72,7 +72,7 @@ Mock generation is explicitly simulated. No Twitch clip is published by these co
 
 ## How Codex was used
 
-**Build:** one main Codex thread wrote the original engine, game format, bot harness, Twitch adapters, browser clients, tests and recording tools. The session is `01a18380-92df-7fb1-84cd-1b45659bee41`. The current suite has **240 passing tests**.
+**Build:** one main Codex thread wrote the original engine, game format, bot harness, Twitch adapters, browser clients, tests and recording tools. The session is `01a18380-92df-7fb1-84cd-1b45659bee41`. The current suite has **267 passing tests**.
 
 **Runtime:** live jobs use the installed Codex CLI with **gpt-6.1-sol** by default. Each isolated job receives untrusted pitch data and a short digest of recent mechanics and themes. It writes JSON, uses the trusted playtest tool and gets at most one repair within the same total budget. The server independently checks everything before approval. Mock mode makes no model call.
 
@@ -182,7 +182,7 @@ npm run playtest -- library/01-taco-rain.json
 npm run shots
 ```
 
-240 tests cover deterministic outcomes, validation, quality gates, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols, rankings and repeated recording cycles. [Fresh clone proof](docs/fresh-clone.md) records installation, the suite and the recording command from a clean checkout.
+267 tests cover deterministic outcomes, validation, quality gates, queue races, sandbox boundaries, OAuth refresh, local Twitch protocols, rankings and repeated recording cycles. [Fresh clone proof](docs/fresh-clone.md) records installation, the suite and the recording command from a clean checkout.
 
 The screenshot script captures actual gameplay, hit feedback, factory work, opening cards, approvals and credited results at 1920 by 1080. It also checks sound, reduced motion, input, preview isolation and literal untrusted HTML rendering.
 
