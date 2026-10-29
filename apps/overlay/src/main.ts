@@ -2,6 +2,9 @@ import '../../shared/style.css';
 import './overlay.css';
 import {node,mount,brand} from '../../shared/dom.js';
 import {ArcadeClient} from '../../shared/client.js';
+import {soundControls} from '../../shared/sound.js';
+import {SceneTransitions,countdownCue} from '../../../packages/shared/src/presentation.js';
+import {safeName} from '../../../packages/shared/src/scoring.js';
 import {receiptSummary} from '../../../packages/shared/src/receipt.js';
 import type {ArcadeState,GauntletState} from '../../../packages/shared/src/protocol.js';
 const root=mount();root.className='overlay-stage';
@@ -17,12 +20,21 @@ nowTop.append(phase,gameRound);const nowTitle=node('h1','now-title','Your move.'
 const nowObjective=node('div','now-objective'),objectiveText=node('strong'),objectiveTime=node('span');nowObjective.append(objectiveText,objectiveTime);
 nowBottom.append(hearts,pace);playing.append(nowTop,nowTitle,nowBy,nowEmoji,nowObjective,nowBottom);
 const leaders=node('section','overlay-panel leader-panel'),leaderTop=node('div','row between'),leaderList=node('div','leader-list');
-leaderTop.append(node('h2','','Toughest designers'),node('span','mono muted','BEATS'));leaders.append(leaderTop,leaderList);
+leaderTop.append(node('h2','','Designer league'),node('span','mono muted','POINTS'));leaders.append(leaderTop,leaderList);
 const roundTag=node('div','overlay-panel round-tag'),tagText=node('span','mono','FIVE GAMES. THREE LIVES.'),tagScore=node('strong','','0 / 5');
 roundTag.append(tagText,tagScore);
 const ticker=node('div','overlay-ticker'),tickerLabel=node('span','ticker-label','IN THE FACTORY'),tickerText=node('span','ticker-text','Pitch a five second game with !pitch'),tickerEnd=node('span','ticker-end','CHAT MADE THIS.');
 ticker.append(tickerLabel,tickerText,tickerEnd);
-root.append(logo,session,factory,playing,leaders,roundTag,ticker);
+const sound=soundControls(false);sound.element.classList.add('overlay-sound');
+const mode=node('div','broadcast-mode','THE CHAT ARCADE'),pitchToast=node('div','pitch-toast');pitchToast.hidden=true;
+const players=node('section','overlay-panel player-panel'),playerList=node('div','player-list');players.append(node('h2','','Player high scores'),playerList,node('p','league-note','WIN STREAKS PAY MORE'));
+const designerBadge=node('span','credit-badge','CHAT DESIGNER');nowBy.append(designerBadge);
+const intro=node('section','overlay-intro'),introLogo=brand(),introKicker=node('p','intro-kicker','THE COMMUNITY GAUNTLET'),introTitle=node('h2','intro-title','CHAT MADE THIS.'),introSub=node('p','intro-sub','Five games. Three lives. Make them proud.'),introCount=node('strong','intro-count');introLogo.classList.add('intro-logo');intro.append(introLogo,introKicker,introTitle,introSub,introCount);intro.hidden=true;
+root.append(logo,session,sound.element,mode,factory,playing,leaders,players,roundTag,ticker,pitchToast,intro);
+const transitions=new SceneTransitions();let currentPhase:GauntletState['phase']='idle',phaseSignature='',lastPitch=-1,toastTimer=0,boardSignature='';
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+function changeScene():void{const active=latest?.pitches??[],next=transitions.next(currentPhase,active.filter(p=>p.status==='building').length,active.filter(p=>p.status==='queued').length,!pitchToast.hidden);root.dataset.scene=next.scene;mode.textContent=({queue:'OPEN FOR PITCHES',pitching:'A NEW CHALLENGER',factory:'THE FACTORY IS COOKING',gauntlet:'CHAT VS STREAMER',results:'THE SCORE IS SET'})[next.scene];if(next.changed&&!reduced.matches)for(const [index,panel] of [factory,playing,leaders,players,roundTag].entries()){panel.getAnimations().forEach(a=>a.cancel());panel.animate([{opacity:.5,transform:'translateY(12px)'},{opacity:1,transform:'translateY(0)'}],{duration:380,delay:index*24,easing:'cubic-bezier(.16,1,.3,1)'});}}
+
 let latest:ArcadeState|undefined,lastResultId=0,resultUntil=0;
 function drawTicker(state:ArcadeState):void{
  const result=state.resultTicker.filter(item=>item.kind==='chat').at(-1);
@@ -33,6 +45,8 @@ function drawTicker(state:ArcadeState):void{
 }
 function drawState(state:ArcadeState):void{
  latest=state;
+ const newest=state.pitches.at(-1);if(lastPitch>=0&&newest&&newest.id>lastPitch){sound.audio.play('pitch');pitchToast.textContent='NEW PITCH · @'+safeName(newest.login);pitchToast.hidden=false;clearTimeout(toastTimer);toastTimer=window.setTimeout(()=>{pitchToast.hidden=true;changeScene();},2800);}lastPitch=newest?.id??Math.max(0,lastPitch);
+ changeScene();
  session.textContent=state.mockTwitch?'● MOCK SESSION':'● LOCAL ARCADE';
  const recent=state.builds.find(build=>build.status==='completed'&&build.receipt_json);
  const spike=state.games.find(game=>game.receipt&&typeof game.receipt==='object'&&(game.receipt as Record<string,unknown>).source==='codex-cli');
@@ -54,25 +68,32 @@ function drawState(state:ArcadeState):void{
   if(build?.receipt_json){try{card.append(node('p','job-receipt',receiptSummary(JSON.parse(build.receipt_json))));}catch{}}
   jobs.append(card);
  }
- leaderList.replaceChildren();
- if(!state.leaderboard.length)leaderList.append(node('p','leader-empty','The first loss puts a designer on the board.'));
- for(const [index,leader] of state.leaderboard.slice(0,3).entries()){
-  const row=node('div','leader-row');row.append(node('span','leader-rank',String(index+1).padStart(2,'0')),node('strong','','@'+leader.login),node('span','leader-beats',String(leader.beats)));leaderList.append(row);
+ const signature=JSON.stringify(state.scoreboards);
+ if(signature!==boardSignature){boardSignature=signature;leaderList.replaceChildren();playerList.replaceChildren();
+  for(const [entries,list] of [[state.scoreboards.designers,leaderList],[state.scoreboards.players,playerList]] as const){
+   if(!entries.length)list.append(node('p','leader-empty','The next great score could be yours.'));
+   for(const [index,entry] of entries.slice(0,3).entries()){const row=node('div','leader-row');row.append(node('span','leader-rank',String(index+1).padStart(2,'0')),node('strong','','@'+safeName(entry.login)),node('span','leader-beats',String(entry.score)));if(entry.simulated)row.querySelector('strong')!.append(node('span','credit-badge','BOT'));list.append(row);}
+  }
  }
+
  drawTicker(state);
 }
 function drawGame(state:GauntletState):void{
- root.dataset.phase=state.phase;
+ root.dataset.phase=state.phase;currentPhase=state.phase;changeScene();
+ const cue=countdownCue(state.phase,state.countdown,state.phaseFrames),signature=state.id+':'+state.round+':'+state.phase+':'+cue;
+ if(signature!==phaseSignature){phaseSignature=signature;if(state.phase==='countdown')sound.audio.play('countdown');if(cue==='GO')sound.audio.play('go');if(state.phase==='result')sound.audio.play(state.lastOutcome==='win'?'win':state.lastOutcome==='lose'?'lose':'tick');}
+ intro.hidden=!(state.round===1&&['title','countdown'].includes(state.phase))&&cue!=='GO';intro.classList.toggle('intro-go',cue==='GO');intro.classList.toggle('intro-counting',state.phase==='countdown');introCount.textContent=cue;introTitle.textContent=state.phase==='title'?'CHAT MADE THIS.':'YOUR TURN.';
+ if(cue==='GO'&&!reduced.matches&&intro.dataset.cue!=='GO')intro.animate([{transform:'scale(.85)',opacity:1},{transform:'scale(1.06)',opacity:0}],{duration:400,easing:'ease-out'});intro.dataset.cue=cue;
  phase.textContent=state.phase==='play'?'NOW PLAYING':state.phase==='countdown'?'GET READY · '+state.countdown:state.phase==='result'?(state.lastOutcome==='lose'?'THE DESIGNER WINS':state.lastOutcome==='win'?'STREAMER SURVIVES':'SKIPPED'):state.phase==='finished'?'GAUNTLET COMPLETE':'UP NEXT';
  gameRound.textContent=String(state.round||1).padStart(2,'0')+' / 05';
  nowTitle.textContent=state.game?.title??'Your move.';
- nowBy.textContent=state.game?'by @'+state.game.authorLogin:'Your chat makes the games.';
+ nowBy.replaceChildren(node('span','',state.game?'by @'+safeName(state.game.authorLogin):'Your chat makes the games.'));designerBadge.textContent=state.game?.classic?'ARCADE CLASSIC':'CHAT DESIGNER';nowBy.append(designerBadge);
  nowEmoji.textContent=state.game?.spec.spawners[0]?.emoji??'🎮';
  nowObjective.hidden=state.phase!=='play';
  if(state.game&&state.snapshot){objectiveText.textContent=state.game.verb+('n' in state.game.spec.win?' · '+state.snapshot.score+' / '+state.game.spec.win.n:'');objectiveTime.textContent=Math.max(0,state.game.spec.seconds-state.snapshot.frame/60).toFixed(1)+'s left';}
  hearts.replaceChildren();for(let i=0;i<3;i++)hearts.append(node('span',i<state.lives?'':'spent','♥'));
  pace.textContent=(state.speedPercent/100).toFixed(2)+'× SPEED';
- tagText.textContent=state.autoplay?'HUMANISH BOT · DEMO':'THE COMMUNITY GAUNTLET';tagScore.textContent=state.score+' / 5';
+ tagText.textContent=state.autoplay?'HUMANISH BOT · DEMO':'THE COMMUNITY GAUNTLET';tagScore.textContent=state.points+' PTS';
 }
 setInterval(()=>{if(latest)drawTicker(latest);},1000);
 new ArcadeClient(drawState,drawGame);

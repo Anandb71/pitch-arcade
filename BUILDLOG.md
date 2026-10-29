@@ -139,3 +139,7 @@ Added capped win streak scoring, designer points for beating the streamer, per r
 ### M6 B sound and render feedback
 
 Added synthesized hit, tick, countdown, GO, win, lose and pitch sounds with bounded volume, mute controls and safe gesture unlock. Added render only hit stop capped at 35 ms, combo pops, particles, shake and a localized edge pulse. Reduced motion disables spatial effects and pulses. Pure tests cover feedback caps, expiry, score math, cue recipes and volume bounds. Engine code is unchanged. npm test passes with 178 tests.
+
+### M6 B broadcast intro and overlay
+
+Added a branded gauntlet intro, server timed countdown and GO cue, eased scene changes, a new pitch toast, persistent league panels, designer badges and OBS sound controls. Fixed panel slots keep the safe area stable. Transition tests cover queue, pitching, factory, gauntlet and results priority without changing engine time. Reduced motion skips spatial animation. The working suite is green and the browser capture run exercises the new presentation.
