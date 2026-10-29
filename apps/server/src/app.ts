@@ -1,3 +1,4 @@
+import {scoreboard} from './scoreboard.js';
 import Fastify from 'fastify';
 import {WebSocketServer,WebSocket} from 'ws';
 import {mkdirSync,readFileSync} from 'node:fs';
@@ -65,8 +66,9 @@ export async function createArcade(options:ArcadeOptions={}){
  });
  const unsubscribeResults=resultsSink.subscribe?.(item=>{if(item.kind==='chat'){acks.push({userId:item.authorId??'',text:(item.simulated?'Simulated Twitch: ':'Twitch: ')+item.text});if(acks.length>50)acks.shift();}broadcast({type:'result',item});});
  app.addHook('onClose',async()=>{unsubscribeResults?.();});
- const gauntlet=new Gauntlet(store,library,resultsSink,state=>broadcast({type:'gauntlet',state}));
- const getState=():ArcadeState=>({enabled:store.enabled,mockTwitch,mockCodex:runner.model==='mock replay',pitches:store.pitches(),games:library.all(),steps,acks:acks.map(a=>a.text),builds:store.db.all('SELECT id,pitch_id,model,status,receipt_json FROM builds ORDER BY id DESC LIMIT 20'),gauntlet:gauntlet.state,leaderboard:store.db.all('SELECT login,beats,games_approved AS gamesApproved FROM users WHERE beats>0 ORDER BY beats DESC,login LIMIT 5'),resultTicker:resultsSink.items??[],settings:settings.read()});
+ let scoreRevision='';
+ const gauntlet=new Gauntlet(store,library,resultsSink,state=>{broadcast({type:'gauntlet',state});const revision=state.id+':'+state.outcomes.length+':'+(state.phase==='finished');if(revision!==scoreRevision){scoreRevision=revision;broadcast({type:'leaderboards.changed'});}});
+ const getState=():ArcadeState=>({scoreboards:scoreboard(store),enabled:store.enabled,mockTwitch,mockCodex:runner.model==='mock replay',pitches:store.pitches(),games:library.all(),steps,acks:acks.map(a=>a.text),builds:store.db.all('SELECT id,pitch_id,model,status,receipt_json FROM builds ORDER BY id DESC LIMIT 20'),gauntlet:gauntlet.state,leaderboard:store.db.all('SELECT login,beats,games_approved AS gamesApproved FROM users WHERE beats>0 ORDER BY beats DESC,login LIMIT 5'),resultTicker:resultsSink.items??[],settings:settings.read()});
  const intake=new Intake(store,{
   getDenylist:()=>settings.read().denylist,cooldownMs:options.cooldownMs??120000,queueCap:options.queueCap??20,moderator:options.moderator??moderatorFromEnv(),
   onToggle:enabled=>{if(enabled)factory.kick();else{factory.pause();gauntlet.stop();}broadcast({type:'arcade.toggle',enabled});}
@@ -99,6 +101,7 @@ export async function createArcade(options:ArcadeOptions={}){
  });
  app.get('/api/health',async()=>({app:'pitch-arcade',mockTwitch,mockCodex:runner.model==='mock replay'}));
  app.get('/api/state',async()=>getState());
+ app.get('/api/leaderboards',async()=>scoreboard(store));
  app.get('/api/library',async()=>library.approved());
  if(mockTwitch)app.post<{Body:{login:string;role:ChatMessage['role'];text:string;id?:string}}>('/api/mock/chat',{
   schema:{body:{type:'object',required:['login','role','text'],additionalProperties:false,properties:{login:{type:'string',pattern:'^[a-zA-Z0-9_]{1,25}$'},role:{type:'string',enum:roles},text:{type:'string',maxLength:512},id:{type:'string',minLength:1,maxLength:100}}}}

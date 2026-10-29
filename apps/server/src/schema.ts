@@ -35,6 +35,14 @@ CREATE TABLE IF NOT EXISTS plays (
  game_id INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE, position INTEGER NOT NULL,
  outcome TEXT NOT NULL CHECK(outcome IN ('win','lose','skip')), ms INTEGER NOT NULL, clip_id TEXT, clip_url TEXT
 );
+CREATE TABLE IF NOT EXISTS round_scores (
+ play_id INTEGER PRIMARY KEY REFERENCES plays(id) ON DELETE CASCADE,
+ player_points INTEGER NOT NULL, designer_points INTEGER NOT NULL, combo INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS gauntlet_players (
+ gauntlet_id INTEGER PRIMARY KEY REFERENCES gauntlets(id) ON DELETE CASCADE,
+ login TEXT NOT NULL, simulated INTEGER NOT NULL
+);
 CREATE TABLE IF NOT EXISTS events (
  id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, type TEXT NOT NULL, payload_json TEXT NOT NULL,
  user_id TEXT REFERENCES users(twitch_id) ON DELETE CASCADE

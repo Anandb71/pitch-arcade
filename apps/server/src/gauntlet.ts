@@ -1,3 +1,4 @@
+import {scoreRound,safeName} from '../../../packages/shared/src/scoring.js';
 import {Engine} from '../../../packages/engine/src/engine.js';
 import type {Input} from '../../../packages/engine/src/types.js';
 import {createBot,type Bot} from '../../../packages/harness/src/bots.js';
@@ -10,7 +11,7 @@ export function selectGames(games:ArcadeGame[]):ArcadeGame[]{
  const classics=games.filter(g=>g.status==='approved'&&g.classic).sort((a,b)=>a.id-b.id);
  const ids=new Set<number>();return [...viewers,...classics].filter(g=>{if(ids.has(g.id))return false;ids.add(g.id);return true;}).slice(0,5);
 }
-const idle=():GauntletState=>({id:null,revision:0,phase:'idle',phaseFrames:0,round:0,total:5,lives:3,score:0,countdown:3,speedPercent:100,seed:0,autoplay:false,game:null,snapshot:null,pointer:null,outcomes:[],lastOutcome:null,reason:null});
+const idle=():GauntletState=>({id:null,revision:0,phase:'idle',phaseFrames:0,round:0,total:5,lives:3,score:0,points:0,combo:0,countdown:3,speedPercent:100,seed:0,autoplay:false,game:null,snapshot:null,pointer:null,outcomes:[],lastOutcome:null,reason:null});
 export class Gauntlet {
  frozen=false;private revision=0;
  private value=idle();private games:RoundGame[]=[];private engine:Engine|undefined;private bot:Bot|undefined;
@@ -26,6 +27,7 @@ export class Gauntlet {
   if(this.active)throw Error('GAUNTLET_BUSY');
   const selected=selectGames(this.library.approved());if(selected.length<5)throw Error('NEED_FIVE_GAMES');
   const id=Number(this.store.db.run('INSERT INTO gauntlets(started_at,lives_left,score) VALUES(?,3,0)',Date.now()).lastInsertRowid);
+  this.store.db.run('INSERT INTO gauntlet_players(gauntlet_id,login,simulated) VALUES(?,?,?)',id,options.autoplay?'humanish_bot':safeName(process.env.TWITCH_BROADCASTER_LOGIN||'streamer'),options.autoplay?1:0);
   this.games=selected.map(({id,title,verb,spec,authorId,authorLogin,classic})=>({id,title,verb,spec,authorId,authorLogin,classic}));
   this.value={...idle(),id,seed:(options.seed??2026+id*137)>>>0,autoplay:options.autoplay??false};
   this.frozen=false;this.nextRound();
@@ -78,7 +80,9 @@ export class Gauntlet {
   if(outcome==='win')this.value.score++;
   if(outcome==='lose')this.value.lives--;
   const playId=Number(this.store.db.run('INSERT INTO plays(gauntlet_id,game_id,position,outcome,ms) VALUES(?,?,?,?,?)',this.value.id!,g.id,this.value.round,outcome,ms).lastInsertRowid);
-  this.value.outcomes.push({gameId:g.id,title:g.title,designer:g.authorLogin,outcome,round:this.value.round,ms});
+  const points=scoreRound(outcome,this.value.combo);this.value.points+=points.player;this.value.combo=points.combo;
+  this.store.db.run('INSERT INTO round_scores(play_id,player_points,designer_points,combo) VALUES(?,?,?,?)',playId,points.player,points.designer,points.combo);
+  this.value.outcomes.push({playerPoints:points.player,designerPoints:points.designer,combo:points.combo,gameId:g.id,title:g.title,designer:g.authorLogin,outcome,round:this.value.round,ms});
   this.store.db.run('UPDATE gauntlets SET lives_left=?,score=? WHERE id=?',this.value.lives,this.value.score,this.value.id!);
   if(outcome==='lose'){
    if(g.authorId)this.store.db.run('UPDATE users SET beats=beats+1 WHERE twitch_id=?',g.authorId);

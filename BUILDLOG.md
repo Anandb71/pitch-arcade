@@ -131,3 +131,7 @@ The final prose check passes eleven target files. A temporary negative fixture c
 ### M6 A factory model
 
 Changed the server and CLI runner defaults to gpt-6.1-sol. Updated current configuration docs while preserving the historical gpt-6-luna spike receipts and measurements. Added a default and override regression test. npm test passes with 169 tests.
+
+### M6 B persistent scoring
+
+Added capped win streak scoring, designer points for beating the streamer, per round credits and SQLite score records linked to existing plays. Added a leaderboards endpoint and state payload for designer totals and player high scores. Humanish bot runs are labeled separately. Ranking sanitizes names, sorts ties consistently and handles empty boards. Tests cover score math, unsafe names, ties, persistence after reopen and idempotent results. npm test passes with 178 tests across the scoring and presentation work prepared for this sprint.
