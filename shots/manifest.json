@@ -24,7 +24,7 @@
       "phase": "play",
       "game": "Neon Taco Shuffle",
       "round": 1,
-      "frame": 111
+      "frame": 110
     },
     {
       "file": "play-hit.png",
@@ -45,7 +45,7 @@
       "phase": "play",
       "game": "Shell Shuffle",
       "round": 3,
-      "frame": 111
+      "frame": 112
     },
     {
       "file": "overlay-mock.png",
@@ -130,6 +130,26 @@
       ]
     },
     {
+      "file": "leaderboard.png",
+      "phase": "finished",
+      "source": "Actual persistent designer totals and labeled bot high score",
+      "scoreboards": {
+        "designers": [
+          {
+            "login": "lee",
+            "score": 100
+          }
+        ],
+        "players": [
+          {
+            "login": "humanish_bot",
+            "score": 700,
+            "simulated": true
+          }
+        ]
+      }
+    },
+    {
       "file": "overlay.png",
       "source": "Actual EventSub mock and fake Helix with real Twitch clients. Factory workers are mock replays. Real spike receipt was measured in milestone four.",
       "game": "Neon Taco Shuffle",
@@ -186,7 +206,7 @@
     },
     {
       "file": "factory-floor.png",
-      "source": "Actual two mock jobs, real spike receipt and simulated clip ticker",
+      "source": "Same captured frame as overlay.png: two actual mock jobs, real spike receipt and simulated clip ticker",
       "phase": "play"
     },
     {

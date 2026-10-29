@@ -193,6 +193,7 @@ The screenshot script captures actual gameplay, hit feedback, factory work, open
 | --- | --- |
 | ![Countdown](shots/play-countdown.png) | ![Shell collecting game](shots/play-game-3.png) |
 | ![Transparent OBS composition](shots/overlay.png) | ![Mock chat panel](shots/chat-panel.png) |
+| ![Persistent designer and player rankings](shots/leaderboard.png) | ![Gauntlet intro](shots/overlay-intro.png) |
 
 </details>
 

@@ -1,86 +1,77 @@
 # Fresh clone proof
 
-A clean local clone was checked on October 29, 2026. The source revision was de4bc34b5cd1bb7c6a7855fa06399aeed0e1462f. No files were copied from the working tree. Dependencies came from the committed lockfile.
+## Current recording build
 
-The shell selected Node v22.11.0 and npm 10.9.0 explicitly. The following commands ran in a new /tmp/pa-fresh clone. Twitch credentials, mock flags and moderation credentials were removed from the child environment. Doctor used a deliberately absent token path, so it could not load an existing user's Twitch grant.
+A clean local clone was verified on October 29, 2026 at revision 70ff661756e0c48202da5597271415474e881bdf. It used only committed files and the committed lockfile. The final evidence commit adds this report, gallery updates and the corrected factory capture timing.
+
+The helper cloned into /tmp/pa-m9-fresh. It selected Node v22.11.0 and npm 10.9.0. The child environment inherited only PATH, HOME, LANG, LC_ALL, TERM and TZ. No Twitch, moderation or mock settings were inherited. The clone had no .env file.
+
+These commands ran in the clone. The helper supplied an available loopback PORT for the demo.
 
 ```sh
-git clone --no-hardlinks /workspace/hackathons/twitchcon/pitch-arcade /tmp/pa-fresh
-cd /tmp/pa-fresh
+git clone --no-hardlinks /workspace/hackathons/twitchcon/pitch-arcade /tmp/pa-m9-fresh
+cd /tmp/pa-m9-fresh
 node --version
 npm --version
 npm ci
 npm test
-npm run build
-npm run lint:prose
-npm run demo:auto
-npm run doctor
+npm run demo:video
 git status --short
 ```
 
-## Installation and build
+## Installation
 
-Actual installation output:
+Actual npm ci output:
 
 ```text
 added 107 packages, and audited 117 packages in 1s
 found 0 vulnerabilities
 ```
 
-npm ci returned 0. Type checking, server bundles, the self contained playtest tool and all four Vite pages built successfully. npm run build returned 0. No absolute workspace path was needed by the application. The regenerated committed files were unchanged.
+The command returned 0. No source files were copied from the working tree. Dependencies were installed in the clone. The application needed no absolute workspace path at runtime.
 
-## Tests
+## Tests and build
 
 Actual Vitest summary:
 
 ```text
-Test Files  27 passed (27)
-Tests       168 passed (168)
+Test Files  34 passed (34)
+Tests       204 passed (204)
+Duration    18.89s
 ```
 
-npm test returned 0. The Node experimental SQLite warning is expected on 22.11 and does not affect the result. npm run lint:prose returned 0 for the ten documentation files present at that revision.
+npm test returned 0. Its pretest script ran strict type checking and the complete build. Server bundles, the self contained harness and all four Vite pages built successfully. npm run demo:video also rebuilt before starting. The SQLite experimental warning is expected on Node 22.11.
 
-## Unattended demo
+The main checkout separately passed npm run lint:prose, npm run build and npm test. The screenshot script completed fifteen captures and its browser assertions. Every screenshot was visually inspected, including the corrected busy factory frame.
 
-The helper started npm run demo:auto on an available loopback port and polled its real HTTP state. It reached this result without credentials or input from a person:
+## A complete recording loop
+
+The helper ran the actual npm run demo:video command and polled HTTP state. It did not accelerate the server clock or send player input. The printed URLs included play, overlay, dashboard and chat, followed by the recording checklist. No credentials or real network services were needed.
+
+The first gauntlet reached:
 
 ```json
 {
   "phase": "finished",
   "rounds": 5,
-  "score": 4,
-  "lives": 2
+  "wins": 4,
+  "lives": 2,
+  "points": 700
 }
 ```
 
-The command printed play, overlay, dashboard and mock chat URLs plus OBS setup. The helper stopped the server after the final score card. The demo is a server and otherwise stays running until Ctrl+C.
+The helper kept watching until the script announced Cycle 2. That happened 115 seconds after starting the command, including its build and initial library validation. The recording schedule itself is 110 seconds. This verifies both completion and automatic looping from a fresh installation.
 
-## Doctor without credentials
+The integration suite separately checks the final hold option, repeated outcomes, visible moderation, approval notices, credits and rankings. Chromium capture was verified during milestone eight and produced a silent 112 second WebM. OBS is needed to capture audio.
 
-The checklist reported:
+## Cleanup and audit
 
-```text
-✓ Node 22.11 or newer
-✗ TWITCH_CLIENT_ID is configured
-✗ TWITCH_CLIENT_SECRET is configured
-✗ TWITCH_BROADCASTER_LOGIN is configured
-✗ TWITCH_BOT_LOGIN is configured
-✗ Private token file is ready. Run npm run auth if needed.
-✓ Twitch ID endpoint is reachable
-✓ Codex CLI is installed
-Mock play needs no credentials. Use npm run demo.
-```
+The clone's git status was empty after the test and demo. The helper stopped the entire demo process group and deleted /tmp/pa-m9-fresh. No temporary clone or server was left running.
 
-Doctor returned 1 intentionally because the live account requirements were absent. This is the expected readiness result for a credential free checkout. The mock demo completed successfully in the same checkout.
+The final tracked tree and full git history were scanned for service key patterns, bearer literals, JWTs, private keys and token shaped high entropy strings. No operational credential or unclassified entropy candidate was found. Public session IDs, dependency integrity values, source paths and synthetic fixtures account for the expected candidates. Ignore checks cover .env, local env variants, token JSON, data, node_modules, dist and factory jobs. Only variable names are tracked in .env.example.
 
-## Cleanup
+The prose checker passed. The screenshots contain local demo identities, public runtime receipts and explicitly simulated clip URLs. Live Twitch authorization, public chat delivery and published clips remain unverified here.
 
-The final git status was empty. The helper deleted /tmp/pa-fresh after stopping its server. No clone directory or demo process was left behind. This proof required no source fix.
+## Earlier check
 
-## Final audit
-
-The full git history and current tracked files were scanned for service key patterns, bearer literals, JWTs, private keys and token shaped high entropy strings. No operational credential was found. Entropy candidates were checked as public dependency integrity values, commit and session IDs, source paths, Canvas type names or synthetic test fixtures. The prohibited provenance marker scan found zero occurrences in the tracked tree and history.
-
-Ignore checks confirmed .env, .env.local, token JSON, data, dependencies, builds and factory jobs are excluded. Only the names in .env.example are tracked. All eight screenshots were visually inspected and contain local demo identities, measured public receipts and simulated clip links.
-
-The prose checker passed the final docs. A temporary negative fixture proved it rejects an em dash, an en dash and a spaced hyphen. The fixture was removed after the check.
+The milestone five installation check at revision de4bc34b5cd1bb7c6a7855fa06399aeed0e1462f passed 168 tests in 27 files. Its unattended demo also completed five rounds. Doctor returned 1 because live credentials and a token file were absent. That was the expected readiness result. The current proof above supersedes those historical test counts.

@@ -24,8 +24,8 @@ async function until(predicate,timeout=90000){
  throw Error('Scene timed out. Last phase: '+last?.gauntlet?.phase+' / '+last?.gauntlet?.round+'\n'+serverLog);
 }
 async function capture(page,file,scene){
- await page.screenshot({path:resolve('shots',file),animations:'disabled',fullPage:false});
- captures.push({file,...scene});console.log('Captured '+file);
+ const buffer=await page.screenshot({path:resolve('shots',file),animations:'disabled',fullPage:false});
+ captures.push({file,...scene});console.log('Captured '+file);return buffer;
 }
 try{
  console.log('Starting the real scripted mock session.');
@@ -151,9 +151,9 @@ try{
  await overlay.locator('.last-build').filter({hasText:'Real Codex spike'}).waitFor();
  await overlay.locator('.ticker-text').filter({hasText:'https://clips.twitch.tv/'}).waitFor();
  assert.ok(await overlay.locator('.overlay-panel,.overlay-ticker').evaluateAll(elements=>elements.every(el=>{const r=el.getBoundingClientRect();return r.left>=48&&r.top>=48&&r.right<=1872&&r.bottom<=1032;})));
- await capture(overlay,'overlay.png',{source:'Actual EventSub mock and fake Helix with real Twitch clients. Factory workers are mock replays. Real spike receipt was measured in milestone four.',game:protocol.gauntlet.game.title,realReceipt:(await state()).games.find(game=>game.receipt.source==='codex-cli').receipt,clip:protocol.resultTicker.find(item=>item.kind==='chat'&&item.text.includes('https://clips.twitch.tv/'))});
+ const factoryFrame=await capture(overlay,'overlay.png',{source:'Actual EventSub mock and fake Helix with real Twitch clients. Factory workers are mock replays. Real spike receipt was measured in milestone four.',game:protocol.gauntlet.game.title,realReceipt:(await state()).games.find(game=>game.receipt.source==='codex-cli').receipt,clip:protocol.resultTicker.find(item=>item.kind==='chat'&&item.text.includes('https://clips.twitch.tv/'))});
  await post('/api/demo/freeze',{frozen:false});
- await capture(overlay,'factory-floor.png',{source:'Actual two mock jobs, real spike receipt and simulated clip ticker',phase:'play'});
+ writeFileSync('shots/factory-floor.png',factoryFrame);captures.push({file:'factory-floor.png',source:'Same captured frame as overlay.png: two actual mock jobs, real spike receipt and simulated clip ticker',phase:'play'});console.log('Saved factory-floor.png from the same captured factory frame.');
  // A separate video session supplies the opening card from the real recording mode.
  const videoPort=await new Promise((resolve,reject)=>{const server=createServer();server.once('error',reject);server.listen(0,'127.0.0.1',()=>{const address=server.address();server.close(()=>resolve(address.port));});});
  videoChild=spawn(process.execPath,['--experimental-sqlite','tools/start.mjs','--video','--hold'],{env:{...process.env,PORT:String(videoPort),ARCADE_DB_PATH:join(data,'video.sqlite')},stdio:['ignore','pipe','pipe']});
